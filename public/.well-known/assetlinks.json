@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "br.com.autopilot.app",
+      "sha256_cert_fingerprints": [
+        "68:0F:27:C6:49:94:9D:26:BB:A3:E2:B7:AC:9A:3A:1E:CF:A0:10:F7:C1:16:A8:B9:07:8E:BC:31:88:C7:BF:EF"
+      ]
+    }
+  }
+]

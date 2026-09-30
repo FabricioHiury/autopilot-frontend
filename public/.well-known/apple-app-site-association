@@ -1,0 +1,21 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "HAD98Y6X9N.br.com.autopilot.app",
+        "paths": [
+          "/app/*",
+          "/autenticacao/*",
+          "*"
+        ]
+      }
+    ]
+  },
+  "activitycontinuation": {
+    "apps": ["HAD98Y6X9N.br.com.autopilot.app"]
+  },
+  "webcredentials": {
+    "apps": ["HAD98Y6X9N.br.com.autopilot.app"]
+  }
+}
