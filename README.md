@@ -291,5 +291,5 @@ src/
 
 ## 🔗 Repositórios Relacionados
 
-- **[autopilot-backend](../autopilot-backend)** — Core API NestJS com WebSockets e AutoPilot IA.
-- **[autopilot-microservice](../autopilot-microservice)** — Gateway Omnichannel (Evolution API v2, Meta, OLX).
+- **[autopilot-backend](https://github.com/FabricioHiury/autopilot-backend)** — Core API NestJS com WebSockets e AutoPilot IA.
+- **[autopilot-microservice](https://github.com/FabricioHiury/autopilot-microservice)** — Gateway Omnichannel (Evolution API v2, Meta, OLX).
