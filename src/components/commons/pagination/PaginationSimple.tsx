@@ -6,10 +6,10 @@ interface PaginationSimpleProps {
   onPageChange: (page: number) => void;
 }
 
-const PaginationSimple: React.FC<PaginationSimpleProps> = ({ 
-  totalPages, 
-  currentPage, 
-  onPageChange 
+const PaginationSimple: React.FC<PaginationSimpleProps> = ({
+  totalPages,
+  currentPage,
+  onPageChange,
 }) => {
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -26,10 +26,10 @@ const PaginationSimple: React.FC<PaginationSimpleProps> = ({
   const renderPageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
-    
+
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
     let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-    
+
     if (endPage - startPage + 1 < maxPagesToShow) {
       startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
@@ -40,16 +40,14 @@ const PaginationSimple: React.FC<PaginationSimpleProps> = ({
           key={i}
           onClick={() => onPageChange(i)}
           className={`px-3 py-1 mx-1 rounded-md ${
-            currentPage === i
-              ? 'bg-[#1B263A] text-white'
-              : 'text-[#485B80] hover:bg-[#F2F4F7]'
+            currentPage === i ? 'bg-[#1B263A] text-white' : 'text-[#485B80] hover:bg-[#F2F4F7]'
           }`}
         >
           {i}
-        </button>
+        </button>,
       );
     }
-    
+
     return pageNumbers;
   };
 
@@ -62,11 +60,9 @@ const PaginationSimple: React.FC<PaginationSimpleProps> = ({
       >
         <img src="/icons/arrow_2.svg" alt="Anterior" />
       </button>
-      
-      <div className="flex mx-2">
-        {renderPageNumbers()}
-      </div>
-      
+
+      <div className="flex mx-2">{renderPageNumbers()}</div>
+
       <button
         onClick={handleNext}
         disabled={currentPage === totalPages}
@@ -78,4 +74,4 @@ const PaginationSimple: React.FC<PaginationSimpleProps> = ({
   );
 };
 
-export default PaginationSimple; 
+export default PaginationSimple;

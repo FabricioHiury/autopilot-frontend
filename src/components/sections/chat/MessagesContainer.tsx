@@ -31,30 +31,29 @@ import { MessageOriginBadge } from '@/components/sections/chat/cards/MessageOrig
 import { analyzeMessage } from '@/components/sections/chat/utils/messageParser';
 
 type Pessoa = {
-  nome?: string | null;
+  name?: string | null;
   avatar?: string | null;
 };
 
-type Mensagem = {
+type Message = {
   id: string;
-  idUsuario: string | null;
-  idChat: string;
-  idDestinatarioApiExterna: string;
-  idMensagemExterna: string;
-  anexoMensagem: string | null;
-  tipoAnexo: string | null;
-  tipo?: string | null;
-  mensagemReferencia?: string | null;
-  idMensagemReferenciaExt?: string | null;
-  mensagemOriginal?: {
+  userId: string | null;
+  chatId: string;
+  externalRecipientId: string;
+  externalMessageId: string;
+  attachmentUrl: string | null;
+  attachmentType: string | null;
+  type?: string | null;
+  quotedMessageId?: string | null;
+  originalMessage?: {
     id: string;
-    conteudo: string | null;
-    anexoMensagem: string | null;
-    tipoAnexo: string | null;
-    criadoEm: string;
-    pessoa: Pessoa | null;
+    content: string | null;
+    attachmentUrl: string | null;
+    attachmentType: string | null;
+    createdAt: string;
+    person: Pessoa | null;
   } | null;
-  metadados?: {
+  metadata?: {
     origemMensagem?: string;
     detalhesOrigem?: string;
     storyId?: string;
@@ -63,39 +62,40 @@ type Mensagem = {
     reelId?: string;
   } | null;
   reaction?: string | null;
-  remetente: 'cliente' | 'loja' | 'sistema' | string;
-  conteudo: string;
-  canal: string;
-  criadoEm: string;
-  pessoa: Pessoa | null;
-  lido: boolean;
+  sender: 'CUSTOMER' | 'STORE' | 'SYSTEM' | string;
+  content: string;
+  channel: string;
+  createdAt: string;
+  person: Pessoa | null;
+  isRead: boolean;
+  deliveryStatus?: 'PENDING' | 'SENT' | 'DELIVERED' | 'READ' | 'FAILED';
 };
 
-type ClienteTemporario = {
+type TemporaryCustomer = {
   id: string;
   avatar: string | null;
-  nome: string | null;
+  name: string | null;
   email: string | null;
   whatsapp: string | null;
-  canal: string;
-  idContatoApiExterna: string;
-  criadoEm: string;
-  atualizadoEm: string;
+  channel: string;
+  externalContactId: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 type Chat = {
   id: string;
-  idLoja: string;
-  idCliente: number | null;
-  idClienteTemporario: string;
-  idAtendimento: number | null;
-  idDestinatarioApiExterna: string;
-  canal: 'whatsapp' | 'instagram' | 'facebook' | 'olx' | 'outros';
-  criadoEm: string;
-  atualizadoEm: string;
-  cliente: unknown;
-  clienteTemporario: ClienteTemporario;
-  mensagem: Mensagem[];
+  storeId: string;
+  customerId: number | null;
+  temporaryCustomerId: string;
+  dealId: number | null;
+  externalRecipientId: string;
+  channel: 'whatsapp' | 'instagram' | 'facebook' | 'olx' | 'other';
+  createdAt: string;
+  updatedAt: string;
+  customer: unknown;
+  temporaryCustomer: TemporaryCustomer;
+  message: Message[];
 };
 
 const isOlxAudioUrl = (rawUrl: string): boolean => {
@@ -148,33 +148,37 @@ const findOlxImageUrlInText = (text?: string | null): string | null => {
       const okHost = /(^|\.)chat-images\.olx\.com\.br$/i.test(parsed.host);
       const looksImg = /\.(jpg|jpeg|png|webp)(\?.*)?$/i.test(parsed.pathname);
       if (okHost && looksImg) return normalized;
-    } catch { }
+    } catch {}
   }
   return null;
 };
 
 export interface MessagesContainerProps {
-  messages?: Mensagem[];
+  messages?: Message[];
   loading: boolean;
   chat?: Chat;
-  pesquisa: string;
+  search: string;
   onLoadMore: () => void;
   end: boolean;
   onScroolOnTop: () => boolean;
   onOpenNovoChat?: (payload: {
-    nome?: string;
+    name?: string;
     whatsapp?: string;
     atendimentoId?: number | null;
   }) => void;
   onNavigateToMessage?: (messageId: string) => Promise<void>;
-  onReplyToMessage?: (message: Mensagem) => void;
-  onReactToMessage?: (message: Mensagem, reaction: string) => void;
+  onReplyToMessage?: (message: Message) => void;
+  onReactToMessage?: (message: Message, reaction: string) => void;
 }
 
 const hasNonEmptyText = (text?: string | null): text is string =>
   typeof text === 'string' && text.trim().length > 0;
 
-const normalize = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const normalize = (s: string) =>
+  s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 
 const dayLabel = (isoDateStr: string): string => {
   const dateObj = new Date(`${isoDateStr}T00:00:00`);
@@ -196,8 +200,8 @@ const ReactionBadge: React.FC<{ text: string }> = ({ text }) => (
 
 function useSocialMediaMp4Type(
   url: string | null | undefined,
-  canal: string,
-  messageType?: string | null
+  channel: string,
+  messageType?: string | null,
 ): 'audio' | 'video' | null {
   const [type, setType] = useState<'audio' | 'video' | null>(null);
 
@@ -209,8 +213,8 @@ function useSocialMediaMp4Type(
         if (!cancelled) setType(null);
         return;
       }
-      
-      if (canal === 'instagram' || canal === 'facebook') {
+
+      if (channel === 'instagram' || channel === 'facebook') {
         const ext = url.split('.').pop()?.toLowerCase();
         if (ext === 'mp4') {
           if (messageType?.toLowerCase() === 'audio') {
@@ -221,7 +225,7 @@ function useSocialMediaMp4Type(
             if (!cancelled) setType('video');
             return;
           }
-          
+
           try {
             const t = await checkSocialMediaMp4Type(url);
             if (!cancelled) setType(t ?? null);
@@ -231,14 +235,14 @@ function useSocialMediaMp4Type(
           return;
         }
       }
-      
+
       if (!cancelled) setType(null);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [url, canal, messageType]);
+  }, [url, channel, messageType]);
 
   return type;
 }
@@ -247,7 +251,7 @@ export function MessagesContainer({
   messages,
   loading,
   chat,
-  pesquisa,
+  search,
   onLoadMore,
   end,
   onScroolOnTop,
@@ -288,43 +292,42 @@ export function MessagesContainer({
   }, [safeMessages.length]);
 
   useEffect(() => {
-    if (!hasNonEmptyText(pesquisa)) return;
-    const first = safeMessages.find(m => hasNonEmptyText(m.conteudo) && normalize(m.conteudo).includes(normalize(pesquisa)));
+    if (!hasNonEmptyText(search)) return;
+    const first = safeMessages.find(
+      (m) => hasNonEmptyText(m.content) && normalize(m.content).includes(normalize(search)),
+    );
     if (first?.id) {
       const el = document.getElementById(`message-${first.id}`);
       el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-  }, [pesquisa, safeMessages]);
+  }, [search, safeMessages]);
 
   const filteredAndGrouped = useMemo(() => {
-    const acc: Record<string, Mensagem[]> = {};
+    const acc: Record<string, Message[]> = {};
 
-    const matchesSearch = (m: Mensagem): boolean => {
-      const hasAttachment = hasNonEmptyText(m.anexoMensagem);
-      const hasText = hasNonEmptyText(m.conteudo);
+    const matchesSearch = (m: Message): boolean => {
+      const hasAttachment = hasNonEmptyText(m.attachmentUrl);
+      const hasText = hasNonEmptyText(m.content);
       if (hasAttachment) return true;
       if (!hasText) return false;
-      if (!hasNonEmptyText(pesquisa)) return true;
-      const normT = normalize(m.conteudo!);
-      const normQ = normalize(pesquisa);
+      if (!hasNonEmptyText(search)) return true;
+      const normT = normalize(m.content!);
+      const normQ = normalize(search);
       return normT.includes(normQ);
     };
 
     const sorted = [...safeMessages]
       .filter((m) => matchesSearch(m))
-      .sort(
-        (a, b) =>
-          new Date(a.criadoEm).getTime() - new Date(b.criadoEm).getTime()
-      );
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
     for (const message of sorted) {
-      const dateKey = format(new Date(message.criadoEm), 'yyyy-MM-dd');
+      const dateKey = format(new Date(message.createdAt), 'yyyy-MM-dd');
       if (!acc[dateKey]) acc[dateKey] = [];
       acc[dateKey].push(message);
     }
 
     return acc;
-  }, [safeMessages, pesquisa]);
+  }, [safeMessages, search]);
 
   if (!chat) {
     return (
@@ -343,7 +346,7 @@ export function MessagesContainer({
       )}
 
       {(() => {
-        const showLoadMore = !end && onScroolOnTop() && !loading && (safeMessages.length > 0);
+        const showLoadMore = !end && onScroolOnTop() && !loading && safeMessages.length > 0;
         return (
           showLoadMore && (
             <div className="self-center">
@@ -361,15 +364,14 @@ export function MessagesContainer({
 
       <div className="mx-auto w-full px-4 max-w-[24rem]">
         <p className="text-center text-[#485b7f] text-xs font-semibold">
-          Você está iniciando o atendimento pelo {chat.canal}.
+          Você está iniciando o atendimento pelo {chat.channel}.
         </p>
         <p className="text-center text-[#485b7f] text-xs font-normal">
-          As mensagens em outros canais ficarão disponíveis nas informações
-          sobre o atendimento.
+          As mensagens em outros canais ficarão disponíveis nas informações sobre o atendimento.
         </p>
       </div>
 
-      {hasNonEmptyText(pesquisa) && Object.keys(filteredAndGrouped).length === 0 && !loading && (
+      {hasNonEmptyText(search) && Object.keys(filteredAndGrouped).length === 0 && !loading && (
         <div className="flex h-full w-full items-center justify-center">
           <div className="text-center text-[#485b7f]">
             <p className="text-sm">Nenhuma mensagem encontrada neste chat.</p>
@@ -378,9 +380,10 @@ export function MessagesContainer({
       )}
 
       {Object.entries(filteredAndGrouped)
-        .sort(([, itemsA], [, itemsB]) =>
-          new Date(itemsA[itemsA.length - 1]?.criadoEm || 0).getTime() -
-          new Date(itemsB[itemsB.length - 1]?.criadoEm || 0).getTime()
+        .sort(
+          ([, itemsA], [, itemsB]) =>
+            new Date(itemsA[itemsA.length - 1]?.createdAt || 0).getTime() -
+            new Date(itemsB[itemsB.length - 1]?.createdAt || 0).getTime(),
         )
         .map(([date, items]) => (
           <MessageDayGroup
@@ -392,7 +395,7 @@ export function MessagesContainer({
             onNavigateToMessage={onNavigateToMessage}
             onReplyToMessage={onReplyToMessage}
             onReactToMessage={onReactToMessage}
-            pesquisa={pesquisa}
+            search={search}
           />
         ))}
 
@@ -409,28 +412,28 @@ const MessageDayGroup = memo(function MessageDayGroup({
   onNavigateToMessage,
   onReplyToMessage,
   onReactToMessage,
-  pesquisa,
+  search,
 }: {
   stringDay: string;
-  messages: Mensagem[];
+  messages: Message[];
   chat?: Chat;
   onOpenNovoChat?: MessagesContainerProps['onOpenNovoChat'];
   onNavigateToMessage?: MessagesContainerProps['onNavigateToMessage'];
   onReplyToMessage?: MessagesContainerProps['onReplyToMessage'];
   onReactToMessage?: MessagesContainerProps['onReactToMessage'];
-  pesquisa: string;
+  search: string;
 }) {
   const imageGallery = useMemo(() => {
     const imgs: { src: string; data?: string; id: string }[] = [];
     for (const m of messages) {
-      if (m.tipo === 'reaction') continue;
-      const anexo = m.anexoMensagem;
-      if (!anexo) continue;
-      const resolvedType: string = m.tipoAnexo
-        ? getFileTypeByMimeType(m.tipoAnexo)
-        : getFileTypeByExtension(anexo);
+      if (m.type === 'reaction') continue;
+      const attachment = m.attachmentUrl;
+      if (!attachment) continue;
+      const resolvedType: string = m.attachmentType
+        ? getFileTypeByMimeType(m.attachmentType)
+        : getFileTypeByExtension(attachment);
       if (resolvedType === 'image') {
-        imgs.push({ src: anexo, data: m.criadoEm, id: m.id });
+        imgs.push({ src: attachment, data: m.createdAt, id: m.id });
       }
     }
     return imgs;
@@ -447,16 +450,15 @@ const MessageDayGroup = memo(function MessageDayGroup({
     const prev = messages[index - 1];
     const curr = messages[index];
 
-    const sameSender = curr.remetente === prev.remetente;
-    const diffMs =
-      new Date(curr.criadoEm).getTime() - new Date(prev.criadoEm).getTime();
+    const sameSender = curr.sender === prev.sender;
+    const diffMs = new Date(curr.createdAt).getTime() - new Date(prev.createdAt).getTime();
     const closeInTime = diffMs < 5 * 60 * 1000;
 
     return !(sameSender && closeInTime);
   };
 
   const filteredMessages = useMemo(() => {
-    return messages.filter(m => m.tipo !== 'reaction');
+    return messages.filter((m) => m.type !== 'reaction');
   }, [messages]);
 
   return (
@@ -477,10 +479,10 @@ const MessageDayGroup = memo(function MessageDayGroup({
           onReplyToMessage={onReplyToMessage}
           onReactToMessage={onReactToMessage}
           chat={chat}
-          atendimentoId={chat?.idAtendimento ?? null}
+          atendimentoId={chat?.dealId ?? null}
           imageGallery={imageGallery}
           imageIndex={indexByMessageId.get(message.id)}
-          pesquisa={pesquisa}
+          search={search}
           allMessages={messages}
         />
       ))}
@@ -499,10 +501,10 @@ function MessageItem({
   atendimentoId,
   imageGallery,
   imageIndex,
-  pesquisa,
+  search,
   allMessages,
 }: {
-  message: Mensagem;
+  message: Message;
   header?: boolean;
   onOpenNovoChat?: MessagesContainerProps['onOpenNovoChat'];
   onNavigateToMessage?: MessagesContainerProps['onNavigateToMessage'];
@@ -512,21 +514,21 @@ function MessageItem({
   atendimentoId?: number | null;
   imageGallery?: { src: string; data?: string; id: string }[];
   imageIndex?: number;
-  pesquisa: string;
-  allMessages?: Mensagem[];
+  search: string;
+  allMessages?: Message[];
 }) {
   const timeFormatted = useMemo(
-    () => format(new Date(message.criadoEm || Date.now()), 'HH:mm'),
-    [message.criadoEm]
+    () => format(new Date(message.createdAt || Date.now()), 'HH:mm'),
+    [message.createdAt],
   );
 
   const referencedMessage = useMemo(() => {
-    const hasReference = message.mensagemReferencia || message.idMensagemReferenciaExt;
-    if (message.mensagemOriginal) {
-      return message.mensagemOriginal;
+    const hasReference = message.quotedMessageId || message.quotedMessageId;
+    if (message.originalMessage) {
+      return message.originalMessage;
     }
 
-    const referenceId = message.mensagemReferencia || message.idMensagemReferenciaExt;
+    const referenceId = message.quotedMessageId || message.quotedMessageId;
     if (!referenceId || !allMessages) return null;
 
     const extractExternalId = (id: string) => {
@@ -536,16 +538,16 @@ function MessageItem({
 
     const cleanReferenceId = extractExternalId(referenceId);
 
-    const foundMessage = allMessages.find(msg => {
-      if (!msg.idMensagemExterna) return msg.id === referenceId;
+    const foundMessage = allMessages.find((msg) => {
+      if (!msg.externalMessageId) return msg.id === referenceId;
 
-      const cleanMsgId = extractExternalId(msg.idMensagemExterna);
+      const cleanMsgId = extractExternalId(msg.externalMessageId);
 
       return (
-        msg.idMensagemExterna === referenceId ||
+        msg.externalMessageId === referenceId ||
         msg.id === referenceId ||
-        msg.idMensagemExterna.endsWith(referenceId) ||
-        msg.idMensagemExterna.endsWith(cleanReferenceId) ||
+        msg.externalMessageId.endsWith(referenceId) ||
+        msg.externalMessageId.endsWith(cleanReferenceId) ||
         cleanMsgId === cleanReferenceId
       );
     });
@@ -553,16 +555,16 @@ function MessageItem({
     if (foundMessage) {
       return {
         id: foundMessage.id,
-        conteudo: foundMessage.conteudo,
-        anexoMensagem: foundMessage.anexoMensagem,
-        tipoAnexo: foundMessage.tipoAnexo,
-        criadoEm: foundMessage.criadoEm,
-        pessoa: foundMessage.pessoa
+        content: foundMessage.content,
+        attachmentUrl: foundMessage.attachmentUrl,
+        attachmentType: foundMessage.attachmentType,
+        createdAt: foundMessage.createdAt,
+        person: foundMessage.person,
       };
     }
 
     return null;
-  }, [message.mensagemOriginal, message.mensagemReferencia, message.idMensagemReferenciaExt, allMessages]);
+  }, [message.originalMessage, message.quotedMessageId, message.quotedMessageId, allMessages]);
 
   const handleNavigateToOriginal = useCallback(async () => {
     if (!referencedMessage?.id || !onNavigateToMessage) return;
@@ -576,69 +578,74 @@ function MessageItem({
 
   const [errorSending, setErrorSending] = useState(false);
   const socialMediaType = useSocialMediaMp4Type(
-    message.anexoMensagem,
-    message.canal,
-    message.tipo
+    message.attachmentUrl,
+    message.channel,
+    message.type,
   );
 
-  const { isPix, callInfo, locationInfo, contactInfo, linkInfo } =
-    analyzeMessage(message.conteudo || '');
+  const { isPix, callInfo, locationInfo, contactInfo, linkInfo } = analyzeMessage(
+    message.content || '',
+  );
 
   useEffect(() => {
     setErrorSending(false);
 
-    if (message.remetente !== 'loja') return;
-    if (message.idMensagemExterna) return;
+    if (message.sender !== 'STORE') return;
+    if (message.externalMessageId) return;
 
     const timer = setTimeout(() => {
-      if (!message.idMensagemExterna) {
+      if (!message.externalMessageId) {
         setErrorSending(true);
       }
     }, 10_000);
 
     return () => clearTimeout(timer);
-  }, [message.id, message.remetente, message.idMensagemExterna]);
+  }, [message.id, message.sender, message.externalMessageId]);
 
-  const hasText = hasNonEmptyText(message.conteudo);
-  const hasAttachment = hasNonEmptyText(message.anexoMensagem);
-  if (!hasText && !hasAttachment && message.tipo !== 'reaction') return null;
+  const hasText = hasNonEmptyText(message.content);
+  const hasAttachment = hasNonEmptyText(message.attachmentUrl);
+  if (!hasText && !hasAttachment && message.type !== 'reaction') return null;
 
-  const displayName = message.pessoa?.nome || 'Usuário';
-  const avatarSrc = message.pessoa?.avatar || undefined;
+  const displayName = message.person?.name || 'Usuário';
+  const avatarSrc = message.person?.avatar || undefined;
 
   const isPureLinkText = useMemo(() => {
     if (!hasText) return false;
-    const trimmed = message.conteudo!.trim();
-    const urlOnly = /^(https?:\/\/[^\s<>'"\)\]]+)$/i.test(trimmed) || /^(?:www\.)?[^\s<>'"\)\]]+\.[a-z]{2,}[^\s]*$/i.test(trimmed);
+    const trimmed = message.content!.trim();
+    const urlOnly =
+      /^(https?:\/\/[^\s<>'"\)\]]+)$/i.test(trimmed) ||
+      /^(?:www\.)?[^\s<>'"\)\]]+\.[a-z]{2,}[^\s]*$/i.test(trimmed);
     return urlOnly;
-  }, [hasText, message.conteudo]);
+  }, [hasText, message.content]);
 
   const shouldHideTextBecauseAttachment = useMemo(() => {
     if (!hasAttachment) return false;
     if (!hasText) return false;
     if (isPureLinkText) return true;
-    if (findOlxImageUrlInText(message.conteudo) || findOlxAudioUrlInText(message.conteudo)) return true;
-    const looksLikeFilename = /[^\s]+\.[a-z0-9]{2,4}$/i.test(message.conteudo.trim());
+    if (findOlxImageUrlInText(message.content) || findOlxAudioUrlInText(message.content))
+      return true;
+    const looksLikeFilename = /[^\s]+\.[a-z0-9]{2,4}$/i.test(message.content.trim());
     if (looksLikeFilename) return true;
     return false;
-  }, [hasAttachment, hasText, isPureLinkText, message.conteudo]);
+  }, [hasAttachment, hasText, isPureLinkText, message.content]);
 
-  const renderAttachment = (m: Mensagem) => {
-    const anexo = m.anexoMensagem;
-    if (!anexo) return null;
+  const renderAttachment = (m: Message) => {
+    const attachment = m.attachmentUrl;
+    if (!attachment) return null;
 
-    const attachmentClass = m.remetente === 'cliente'
-      ? 'message-attachment-cliente'
-      : 'message-attachment-loja';
+    const attachmentClass =
+      m.sender === 'CUSTOMER' ? 'message-attachment-cliente' : 'message-attachment-loja';
 
-    const isStoryReply = m.canal === 'instagram' && m.metadados?.origemMensagem === 'story_reply';
+    const isStoryReply = m.channel === 'instagram' && m.metadata?.origemMensagem === 'story_reply';
 
-    if ((m.tipo === 'sticker' || m.tipo === 'STICKER') && anexo) {
-      const alignRightClass = m.remetente === 'loja' ? 'ml-auto' : '';
+    if ((m.type === 'sticker' || m.type === 'STICKER') && attachment) {
+      const alignRightClass = m.sender === 'STORE' ? 'ml-auto' : '';
       return (
-        <div className={`${attachmentClass} inline-flex w-36 h-36 rounded-lg bg-transparent overflow-hidden ${alignRightClass}`}>
+        <div
+          className={`${attachmentClass} inline-flex w-36 h-36 rounded-lg bg-transparent overflow-hidden ${alignRightClass}`}
+        >
           <img
-            src={anexo}
+            src={attachment}
             alt="Sticker"
             className="w-full h-full object-contain pointer-events-none select-none"
             draggable={false}
@@ -648,24 +655,29 @@ function MessageItem({
     }
 
     let resolvedType: string;
-    
-    if (m.canal === 'instagram' || m.canal === 'facebook') {
-      if (m.tipo && ['audio', 'voice', 'video', 'image', 'reel', 'sticker', 'document', 'pdf'].includes(m.tipo.toLowerCase())) {
-        resolvedType = m.tipo.toLowerCase();
+
+    if (m.channel === 'instagram' || m.channel === 'facebook') {
+      if (
+        m.type &&
+        ['audio', 'voice', 'video', 'image', 'reel', 'sticker', 'document', 'pdf'].includes(
+          m.type.toLowerCase(),
+        )
+      ) {
+        resolvedType = m.type.toLowerCase();
       } else if (socialMediaType) {
         resolvedType = socialMediaType;
-      } else if (m.tipoAnexo) {
-        resolvedType = getFileTypeByMimeType(m.tipoAnexo);
+      } else if (m.attachmentType) {
+        resolvedType = getFileTypeByMimeType(m.attachmentType);
       } else {
-        resolvedType = getFileTypeByExtension(anexo);
+        resolvedType = getFileTypeByExtension(attachment);
       }
     } else {
       if (socialMediaType) {
         resolvedType = socialMediaType;
-      } else if (m.tipoAnexo) {
-        resolvedType = getFileTypeByMimeType(m.tipoAnexo);
+      } else if (m.attachmentType) {
+        resolvedType = getFileTypeByMimeType(m.attachmentType);
       } else {
-        resolvedType = getFileTypeByExtension(anexo);
+        resolvedType = getFileTypeByExtension(attachment);
       }
     }
 
@@ -675,8 +687,8 @@ function MessageItem({
           <div className={attachmentClass}>
             <div className="relative">
               <AnexoImageChat
-                src={anexo}
-                data={m.criadoEm}
+                src={attachment}
+                data={m.createdAt}
                 idContainer="content-container"
                 gallery={imageGallery?.map((g) => ({ src: g.src, data: g.data }))}
                 currentIndex={imageIndex}
@@ -684,8 +696,8 @@ function MessageItem({
               {isStoryReply && (
                 <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2" fill="none"/>
-                    <circle cx="12" cy="12" r="6" fill="currentColor"/>
+                    <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2" fill="none" />
+                    <circle cx="12" cy="12" r="6" fill="currentColor" />
                   </svg>
                   <span className="text-white text-xs font-semibold">Story</span>
                 </div>
@@ -697,34 +709,26 @@ function MessageItem({
       case 'voice':
         return (
           <div className={attachmentClass}>
-            <AnexoAudioChat src={anexo} />
+            <AnexoAudioChat src={attachment} />
           </div>
         );
       case 'reel':
       case 'ig_reel':
         return (
           <div className={attachmentClass}>
-            <AnexoReelChat
-              src={anexo}
-              data={m.criadoEm}
-              idContainer="content-container"
-            />
+            <AnexoReelChat src={attachment} data={m.createdAt} idContainer="content-container" />
           </div>
         );
       case 'video':
         return (
           <div className={attachmentClass}>
             <div className="relative">
-              <AnexoVideoChat
-                src={anexo}
-                data={m.criadoEm}
-                idContainer="content-container"
-              />
+              <AnexoVideoChat src={attachment} data={m.createdAt} idContainer="content-container" />
               {isStoryReply && (
                 <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2" fill="none"/>
-                    <circle cx="12" cy="12" r="6" fill="currentColor"/>
+                    <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2" fill="none" />
+                    <circle cx="12" cy="12" r="6" fill="currentColor" />
                   </svg>
                   <span className="text-white text-xs font-semibold">Story</span>
                 </div>
@@ -735,21 +739,21 @@ function MessageItem({
       case 'pdf':
         return (
           <div className={attachmentClass}>
-            <AnexoPdfChat src={anexo} idContainer="content-container" />
+            <AnexoPdfChat src={attachment} idContainer="content-container" />
           </div>
         );
       case 'document':
       case 'file':
         return (
           <div className={attachmentClass}>
-            <AnexoDocumentoChat src={anexo} titulo={m.conteudo || undefined} />
+            <AnexoDocumentoChat src={attachment} title={m.content || undefined} />
           </div>
         );
       case 'sticker':
         return (
           <div className={attachmentClass}>
             <img
-              src={anexo}
+              src={attachment}
               alt="Sticker"
               className="max-w-[150px] max-h-[150px] object-contain"
             />
@@ -758,10 +762,10 @@ function MessageItem({
       default:
         console.log('[MessagesContainer] Tipo não suportado:', {
           resolvedType,
-          tipo: m.tipo,
-          tipoAnexo: m.tipoAnexo,
-          canal: m.canal,
-          anexo: anexo?.substring(0, 100),
+          type: m.type,
+          attachmentType: m.attachmentType,
+          channel: m.channel,
+          attachment: attachment?.substring(0, 100),
         });
         return (
           <div className={attachmentClass}>
@@ -776,25 +780,35 @@ function MessageItem({
   const ReactionBadge = ({ text }: { text: string }) => (
     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 text-[#485b7f] text-[11px] border border-[#d7deea]">
       <span className="text-base leading-none">{text}</span>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden className="opacity-60">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden
+        className="opacity-60"
+      >
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.22 2.53C11.09 5.01 12.76 4 14.5 4 17 4 19 6 19 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
       </svg>
     </span>
   );
 
   const highlightClass = useMemo(() => {
-    if (!hasNonEmptyText(pesquisa)) return '';
-    const normT = message.conteudo ? normalize(message.conteudo) : '';
-    const normQ = normalize(pesquisa);
+    if (!hasNonEmptyText(search)) return '';
+    const normT = message.content ? normalize(message.content) : '';
+    const normQ = normalize(search);
     if (!normT.includes(normQ)) return '';
     return 'animate-[ping_0.6s_ease-in-out_1]';
-  }, [pesquisa, message.conteudo]);
+  }, [search, message.content]);
 
-  if (message.remetente === 'cliente') {
+  if (message.sender === 'CUSTOMER') {
     return (
       <div
         id={`message-${message.id}`}
-        className={cn("lg:w-[26rem] justify-start items-start gap-3 inline-flex animate-fade-in group", highlightClass)}
+        className={cn(
+          'lg:w-[26rem] justify-start items-start gap-3 inline-flex animate-fade-in group',
+          highlightClass,
+        )}
       >
         <AvatarUser
           name={displayName}
@@ -806,21 +820,19 @@ function MessageItem({
           <div
             className={cn(
               'self-stretch justify-start items-center gap-[9px] inline-flex',
-              header ? '' : 'hidden'
+              header ? '' : 'hidden',
             )}
           >
-            <div className="text-[#283855] text-sm font-semibold">
-              {displayName}
-            </div>
-            <div className="text-[#7f8999] text-xs font-normal">
-              {timeFormatted}
-            </div>
-            {message.canal === 'instagram' && message.metadados?.origemMensagem && message.metadados.origemMensagem !== 'direct_message' && (
-              <MessageOriginBadge 
-                origin={message.metadados.origemMensagem} 
-                details={message.metadados.detalhesOrigem}
-              />
-            )}
+            <div className="text-[#283855] text-sm font-semibold">{displayName}</div>
+            <div className="text-[#7f8999] text-xs font-normal">{timeFormatted}</div>
+            {message.channel === 'instagram' &&
+              message.metadata?.origemMensagem &&
+              message.metadata.origemMensagem !== 'direct_message' && (
+                <MessageOriginBadge
+                  origin={message.metadata.origemMensagem}
+                  details={message.metadata.detalhesOrigem}
+                />
+              )}
           </div>
           {/* Reação desabilitada para Instagram - API não suporta receber reações via webhook */}
           {/* {chat?.canal === 'instagram' && message.remetente === 'cliente' && onReactToMessage && (
@@ -838,88 +850,96 @@ function MessageItem({
           <div className="grid grid-cols-1 gap-4 w-full">
             {hasAttachment && renderAttachment(message)}
 
-            {hasText &&
-              message.conteudo === 'Mensagem não identificada' && (
-                <span className="text-slate-400 text-xs">
-                  Ação realizada pelo(a) interlocutor(a) não suportada
-                </span>
-              )}
-
-            {(hasText || message.tipo === 'reaction') && !shouldHideTextBecauseAttachment && (message.conteudo !== 'Mensagem não identificada' || message.tipo === 'reaction') && (
-              <div
-                className="message-content-cliente self-stretch p-4 bg-[#e2e6ec] rounded-tr-xl rounded-bl-xl rounded-br-xl justify-center items-center gap-2.5 inline-flex"
-              >
-                <div className="w-full">
-                  {referencedMessage && (
-                    <div
-                      className="mb-3 p-2 bg-[#d1d5db] border-l-4 border-[#485b7f] rounded-lg cursor-pointer"
-                      onClick={handleNavigateToOriginal}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => e.key === 'Enter' && handleNavigateToOriginal()}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-[#485b7f]">
-                          <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" fill="currentColor" />
-                        </svg>
-                        <span className="text-xs font-medium text-[#485b7f]">
-                          {referencedMessage.pessoa?.nome || 'Usuário'}
-                        </span>
-                        <span className="text-xs text-[#7f8999] ml-auto">↗</span>
-                      </div>
-                      <div className="text-xs text-[#283855] truncate max-w-full">
-                        {referencedMessage.anexoMensagem ? (
-                          <span className="italic">📎 Anexo</span>
-                        ) : (
-                          referencedMessage.conteudo && referencedMessage.conteudo.length > 40
-                            ? `${referencedMessage.conteudo.substring(0, 40)}...`
-                            : referencedMessage.conteudo || 'Mensagem sem conteúdo'
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {isPix ? (
-                    <PixMessageCard code={message.conteudo} tone="light" />
-                  ) : callInfo.isCall ? (
-                    <CallMessageCard info={callInfo} tone="light" />
-                  ) : locationInfo.isLocation ? (
-                    <LocationMessageCard info={locationInfo} tone="light" />
-                  ) : contactInfo.isContact ? (
-                    <ContactMessageCard
-                      info={contactInfo}
-                      tone="light"
-                      onOpenNovoChat={onOpenNovoChat}
-                      atendimentoId={atendimentoId ?? null}
-                    />
-                  ) : message.tipo === 'reaction' ? (
-                    <div className="flex items-center gap-2">
-                      <ReactionBadge text={message.conteudo} />
-                    </div>
-                  ) : message.tipo === 'list_response' ? (
-                    <span className="text-[#283855] text-sm">{message.conteudo}</span>
-                  ) : message.tipo === 'buttons_response' ? (
-                    <span className="text-[#283855] text-sm">{message.conteudo}</span>
-                  ) : message.tipo === 'sticker' ? (
-                    <span className="text-[#485b7f] text-xs">Sticker</span>
-                  ) : findOlxImageUrlInText(message.conteudo) ? (
-                    <AnexoImageChat
-                      src={findOlxImageUrlInText(message.conteudo) as string}
-                      data={message.criadoEm}
-                      idContainer="content-container"
-                    />
-                  ) : findOlxAudioUrlInText(message.conteudo) ? (
-                    <AnexoAudioChat src={findOlxAudioUrlInText(message.conteudo) as string} />
-                  ) : linkInfo.isLink ? (
-                    <LinkMessageCard url={linkInfo.url} tone="light" />
-                  ) : (
-                    <div className="grow shrink basis-0 text-[#283855] text-sm font-normal leading-[18.20px] whitespace-pre-wrap break-words">
-                      {formatMessageText(message.conteudo)}
-                    </div>
-                  )}
-                </div>
-              </div>
+            {hasText && message.content === 'Mensagem não identificada' && (
+              <span className="text-slate-400 text-xs">
+                Ação realizada pelo(a) interlocutor(a) não suportada
+              </span>
             )}
+
+            {(hasText || message.type === 'reaction') &&
+              !shouldHideTextBecauseAttachment &&
+              (message.content !== 'Mensagem não identificada' || message.type === 'reaction') && (
+                <div className="message-content-cliente self-stretch p-4 bg-[#e2e6ec] rounded-tr-xl rounded-bl-xl rounded-br-xl justify-center items-center gap-2.5 inline-flex">
+                  <div className="w-full">
+                    {referencedMessage && (
+                      <div
+                        className="mb-3 p-2 bg-[#d1d5db] border-l-4 border-[#485b7f] rounded-lg cursor-pointer"
+                        onClick={handleNavigateToOriginal}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === 'Enter' && handleNavigateToOriginal()}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            className="text-[#485b7f]"
+                          >
+                            <path
+                              d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                          <span className="text-xs font-medium text-[#485b7f]">
+                            {referencedMessage.person?.name || 'Usuário'}
+                          </span>
+                          <span className="text-xs text-[#7f8999] ml-auto">↗</span>
+                        </div>
+                        <div className="text-xs text-[#283855] truncate max-w-full">
+                          {referencedMessage.attachmentUrl ? (
+                            <span className="italic">📎 Anexo</span>
+                          ) : referencedMessage.content && referencedMessage.content.length > 40 ? (
+                            `${referencedMessage.content.substring(0, 40)}...`
+                          ) : (
+                            referencedMessage.content || 'Mensagem sem conteúdo'
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {isPix ? (
+                      <PixMessageCard code={message.content} tone="light" />
+                    ) : callInfo.isCall ? (
+                      <CallMessageCard info={callInfo} tone="light" />
+                    ) : locationInfo.isLocation ? (
+                      <LocationMessageCard info={locationInfo} tone="light" />
+                    ) : contactInfo.isContact ? (
+                      <ContactMessageCard
+                        info={contactInfo}
+                        tone="light"
+                        onOpenNovoChat={onOpenNovoChat}
+                        atendimentoId={atendimentoId ?? null}
+                      />
+                    ) : message.type === 'reaction' ? (
+                      <div className="flex items-center gap-2">
+                        <ReactionBadge text={message.content} />
+                      </div>
+                    ) : message.type === 'list_response' ? (
+                      <span className="text-[#283855] text-sm">{message.content}</span>
+                    ) : message.type === 'buttons_response' ? (
+                      <span className="text-[#283855] text-sm">{message.content}</span>
+                    ) : message.type === 'sticker' ? (
+                      <span className="text-[#485b7f] text-xs">Sticker</span>
+                    ) : findOlxImageUrlInText(message.content) ? (
+                      <AnexoImageChat
+                        src={findOlxImageUrlInText(message.content) as string}
+                        data={message.createdAt}
+                        idContainer="content-container"
+                      />
+                    ) : findOlxAudioUrlInText(message.content) ? (
+                      <AnexoAudioChat src={findOlxAudioUrlInText(message.content) as string} />
+                    ) : linkInfo.isLink ? (
+                      <LinkMessageCard url={linkInfo.url} tone="light" />
+                    ) : (
+                      <div className="grow shrink basis-0 text-[#283855] text-sm font-normal leading-[18.20px] whitespace-pre-wrap break-words">
+                        {formatMessageText(message.content)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             {message.reaction && (
               <div className="pl-2 pt-0.5">
                 <ReactionBadge text={message.reaction} />
@@ -927,13 +947,21 @@ function MessageItem({
             )}
           </div>
         </div>
-        {chat?.canal === 'whatsapp' && onReplyToMessage && message.remetente === 'cliente' && (
+        {chat?.channel === 'whatsapp' && onReplyToMessage && message.sender === 'CUSTOMER' && (
           <button
             onClick={() => onReplyToMessage(message)}
             className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1.5 hover:bg-[#F2F4F7] rounded-full ml-2 self-center"
             title="Responder"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#657380]">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="text-[#657380]"
+            >
               <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" />
             </svg>
           </button>
@@ -942,15 +970,12 @@ function MessageItem({
     );
   }
 
-  if (message.remetente === 'sistema') {
+  if (message.sender === 'SYSTEM') {
     if (!hasText) return null;
     return (
-      <div
-        id={`message-${message.id}`}
-        className="w-full flex justify-center"
-      >
+      <div id={`message-${message.id}`} className="w-full flex justify-center">
         <p className="w-fit block text-center text-[#485b7f] text-xs font-semibold px-1.5 py-1 bg-[#ebeef2] rounded whitespace-pre-wrap break-words">
-          {message.conteudo}
+          {message.content}
         </p>
       </div>
     );
@@ -965,24 +990,48 @@ function MessageItem({
         <div
           className={cn(
             'self-stretch justify-end items-center gap-[9px] inline-flex',
-            header ? '' : 'hidden'
+            header ? '' : 'hidden',
           )}
         >
-          <div className="text-[#283855] text-sm font-semibold">
-            {displayName}
-          </div>
+          <div className="text-[#283855] text-sm font-semibold">{displayName}</div>
           <div className="text-[#7f8999] text-xs font-normal">
-            {timeFormatted}
+            {timeFormatted}{' '}
+            {message.deliveryStatus && (
+              <span
+                title={
+                  {
+                    PENDING: 'Enviando',
+                    SENT: 'Enviada',
+                    DELIVERED: 'Entregue',
+                    READ: 'Lida',
+                    FAILED: 'Falha no envio',
+                  }[message.deliveryStatus]
+                }
+                className={
+                  message.deliveryStatus === 'FAILED'
+                    ? 'text-red-600'
+                    : message.deliveryStatus === 'READ'
+                      ? 'text-primary'
+                      : ''
+                }
+              >
+                {message.deliveryStatus === 'FAILED'
+                  ? '! Falha'
+                  : message.deliveryStatus === 'PENDING'
+                    ? '◷'
+                    : message.deliveryStatus === 'SENT'
+                      ? '✓'
+                      : '✓✓'}
+              </span>
+            )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 w-full">
           {hasAttachment && renderAttachment(message)}
 
-          {(hasText || message.tipo === 'reaction') && !shouldHideTextBecauseAttachment && (
-            <div
-              className="message-content-loja self-stretch p-4 bg-[#34486e] rounded-tl-xl rounded-bl-xl rounded-br-xl justify-start items-center gap-2.5 inline-flex"
-            >
+          {(hasText || message.type === 'reaction') && !shouldHideTextBecauseAttachment && (
+            <div className="message-content-loja self-stretch p-4 bg-[#34486e] rounded-tl-xl rounded-bl-xl rounded-br-xl justify-start items-center gap-2.5 inline-flex">
               <div className="w-full">
                 {referencedMessage && (
                   <div
@@ -993,28 +1042,37 @@ function MessageItem({
                     onKeyDown={(e) => e.key === 'Enter' && handleNavigateToOriginal()}
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-[#ebeef2]">
-                        <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" fill="currentColor" />
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        className="text-[#ebeef2]"
+                      >
+                        <path
+                          d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"
+                          fill="currentColor"
+                        />
                       </svg>
                       <span className="text-xs font-medium text-[#ebeef2]">
-                        {referencedMessage.pessoa?.nome || 'Usuário'}
+                        {referencedMessage.person?.name || 'Usuário'}
                       </span>
                       <span className="text-xs text-[#7f8999] ml-auto">↗</span>
                     </div>
                     <div className="text-xs text-[#d7deea] truncate max-w-full">
-                      {referencedMessage.anexoMensagem ? (
+                      {referencedMessage.attachmentUrl ? (
                         <span className="italic">📎 Anexo</span>
+                      ) : referencedMessage.content && referencedMessage.content.length > 40 ? (
+                        `${referencedMessage.content.substring(0, 40)}...`
                       ) : (
-                        referencedMessage.conteudo && referencedMessage.conteudo.length > 40
-                          ? `${referencedMessage.conteudo.substring(0, 40)}...`
-                          : referencedMessage.conteudo || 'Mensagem sem conteúdo'
+                        referencedMessage.content || 'Mensagem sem conteúdo'
                       )}
                     </div>
                   </div>
                 )}
 
                 {isPix ? (
-                  <PixMessageCard code={message.conteudo} tone="dark" />
+                  <PixMessageCard code={message.content} tone="dark" />
                 ) : callInfo.isCall ? (
                   <CallMessageCard info={callInfo} tone="dark" />
                 ) : locationInfo.isLocation ? (
@@ -1026,29 +1084,29 @@ function MessageItem({
                     onOpenNovoChat={onOpenNovoChat}
                     atendimentoId={atendimentoId ?? null}
                   />
-                ) : message.tipo === 'reaction' ? (
+                ) : message.type === 'reaction' ? (
                   <div className="flex items-center justify-end gap-2">
-                    <ReactionBadge text={message.conteudo} />
+                    <ReactionBadge text={message.content} />
                   </div>
-                ) : message.tipo === 'list_response' ? (
-                  <span className="text-white text-sm">{message.conteudo}</span>
-                ) : message.tipo === 'buttons_response' ? (
-                  <span className="text-white text-sm">{message.conteudo}</span>
-                ) : message.tipo === 'sticker' ? (
+                ) : message.type === 'list_response' ? (
+                  <span className="text-white text-sm">{message.content}</span>
+                ) : message.type === 'buttons_response' ? (
+                  <span className="text-white text-sm">{message.content}</span>
+                ) : message.type === 'sticker' ? (
                   <span className="text-blue-100 text-xs">Sticker</span>
-                ) : findOlxImageUrlInText(message.conteudo) ? (
+                ) : findOlxImageUrlInText(message.content) ? (
                   <AnexoImageChat
-                    src={findOlxImageUrlInText(message.conteudo) as string}
-                    data={message.criadoEm}
+                    src={findOlxImageUrlInText(message.content) as string}
+                    data={message.createdAt}
                     idContainer="content-container"
                   />
-                ) : findOlxAudioUrlInText(message.conteudo) ? (
-                  <AnexoAudioChat src={findOlxAudioUrlInText(message.conteudo) as string} />
+                ) : findOlxAudioUrlInText(message.content) ? (
+                  <AnexoAudioChat src={findOlxAudioUrlInText(message.content) as string} />
                 ) : linkInfo.isLink ? (
                   <LinkMessageCard url={linkInfo.url} tone="dark" />
                 ) : (
                   <div className="grow shrink basis-0 text-[#fdfdfd] text-sm font-normal whitespace-pre-wrap break-words">
-                    {formatMessageText(message.conteudo, 'text-blue-200')}
+                    {formatMessageText(message.content, 'text-blue-200')}
                   </div>
                 )}
               </div>
@@ -1087,7 +1145,6 @@ function MessageItem({
           </svg>
         </div>
       )}
-
     </div>
   );
 }

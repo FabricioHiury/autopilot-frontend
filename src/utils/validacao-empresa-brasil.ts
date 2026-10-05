@@ -1,45 +1,46 @@
-
 export interface ValidacaoEmpresaRegras {
   inscricaoMunicipalObrigatoria: boolean;
   inscricaoEstadualObrigatoria: boolean;
-  observacoes?: string;
+  notes?: string;
 }
 
 export interface DadosEmpresa {
-  uf: string;
-  portalEmpresa: string;
-  atividadePrincipal: string;
+  state: string;
+  portalCompany: string;
+  activityPrimary: string;
 }
 
-export function validarObrigatoriedadeInscricoes(dados: DadosEmpresa): ValidacaoEmpresaRegras {
-  const { uf, portalEmpresa, atividadePrincipal } = dados;
+export function validarObrigatoriedadeInscricoes(data: DadosEmpresa): ValidacaoEmpresaRegras {
+  const { state, portalCompany, activityPrimary } = data;
 
-  if (portalEmpresa === '1') {
+  if (portalCompany === '1') {
     return {
       inscricaoMunicipalObrigatoria: false,
       inscricaoEstadualObrigatoria: false,
-      observacoes: 'MEI está dispensado de inscrição municipal e estadual na maioria dos casos. Consulte a prefeitura local para atividades específicas.'
+      notes:
+        'MEI está dispensado de inscrição municipal e estadual na maioria dos casos. Consulte a prefeitura local para atividades específicas.',
     };
   }
 
-  const regrasEspeciais = getRegrasEspeciaisPorEstado(uf);
+  const regrasEspeciais = getRegrasEspeciaisPorEstado(state);
   if (regrasEspeciais) {
     return regrasEspeciais;
   }
 
   return {
-    inscricaoMunicipalObrigatoria: atividadePrincipal === '3',
-    inscricaoEstadualObrigatoria: ['1', '2'].includes(atividadePrincipal),
+    inscricaoMunicipalObrigatoria: activityPrimary === '3',
+    inscricaoEstadualObrigatoria: ['1', '2'].includes(activityPrimary),
   };
 }
 
-function getRegrasEspeciaisPorEstado(uf: string): ValidacaoEmpresaRegras | null {
-  switch (uf) {
+function getRegrasEspeciaisPorEstado(state: string): ValidacaoEmpresaRegras | null {
+  switch (state) {
     case 'DF':
       return {
         inscricaoMunicipalObrigatoria: false,
         inscricaoEstadualObrigatoria: true,
-        observacoes: 'No Distrito Federal não existe inscrição municipal. A inscrição estadual é obrigatória para atividades de comércio e indústria.'
+        notes:
+          'No Distrito Federal não existe inscrição municipal. A inscrição estadual é obrigatória para atividades de comércio e indústria.',
       };
 
     case 'AC':
@@ -48,7 +49,7 @@ function getRegrasEspeciaisPorEstado(uf: string): ValidacaoEmpresaRegras | null 
       return {
         inscricaoMunicipalObrigatoria: true,
         inscricaoEstadualObrigatoria: true,
-        observacoes: 'Estados da região Norte podem ter particularidades. Consulte os órgãos locais.'
+        notes: 'Estados da região Norte podem ter particularidades. Consulte os órgãos locais.',
       };
 
     default:
@@ -57,24 +58,24 @@ function getRegrasEspeciaisPorEstado(uf: string): ValidacaoEmpresaRegras | null 
 }
 
 export function isCampoObrigatorio(
-  campo: 'inscricaoMunicipal' | 'inscricaoEstadual',
-  dados: DadosEmpresa
+  campo: 'registrationMunicipal' | 'registrationState',
+  data: DadosEmpresa,
 ): boolean {
-  const regras = validarObrigatoriedadeInscricoes(dados);
+  const regras = validarObrigatoriedadeInscricoes(data);
 
   switch (campo) {
-    case 'inscricaoMunicipal':
+    case 'registrationMunicipal':
       return regras.inscricaoMunicipalObrigatoria;
-    case 'inscricaoEstadual':
+    case 'registrationState':
       return regras.inscricaoEstadualObrigatoria;
     default:
       return false;
   }
 }
 
-export function getMensagemValidacao(dados: DadosEmpresa): string | null {
-  const regras = validarObrigatoriedadeInscricoes(dados);
-  return regras.observacoes || null;
+export function getMensagemValidacao(data: DadosEmpresa): string | null {
+  const regras = validarObrigatoriedadeInscricoes(data);
+  return regras.notes || null;
 }
 
 export const TIPOS_EMPRESA = {
@@ -82,11 +83,11 @@ export const TIPOS_EMPRESA = {
   '2': 'ME',
   '3': 'EPP',
   '4': 'LTDA',
-  '5': 'SA'
+  '5': 'SA',
 } as const;
 
 export const ATIVIDADES = {
   '1': 'Comércio',
   '2': 'Indústria',
-  '3': 'Serviços'
+  '3': 'Serviços',
 } as const;

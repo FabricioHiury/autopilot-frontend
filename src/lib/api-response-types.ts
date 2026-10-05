@@ -1,48 +1,27 @@
-export interface ApiResponseLoginType {
-    token: string;
-    perfil: string;
-    nome: string;
-    id: string;
-    idLoja: string;
-    nomeEmpresa: string;
+export type { AuthSession } from '@/types/auth';
+
+export interface Employee {
+  id: string;
+  storeId: string;
+  userId: string;
+  photoUrl: string;
+  name: string;
+  taxId: string;
+  status: string;
+  notes: string;
+  phoneAdditional: string;
+  whatsapp: string;
+  email: string;
+  roles: Role[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface ColaboradorType {
-    id: string;
-    idLoja: string;
-    idUsuario: string;
-    idFoto: string;
-    nome: string;
-    documentoFiscal: string;
-    status: string;
-    observacoes: string;
-    telefoneComplementar: string;
-    whatsapp: string;
-    email: string;
-    cargos: Cargo[]
-    criadoEm: string;
-    atualizadoEm: string;
-}
+type Role = {
+  role: string;
+  features: string;
+  id: string;
+  storeId: string;
+};
 
-type Cargo={
-    cargo:string;
-    funcionalidades:string;
-    id: string;
-    idLoja: string
-}
-
-export interface ComentarioType {
-    id: string;
-    idAtendimento: string;
-    idUsuario: string;
-    nome: string;
-    avatar: string;
-    criadoEm: Date;
-    comentario: string;
-}
-
-export interface ComentarioListType {
-    pagina: number;
-    itensPagina: number;
-    comentarios: ComentarioType[];
-}
+export type { DealComment as DealComment, DealCommentList } from '@/types/comment';

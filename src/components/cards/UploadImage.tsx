@@ -1,10 +1,10 @@
-import IconBgImageUpload from "../icons/icon-bg-image-upload";
-import IconCamera from "../icons/icon-camera";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { profileImageUrl } from "@/lib/profile.utils";
+import IconBgImageUpload from '../icons/icon-bg-image-upload';
+import IconCamera from '../icons/icon-camera';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { profileImageUrl } from '@/lib/profile.utils';
 
 export interface UploadImageProps {
-  idUsuario: string;
+  userId: string;
   file?: File;
   setFile: (file: File | undefined) => void;
   label: string;
@@ -13,7 +13,7 @@ export interface UploadImageProps {
 }
 
 export default function UploadImage({
-  idUsuario,
+  userId,
   file,
   setFile,
   label,
@@ -28,12 +28,12 @@ export default function UploadImage({
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const loadInitialImage = useCallback(() => {
-    if (avatar && avatar.trim() !== "") {
+    if (avatar && avatar.trim() !== '') {
       setImageSrc(avatar);
       setIsValidImage(true);
       setIsLoaded(false);
-    } else if (idUsuario && idUsuario.trim() !== "") {
-      const profileUrl = profileImageUrl(idUsuario);
+    } else if (userId && userId.trim() !== '') {
+      const profileUrl = profileImageUrl(userId);
       setImageSrc(profileUrl);
       setIsValidImage(true);
       setIsLoaded(false);
@@ -41,13 +41,13 @@ export default function UploadImage({
       setIsValidImage(false);
       setImageSrc(undefined);
     }
-  }, [avatar, idUsuario]);
+  }, [avatar, userId]);
 
   useEffect(() => {
-    if (idUsuario !== "" || (avatar && avatar.trim() !== "")) {
+    if (userId !== '' || (avatar && avatar.trim() !== '')) {
       loadInitialImage();
     }
-  }, [idUsuario, avatar, loadInitialImage]);
+  }, [userId, avatar, loadInitialImage]);
 
   useEffect(() => {
     if (!file) return;
@@ -61,7 +61,6 @@ export default function UploadImage({
       URL.revokeObjectURL(objectUrl);
     };
   }, [file]);
-
 
   const openFilePicker = useCallback(() => {
     fileInputRef.current?.click();
@@ -78,19 +77,18 @@ export default function UploadImage({
         setIsLoaded(false);
         setFile(tmp);
 
-        event.target.value = "";
+        event.target.value = '';
 
-        if (idUsuario && idUsuario.trim() !== "") {
+        if (userId && userId.trim() !== '') {
           setIsUploading(true);
-          onUpload(idUsuario, tmp);
+          onUpload(userId, tmp);
           setTimeout(() => setIsUploading(false), 2000);
         }
-
       } else {
         setFile(undefined);
       }
     },
-    [setFile, idUsuario, onUpload]
+    [setFile, userId, onUpload],
   );
 
   const onImgLoad = useCallback(() => {
@@ -146,9 +144,7 @@ export default function UploadImage({
       </button>
 
       <div className="flex flex-col gap-2">
-        <p className="text-[#24292e] text-lg font-semibold leading-snug hidden md:block">
-          {label}
-        </p>
+        <p className="text-[#24292e] text-lg font-semibold leading-snug hidden md:block">{label}</p>
         <p className="text-[#24292e] text-lg font-semibold leading-snug md:hidden">
           Adicionar foto
         </p>

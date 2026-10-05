@@ -1,0 +1,12 @@
+--- a/src/core/store/modules/customization/customization.service.ts
++++ b/src/core/store/modules/customization/customization.service.ts
+@@ -20,6 +20,9 @@
+         storeId,
+         slug: storeId,
+         displayName: store.companyName,
++        primaryColor: '#087F8C',
++        secondaryColor: '#172D3E',
++        accentColor: '#D98C10',
+         workingDays: [1, 2, 3, 4, 5],
+       },
+     });

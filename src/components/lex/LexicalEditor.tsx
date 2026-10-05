@@ -6,66 +6,68 @@
  *
  */
 
-import "./style.css";
-import {AutoFocusPlugin} from '@lexical/react/LexicalAutoFocusPlugin';
-import {LexicalComposer} from '@lexical/react/LexicalComposer';
-import {ContentEditable} from '@lexical/react/LexicalContentEditable';
-import {LexicalErrorBoundary} from '@lexical/react/LexicalErrorBoundary';
-import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
-import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
-import {
-  ParagraphNode,
-  TextNode,
-} from 'lexical';
+import './style.css';
+import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { ContentEditable } from '@lexical/react/LexicalContentEditable';
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { ParagraphNode, TextNode } from 'lexical';
 
 import ExampleTheme from './Theme';
 import ToolbarPlugin from './Toolbar';
-import { LexicalComposerContext, useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { ChangeEventHandler, useEffect, useState } from "react";
+import {
+  LexicalComposerContext,
+  useLexicalComposerContext,
+} from '@lexical/react/LexicalComposerContext';
+import { ChangeEventHandler, useEffect, useState } from 'react';
 
 const placeholder = 'Enter some rich text...';
 
 const editorConfig = {
   namespace: 'React.js Demo',
   nodes: [ParagraphNode, TextNode],
-  editable:true,
+  editable: true,
   onError(error: Error) {
     throw error;
   },
   theme: ExampleTheme,
 };
 
-
-export default function LexicalMod({initialState,setEditorState,setText}:{initialState:any,setEditorState:(value:string)=>void,setText:(v:string)=>void}) {
-
-  function onChange(state:any) {
-     const editorStateJSON = state.toJSON();
-     setEditorState(JSON.stringify(editorStateJSON)); //Envia esse json maluco pro backend..
+export default function LexicalMod({
+  initialState,
+  setEditorState,
+  setText,
+}: {
+  initialState: any;
+  setEditorState: (value: string) => void;
+  setText: (v: string) => void;
+}) {
+  function onChange(state: any) {
+    const editorStateJSON = state.toJSON();
+    setEditorState(JSON.stringify(editorStateJSON)); //Envia esse json maluco pro backend..
   }
-  function onChangeText(text:string){
-    setText(text)
+  function onChangeText(text: string) {
+    setText(text);
   }
-  
+
   return (
-    <LexicalComposer  initialConfig={
-      {
+    <LexicalComposer
+      initialConfig={{
         ...editorConfig,
-        editorState:initialState
-      }
-
-    }>
+        editorState: initialState,
+      }}
+    >
       <div className="editor-container w-full flex-grow  ">
         <ToolbarPlugin />
         <div className="editor-inner w-full h-[300px] overflow-y-auto scroll-padrao">
           <RichTextPlugin
             contentEditable={
               <ContentEditable
-            
                 className="editor-input w-full h-full  "
                 aria-placeholder={placeholder}
-                placeholder={
-                  <div className="editor-placeholder">{placeholder}</div>
-                }
+                placeholder={<div className="editor-placeholder">{placeholder}</div>}
               />
             }
             ErrorBoundary={LexicalErrorBoundary}
@@ -73,17 +75,20 @@ export default function LexicalMod({initialState,setEditorState,setText}:{initia
           <HistoryPlugin />
 
           <AutoFocusPlugin />
-          <MyOnChangePlugin onChangeText={onChangeText} onChange={onChange}/>
+          <MyOnChangePlugin onChangeText={onChangeText} onChange={onChange} />
         </div>
       </div>
     </LexicalComposer>
   );
-
-
 }
 
-
-function MyOnChangePlugin({ onChange,onChangeText }:{onChange:Function,onChangeText:Function}) {
+function MyOnChangePlugin({
+  onChange,
+  onChangeText,
+}: {
+  onChange: Function;
+  onChangeText: Function;
+}) {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {

@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
-import localFont from 'next/font/local'
+import type { Metadata } from 'next';
+import localFont from 'next/font/local';
 import 'boxicons/css/boxicons.min.css';
-import "./globals.css";
-import { Toaster } from "react-hot-toast";
+import './globals.css';
+import { Toaster } from 'react-hot-toast';
 import { Analytics } from '@vercel/analytics/next';
 
 const brSonoma = localFont({
@@ -57,18 +57,18 @@ const brSonoma = localFont({
       weight: '700',
       style: 'italic',
     },
-  ]
+  ],
 });
 
 export const metadata: Metadata = {
-  title: "AutoPilot CRM",
-  description: "AutoPilot CRM - O CRM Inteligente para Concessionárias e Revendas de Veículos",
+  title: 'AutoPilot CRM',
+  description: 'AutoPilot CRM - O CRM Inteligente para Concessionárias e Revendas de Veículos',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-br">
-      <body className={`${brSonoma.className} bg-[#0F1522] overflow-y-auto`}>
+      <body className={`${brSonoma.className} bg-[hsl(var(--secondary))] overflow-y-auto`}>
         <div className="fixed z-[2147483647] w-screen top-0 left-0 h-screen pointer-events-none">
           <Toaster
             position="top-right"

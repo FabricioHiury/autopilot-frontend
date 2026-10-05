@@ -10,12 +10,7 @@ const Spinner = ({ width = '40px', color = 'lightblue' }) => {
     borderRightColor: 'transparent',
   };
 
-  return (
-    <div
-      className="loader"
-      style={loaderStyle}
-    ></div>
-  );
+  return <div className="loader" style={loaderStyle}></div>;
 };
 
 export default Spinner;

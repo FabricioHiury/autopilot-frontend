@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -10,8 +10,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
-import { profileImageUrl } from "@/lib/profile.utils";
+} from 'recharts';
+import { profileImageUrl } from '@/lib/profile.utils';
 
 export default function DesempenhoVendasChart({
   data = [],
@@ -22,63 +22,71 @@ export default function DesempenhoVendasChart({
   initialMonth,
   initialYear,
 }: any) {
-  const [ano, setAno] = useState(initialYear || 2025);
-  const [periodo, setPeriodo] = useState("Mês");
-  const [mes, setMes] = useState<number>(Number(initialMonth || new Date().getMonth() + 1));
+  const [year, setAno] = useState(initialYear || 2025);
+  const [period, setPeriodo] = useState('Mês');
+  const [month, setMes] = useState<number>(Number(initialMonth || new Date().getMonth() + 1));
 
   const ultimoMesComDados = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) return null as number | null;
     let maxMes: number | null = null;
-    data.forEach((vendedor: any) => {
-      vendedor.serieVendas.forEach((cur: any) => {
-        const [y, m] = cur.data.split("-").map(Number);
-        if (y === ano) {
+    data.forEach((salesperson: any) => {
+      salesperson.seriesSales.forEach((cur: any) => {
+        const [y, m] = cur.data.split('-').map(Number);
+        if (y === year) {
           maxMes = maxMes == null ? m : Math.max(maxMes, m);
         }
       });
     });
     return maxMes;
-  }, [data, ano]);
+  }, [data, year]);
 
   React.useEffect(() => {
-    if (!initialMonth && ultimoMesComDados && ultimoMesComDados !== mes) {
+    if (!initialMonth && ultimoMesComDados && ultimoMesComDados !== month) {
       setMes(ultimoMesComDados);
     }
-  }, [initialMonth, ultimoMesComDados, mes]);
+  }, [initialMonth, ultimoMesComDados, month]);
   const dias = useMemo(() => {
-    const lastDay = new Date(ano, mes, 0).getDate();
+    const lastDay = new Date(year, month, 0).getDate();
     return Array.from({ length: lastDay }, (_, i) => i + 1);
-  }, [ano, mes]);
+  }, [year, month]);
 
   const porVendedor = useMemo(() => {
-    if (!Array.isArray(data)) return {} as Record<string, { id: string; vendasPorDia: Record<number, number>; ultimoDia: number | null }>;
-    const result: Record<string, { id: string; vendasPorDia: Record<number, number>; ultimoDia: number | null }> = {};
-    data.forEach((vendedor: any) => {
+    if (!Array.isArray(data))
+      return {} as Record<
+        string,
+        { id: string; vendasPorDia: Record<number, number>; ultimoDia: number | null }
+      >;
+    const result: Record<
+      string,
+      { id: string; vendasPorDia: Record<number, number>; ultimoDia: number | null }
+    > = {};
+    data.forEach((salesperson: any) => {
       const vendasPorDia: Record<number, number> = {};
       let ultimoDia: number | null = null;
-      vendedor.serieVendas.forEach((cur: any) => {
-        const [y, m, d] = cur.data.split("-").map(Number);
-        if (y === ano && m === mes) {
-          vendasPorDia[d] = (vendasPorDia[d] || 0) + cur.vendas;
+      salesperson.seriesSales.forEach((cur: any) => {
+        const [y, m, d] = cur.data.split('-').map(Number);
+        if (y === year && m === month) {
+          vendasPorDia[d] = (vendasPorDia[d] || 0) + cur.sales;
           ultimoDia = ultimoDia == null ? d : Math.max(ultimoDia, d);
         }
       });
-      result[vendedor.nome] = { id: vendedor.id, vendasPorDia, ultimoDia };
+      result[salesperson.name] = { id: salesperson.id, vendasPorDia, ultimoDia };
     });
     return result;
-  }, [data, ano, mes]);
-
+  }, [data, year, month]);
 
   const payload = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) return [];
-    const cumulativos: Record<string, number> = Object.fromEntries(data.map((v: any) => [v.nome, 0]));
+    const cumulativos: Record<string, number> = Object.fromEntries(
+      data.map((v: any) => [v.name, 0]),
+    );
     return dias.map((dia) => {
       const linha: Record<string, number> = { dia } as any;
-      data.forEach((vendedor: any) => {
-        const info = porVendedor[vendedor.nome];
+      data.forEach((salesperson: any) => {
+        const info = porVendedor[salesperson.name];
         const add = info?.vendasPorDia[dia] || 0;
-        cumulativos[vendedor.nome] = (cumulativos[vendedor.nome] || 0) + add;
-        linha[vendedor.nome] = cumulativos[vendedor.nome];
+        cumulativos[salesperson.name] = (cumulativos[salesperson.name] || 0) + add;
+        linha[salesperson.name] = cumulativos[salesperson.name];
       });
       return linha;
     });
@@ -87,9 +95,11 @@ export default function DesempenhoVendasChart({
   const top3 = useMemo(() => {
     return [...data]
       .map((v: any) => {
-        const info = porVendedor[v.nome];
-        const total = info ? Object.values(info.vendasPorDia).reduce((acc: number, n: number) => acc + n, 0) : 0;
-        return { nome: v.nome, id: v.id, avatar: v.avatar, total };
+        const info = porVendedor[v.name];
+        const total = info
+          ? Object.values(info.vendasPorDia).reduce((acc: number, n: number) => acc + n, 0)
+          : 0;
+        return { name: v.name, id: v.id, avatar: v.avatar, total };
       })
       .sort((a, b) => b.total - a.total)
       .slice(0, 3);
@@ -98,13 +108,13 @@ export default function DesempenhoVendasChart({
   const lastIndexMap = useMemo(() => {
     const map: Record<string, number | null> = {};
     top3.forEach((v) => {
-      const ultimoDia = porVendedor[v.nome]?.ultimoDia ?? null;
+      const ultimoDia = porVendedor[v.name]?.ultimoDia ?? null;
       if (ultimoDia == null) {
-        map[v.nome] = null;
+        map[v.name] = null;
         return;
       }
       const idx = dias.findIndex((d) => d === ultimoDia);
-      map[v.nome] = idx >= 0 ? idx : null;
+      map[v.name] = idx >= 0 ? idx : null;
     });
     return map;
   }, [top3, dias, porVendedor]);
@@ -112,31 +122,40 @@ export default function DesempenhoVendasChart({
   const AvatarDot = ({ cx, cy, url }: { cx: number; cy: number; url: string }) => {
     return (
       <foreignObject x={cx - 14} y={cy - 14} width={28} height={28}>
-        <div style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", boxShadow: "0 0 0 2px #fff", position: "relative" }}>
+        <div
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: '50%',
+            overflow: 'hidden',
+            boxShadow: '0 0 0 2px #fff',
+            position: 'relative',
+          }}
+        >
           <img
-            src={url || "/images/default.png"}
+            src={url || '/images/default.png'}
             width={28}
             height={28}
-            style={{ display: "block" }}
+            style={{ display: 'block' }}
             alt="avatar"
             onError={(e) => {
-              e.currentTarget.src = "/images/default.png";
-              e.currentTarget.className = "absolute object-cover w-full";
-              e.currentTarget.alt = "";
+              e.currentTarget.src = '/images/default.png';
+              e.currentTarget.className = 'absolute object-cover w-full';
+              e.currentTarget.alt = '';
             }}
           />
         </div>
       </foreignObject>
-    )
-  }
+    );
+  };
 
   return (
-    <div className={`bg-white rounded-2xl p-6 shadow-sm ${className || ""}`}>
+    <div className={`bg-white rounded-2xl p-6 shadow-sm ${className || ''}`}>
       <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
         <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Desempenho de Vendas</h2>
-      <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-2">
+        <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-2">
           <select
-            value={periodo}
+            value={period}
             onChange={(e) => setPeriodo(e.target.value)}
             className="w-full sm:w-auto border border-gray-200 rounded-lg px-3 py-2 text-gray-700 text-sm sm:text-base"
           >
@@ -144,7 +163,7 @@ export default function DesempenhoVendasChart({
             <option>Semana</option>
           </select>
           <select
-            value={mes}
+            value={month}
             onChange={(e) => setMes(Number(e.target.value))}
             className="w-full sm:w-auto border border-gray-200 rounded-lg px-3 py-2 text-gray-700 text-sm sm:text-base"
           >
@@ -162,7 +181,7 @@ export default function DesempenhoVendasChart({
             <option value={12}>Dez</option>
           </select>
           <select
-            value={ano}
+            value={year}
             onChange={(e) => setAno(Number(e.target.value))}
             className="w-full sm:w-auto border border-gray-200 rounded-lg px-3 py-2 text-gray-700 text-sm sm:text-base"
           >
@@ -177,32 +196,32 @@ export default function DesempenhoVendasChart({
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
             dataKey="dia"
-            tick={{ fill: "#6b7280" }}
-            label={{ value: "Dias", position: "insideBottomRight", offset: -5 }}
+            tick={{ fill: '#6b7280' }}
+            label={{ value: 'Dias', position: 'insideBottomRight', offset: -5 }}
           />
           <YAxis
-            tick={{ fill: "#6b7280" }}
-            label={{ value: "Vendas", angle: -90, position: "insideLeft" }}
+            tick={{ fill: '#6b7280' }}
+            label={{ value: 'Vendas', angle: -90, position: 'insideLeft' }}
           />
           <Tooltip />
           <Legend verticalAlign="bottom" height={36} />
 
           {top3.map((v, i) => (
             <Line
-              key={v.nome}
+              key={v.name}
               type="monotone"
-              dataKey={v.nome}
+              dataKey={v.name}
               strokeWidth={3}
               connectNulls={false}
-              stroke={["#22c55e", "#3b82f6", "#f59e0b"][i]}
+              stroke={['#22c55e', '#3b82f6', '#f59e0b'][i]}
               dot={(props: any) => {
-                const lastIdx = lastIndexMap[v.nome];
+                const lastIdx = lastIndexMap[v.name];
                 const isLast = lastIdx !== null && props.index === lastIdx;
-                if (!isLast) return <g key={`dot-${v.nome}-${props.index}`} />
+                if (!isLast) return <g key={`dot-${v.name}-${props.index}`} />;
                 const url = v.avatar || profileImageUrl(v.id);
                 return (
                   <AvatarDot
-                    key={`dot-${v.nome}-${props.index}`}
+                    key={`dot-${v.name}-${props.index}`}
                     cx={props.cx}
                     cy={props.cy}
                     url={url}
@@ -210,7 +229,7 @@ export default function DesempenhoVendasChart({
                 );
               }}
               activeDot={false}
-              name={`${v.nome}`}
+              name={`${v.name}`}
             />
           ))}
         </LineChart>

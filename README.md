@@ -1,295 +1,65 @@
-# AutoPilot CRM - Frontend (Web App Multi-Tenant White-Label)
+# AutoPilot CRM — Frontend
 
-> **Projeto**: Boilerplate CRM White-Label + AutoPilot IA (Frontend)  
-> **Repositório**: `autopilot-frontend`  
-> **Framework**: Next.js 14 (App Router) + Tailwind CSS + Radix UI + Redux Toolkit + Socket.io Client  
-> **Backend Principal Relacionado**: `autopilot-backend` (NestJS + Prisma + PostgreSQL + Redis + Socket.io)  
-> **Domínio Único**: `app.autopilotcrm.com` (Sem subdomínios: login único e injeção dinâmica de branding pós-autenticação)  
-> **Padrão de Linguagem**: Código e APIs em Inglês ("Deal"), UI e labels em Português para o time comercial.
+CRM para concessionárias com interface em português, serviços REST em inglês, identidade visual por loja e assistência de IA nas conversas. A implementação usa como referência o repositório `autopilot-backend` atual.
 
-Aplicação web principal do AutoPilot CRM, interface de usuário tanto para lojistas/colaboradores quanto para o backoffice administrativo. Construída com Next.js 14, React 18, Tailwind CSS e componentes shadcn/ui.
+## Executar localmente
 
----
+Requisitos: Node.js 20 ou superior e pnpm. O frontend não precisa de Docker.
 
-## 🏗️ Principais Pilares Arquiteturais
-
-1. **Código e APIs em Inglês ("Deal"), UI em Português** — Nomes de variáveis, DTOs, modelos, serviços e rotas em inglês; labels e textos da tela em português para o time comercial das concessionárias.
-2. **Rotas do Navegador em Inglês** — `/app/deals`, `/app/deals/chat`, `/app/customers`, `/app/settings`, etc.
-3. **Comunicação em Tempo Real** — Socket.io Client (`socket.client.ts`) conectado ao WebSocket Gateway do `autopilot-backend` para entrega instantânea de mensagens e atualização do AutoPilot IA (eliminando polling).
-4. **White-Label Dinâmico em Domínio Único** — Ao efetuar o login, o frontend obtém os dados visuais da concessionária via `GET /store/customization` e injeta as CSS variables dinamicamente no tema.
-5. **Módulo AutoPilot IA no Chat** — Dossiê Estratégico do Lead (Raio-X da Negociação) + Sugestões de Resposta Rápida (1-Click Quick Replies) com **controle 100% humano**.
-6. **Limpeza e Sanitização** — Remoção total de Stripe, planos e assinaturas (SaaS B2B puro, sem bloqueios de cobrança).
-
----
-
-## 🌐 Arquitetura Multi-Tenant & White-Label (Domínio Único)
-
-Todo o acesso ocorre por um **único domínio** (ex: `app.autopilotcrm.com`), eliminando a necessidade de DNS Wildcard e certificados SSL por subdomínio.
-
-```mermaid
-graph TD
-    A[Vendedor acessa: app.autopilotcrm.com/auth/login] -->|Credenciais de Acesso| B[POST /auth/login no autopilot-backend]
-    B -->|Retorna JWT com storeId| C[Auth Guard / Session Storage]
-    C -->|Carrega Dashboard /app/deals| D[GET /store/customization]
-    D -->|Retorno Branding da Concessionária| E[Dynamic CSS Variable Injection]
-    E -->|Aplica --primary, --secondary, --accent| F[UI Renderizada com Identidade da Loja]
-    D -->|Logos & Favicon| G[Logo no Header, Favicon Dinâmico, Cores de Acento]
-```
-
-### Injeção Dinâmica de CSS Variables (Theming Engine)
-- As variáveis HSL do `globals.css` (`--primary`, `--secondary`, `--accent`, `--ring`) são sobrescritas no elemento `:root` em tempo de execução via hook `useTenantTheme`.
-- O Tailwind CSS continua lendo `hsl(var(--primary))`, permitindo que botões, badges, hovers e gráficos adaptem suas cores dinamicamente à marca da loja.
-
----
-
-## 📋 Funcionalidades Principais
-
-### Painel da Loja (Lojistas/Colaboradores)
-- **Dashboard** — Visão geral da loja, métricas de deals, origem de leads, últimos deals.
-- **Deals (Negociações)** — Kanban de deals (funil de vendas), chat em tempo real com leads/clientes, gerenciamento de tarefas, visitas, comentários e activity logs.
-- **Central de Conversas** — Chat integrado ao AutoPilot IA com:
-  - Painel lateral **Dossiê Estratégico do Lead**: veículo de interesse, troca, método de pagamento, temperatura, objeção principal, Next Best Action.
-  - Barra **Quick Replies 1-Click**: sugestões táticas da IA inseridas no campo de digitação para o vendedor revisar e enviar.
-- **Customers** — Listagem e detalhes completos, histórico do cliente, qualificação.
-- **Reports** — Relatório geral de deals e vendas, por canal de atendimento, por vendedor (desempenho, métricas avançadas, motivos de perdas), tempo médio de resposta, conversão por temperatura do lead.
-- **Settings** — Dados da loja, identidade visual (branding com Live Preview), integrações (WhatsApp, Instagram, Facebook, OLX, etc.), permissões e acessos de usuários.
-- **Help & FAQ** — FAQ, tickets de suporte, abertura de novos tickets.
-
-### Backoffice Administrativo
-- **Dashboard** — Estatísticas gerais (concessionárias cadastradas, uso do sistema).
-- **Gestão de Concessionárias / Tenants** — Listagem e gestão de lojas cadastradas.
-- **FAQ** — Publicação e gestão de posts do FAQ.
-- **Acessos** — Gestão de usuários admin, permissões.
-- **Tickets** — Atendimento de tickets de suporte das lojas.
-
-### Autenticação
-- Login/cadastro de lojistas.
-- Login/cadastro de usuários backoffice.
-- Recuperação e redefinição de senha.
-- Confirmação de email.
-
----
-
-## 🛠️ Stack Tecnológica
-
-| Categoria | Tecnologia |
-| :--- | :--- |
-| **Framework** | Next.js 14 (App Router) + React 18 |
-| **Linguagem** | TypeScript 5 |
-| **Estilização** | Tailwind CSS 3, Tailwind Merge, clsx, CVA |
-| **Componentes UI** | shadcn/ui (Radix UI primitives), Lucide Icons, Boxicons |
-| **Estado Global** | Redux Toolkit + Next-Redux-Wrapper |
-| **Formulários** | React Hook Form + Zod (validação) |
-| **Requisições HTTP** | Axios (interceptors JWT) |
-| **Tempo Real** | socket.io-client (WebSocket) |
-| **Gráficos** | Recharts |
-| **Rich Text** | Lexical Editor + TipTap |
-| **Drag and Drop** | @dnd-kit (Kanban de Deals) |
-| **Notificações/Toasts** | React Hot Toast + Radix Toast |
-| **Datas** | date-fns + react-day-picker |
-| **Emoji** | emoji-mart |
-| **Áudio** | vmsg (gravação de áudio WASM) |
-| **Animações** | Framer Motion, Tailwind Motion |
-| **Upload** | react-dropzone |
-| **Virtualização** | @tanstack/react-virtual |
-| **Testes** | Vitest + Testing Library |
-
----
-
-## ✅ Pré-requisitos
-
-- Node.js 18+
-- pnpm (recomendado) ou npm
-- Backend [autopilot-backend](../autopilot-backend) rodando (Port 3000)
-- Microsserviço [autopilot-microservice](../autopilot-microservice) rodando (para integrações, Port 3005)
-
----
-
-## 🚀 Instalação
-
-```bash
+```sh
 pnpm install
+cp .env.example .env.local
+pnpm dev
 ```
 
----
+Abra `http://localhost:3001/auth/login`. O backend principal deve estar em `http://localhost:3003`. Configure `NEXT_PUBLIC_API_URL` em `.env.local` se usar outra origem. `NEXT_PUBLIC_SOCKET_URL` é opcional e recebe somente a origem, sem o namespace `/chats`.
 
-## ⚙️ Configuração
+Inicie backend e microservice nos respectivos projetos. Libere `http://localhost:3001` no CORS do backend, configure sua URL de frontend para os links de e-mail e prepare banco, Redis, SMTP, armazenamento de arquivos e Evolution conforme as instruções desses projetos. Não há dados demonstrativos nem credenciais de microservice no navegador. Sem backend, o login mostra o erro da conexão.
 
-Configure as variáveis de ambiente no arquivo `.env.local` (copie de `.env.example` se existir):
+Para produção:
 
-| Variável | Descrição |
-| :--- | :--- |
-| `NEXT_PUBLIC_API_URL` | URL do `autopilot-backend` (ex: `http://localhost:3000`) |
-| `NEXT_PUBLIC_SOCKET_URL` | URL do WebSocket (geralmente a mesma do backend) |
-| `NEXT_PUBLIC_APP_URL` | URL pública da aplicação (ex: `http://localhost:3001`) |
-
----
-
-## 🏃 Execução
-
-```bash
-# Desenvolvimento
-pnpm dev
-
-# Build de produção
+```sh
 pnpm build
-
-# Rodar build
 pnpm start
 ```
 
-- Aplicação: `http://localhost:3001` (ou porta configurada).
+As variáveis `NEXT_PUBLIC_*` são públicas e incorporadas ao build. Nunca coloque tokens de microservice ou de provedores nelas.
 
----
+## Fluxos principais
 
-## 🐳 Docker
+- `/auth/login`: login único. `autopilot` entra no backoffice; `storeOwner` e `user` entram na loja. A sessão persiste entre visitas até expirar o JWT, com encerramento em logout ou resposta HTTP 401. Respostas 403 mantêm a sessão.
+- `/backoffice/app/tenants`: cadastro de concessionária e administrador responsável, confirmação de e-mail e habilitação do WhatsApp. Não há cadastro público na interface nem checkout/Stripe.
+- `/app/settings/access`: usuários, cargos e permissões por loja. Os cargos iniciais do backend incluem vendedor e pré-vendedor; cargos adicionais e suas permissões podem ser definidos pela administração da loja.
+- `/app/settings/branding`: cores, nome, logos, favicon, horários e dias de atendimento. A prévia pode ser cancelada. O upload de logo usa o backend; logos alternativos e favicon aceitam URLs HTTPS.
+- `/app/settings/integrations/connect/whatsapp`: Evolution com QR Code, renovação visual e desconexão. Instagram, Facebook e OLX continuam disponíveis.
+- `/app/deals`: pipeline; `/app/deals/chat`: mensagens, status de entrega e AutoPilot IA. O dossiê lateral permite revisar os dados e confirmar sua aplicação ao deal. Sugestões apenas preenchem o editor; o vendedor envia a mensagem.
+- `/app/customers`, `/app/reports` e `/app/help-faq`: clientes, relatórios e suporte.
 
-```bash
-docker-compose up -d
+As cores institucionais padrão são petróleo `#087F8C`, azul escuro `#172D3E` e âmbar `#D98C10`. O tema é carregado após autenticação por `GET /store/customization` e limpo ao sair. A identidade institucional aparece no login, compartilhado entre todas as lojas.
+
+## Integração e organização
+
+`src/services/api.client.ts` centraliza JWT, timeout de 30 segundos e tratamento do envelope `{message,statusCode,data}`. Serviços em `src/services` concentram os contratos de cada domínio; `src/types` contém os modelos. `TenantContext` carrega a marca e `RealtimeContext` mantém uma conexão Socket.io por sessão.
+
+O socket usa `/chats` e `auth: {token}`. Eventos são conferidos pelo `storeId`. Reconexão e retorno à aba refazem a consulta REST; mensagens não dependem de polling. A consulta periódica de status durante o pareamento do QR Code continua necessária. Não existe renovação de JWT no backend atual.
+
+Os links de e-mail existentes `/login` e `/authentication/reset-password` são redirecionados para as rotas atuais. A confirmação usa `/confirm-email?token=...`. Os callbacks legados dos canais em `/app/configuracoes/integracoes/acesso/:channel` continuam sendo redirecionados, preservando os parâmetros do microservice.
+
+## Verificação
+
+Para padronizar a formatação de TypeScript, TSX, JavaScript, JSON, CSS e Markdown:
+
+```sh
+pnpm format
+pnpm lint:fix
 ```
 
----
+`format` aplica o Prettier ao projeto, ignorando dependências, builds, arquivos estáticos e patches de backend. `lint:fix` corrige os problemas que o ESLint consegue resolver automaticamente; erros de lógica, tipagem e hooks podem exigir revisão manual. Para apenas verificar, sem alterar arquivos, use `pnpm format:check` e `pnpm lint`.
 
-## 🧪 Testes
-
-```bash
-pnpm test
-```
-
----
-
-## 📏 Lint & Type Check
-
-```bash
-pnpm lint
+```sh
 pnpm typecheck
+pnpm test:run
+pnpm build
 ```
 
----
-
-## 📂 Estrutura de Diretórios
-
-```
-src/
-├── app/
-│   ├── app/                          # Área logada da loja (rotas em inglês)
-│   │   ├── dashboard/                # Métricas e visão geral
-│   │   ├── deals/                    # Kanban, chat, detalhes (ex-atendimentos)
-│   │   │   ├── chat/                 # Central de conversas + AutoPilot IA
-│   │   │   └── page.tsx              # Kanban de funil de vendas
-│   │   ├── customers/                # Gestão de clientes e leads
-│   │   ├── reports/                  # Relatórios gerenciais (ex-painel-relatorio)
-│   │   ├── settings/
-│   │   │   ├── branding/             # Identidade visual (white-label live preview)
-│   │   │   ├── integrations/         # WhatsApp, Instagram, Facebook, OLX
-│   │   │   └── ...                   # Dados da loja, permissões
-│   │   └── help-faq/                 # Central de ajuda (ex-ajuda-e-faq)
-│   ├── backoffice/                   # Área administrativa corporativa
-│   │   ├── auth/                     # Login backoffice
-│   │   └── app/                      # Dashboard, tenants, FAQ, tickets
-│   └── auth/                         # Login/cadastro da loja (ex-autenticacao)
-│
-├── components/
-│   ├── cards/                        # Cards de UI
-│   ├── commons/                      # Inputs, botões, modais, gráficos
-│   ├── inputs/                       # Componentes de input
-│   ├── lex/                          # Lexical Editor
-│   ├── lego/                         # Componentes Lego
-│   ├── nav/                          # Sidebars, navegação, breadcrumbs
-│   ├── sections/
-│   │   ├── chat/
-│   │   │   └── copilot/              # Componentes do AutoPilot IA
-│   │   │       ├── LeadDossierPanel.tsx    # Dossiê lateral do lead
-│   │   │       └── CopilotQuickReplies.tsx # Quick Replies 1-Click
-│   │   ├── deals/                    # Kanban, cards de deal
-│   │   └── settings/
-│   │       └── integrations/         # Cards de conexão (WhatsApp QR Code, etc.)
-│   └── reports/                      # Componentes de relatório
-│
-├── contexts/
-│   └── TenantContext.tsx             # Contexto global de branding da concessionária
-│
-├── services/                         # Camada de serviços desacoplada (ex-api-app.ts)
-│   ├── api.client.ts                 # Axios singleton (JWT + error handling)
-│   ├── socket.client.ts              # Socket.io Client (tempo real)
-│   ├── auth.service.ts
-│   ├── tenant.service.ts
-│   ├── chat.service.ts
-│   ├── copilot.service.ts            # Endpoints do AutoPilot IA
-│   ├── deal.service.ts
-│   ├── customer.service.ts
-│   ├── employee.service.ts
-│   ├── integration.service.ts
-│   └── reports.service.ts
-│
-├── types/                            # Interfaces e tipos em inglês
-│   ├── auth.ts
-│   ├── store.ts / tenant.ts
-│   ├── deal.ts
-│   ├── chat.ts
-│   ├── message.ts
-│   ├── customer.ts
-│   └── ...
-│
-└── public/
-    ├── avatar/
-    ├── icons/
-    ├── images/
-    └── fonts/                        # BR Sonoma
-```
-
----
-
-## 🔌 Endpoints Principais Consumidos (Alinhados com autopilot-backend)
-
-### Deals (Negociações)
-| Método | Rota | Descrição |
-| :--- | :--- | :--- |
-| `POST` | `/deals` | Criar negociação |
-| `GET` | `/deals` | Listar negociações (Kanban/Tabela) |
-| `GET` | `/deals/:id` | Detalhes da negociação |
-| `PATCH` | `/deals/:id/status` | Mudar etapa do funil |
-
-### Chats & Mensagens
-| Método | Rota | Descrição |
-| :--- | :--- | :--- |
-| `GET` | `/chats` | Listar conversas |
-| `GET` | `/chats/:chatId/messages` | Histórico de mensagens |
-| `POST` | `/chats/:chatId/messages` | Enviar mensagem comercial |
-| `PATCH` | `/chats/:chatId/read` | Marcar mensagens como lidas |
-
-### AutoPilot IA
-| Método | Rota | Descrição |
-| :--- | :--- | :--- |
-| `GET` | `/chats/:chatId/copilot` | Obter dossiê e sugestões consolidadas |
-| `POST` | `/chats/:chatId/copilot/refresh` | Solicitar reanálise forçada à IA |
-
-### Integrações (WhatsApp)
-| Método | Rota | Descrição |
-| :--- | :--- | :--- |
-| `GET` | `/integrations/status` | Status unificado das conexões |
-| `POST` | `/integrations/whatsapp/connect` | Iniciar sessão e receber QR Code |
-| `DELETE` | `/integrations/whatsapp` | Desconectar WhatsApp |
-
-### Branding / Customização da Concessionária
-| Método | Rota | Descrição |
-| :--- | :--- | :--- |
-| `GET` | `/store/customization` | Obter cores, logos e horários da loja |
-| `PUT` | `/store/customization` | Atualizar identidade visual e configurações |
-
----
-
-## 🔌 Eventos Socket.io em Tempo Real
-
-| Evento | Descrição |
-| :--- | :--- |
-| `message:received` | Adiciona novas mensagens à lista ativa instantaneamente, sem polling. |
-| `message:status` | Atualiza o tick de leitura/entrega da mensagem. |
-| `autopilot:analysis-ready` | Atualiza automaticamente o dossiê da negociação e as sugestões táticas da IA. |
-
----
-
-## 🔗 Repositórios Relacionados
-
-- **[autopilot-backend](https://github.com/FabricioHiury/autopilot-backend)** — Core API NestJS com WebSockets e AutoPilot IA.
-- **[autopilot-microservice](https://github.com/FabricioHiury/autopilot-microservice)** — Gateway Omnichannel (Evolution API v2, Meta, OLX).
+Os testes cobrem sessão persistente, erro de permissão, envelope REST, limpeza do tema, reconciliação de mensagens e revisão humana da IA. A validação com os serviços reais depende de iniciar backend e microservice. Veja os pontos de alinhamento e o roteiro de teste em [docs/BACKEND_ALIGNMENT.md](docs/BACKEND_ALIGNMENT.md).

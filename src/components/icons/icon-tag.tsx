@@ -1,6 +1,14 @@
-"use client";
+'use client';
 
-export default function IconTag({ size = 16, className = "", stroke = 1.5 }: { size?: number; className?: string; stroke?: number }) {
+export default function IconTag({
+  size = 16,
+  className = '',
+  stroke = 1.5,
+}: {
+  size?: number;
+  className?: string;
+  stroke?: number;
+}) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

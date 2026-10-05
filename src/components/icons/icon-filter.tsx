@@ -2,7 +2,12 @@ import React from 'react';
 
 interface IconFilterProps extends React.SVGProps<SVGSVGElement> {}
 
-const IconFilter: React.FC<IconFilterProps> = ({ stroke="#FEFEFE", width=18, height=18, ...props}: IconFilterProps) => {
+const IconFilter: React.FC<IconFilterProps> = ({
+  stroke = '#FEFEFE',
+  width = 18,
+  height = 18,
+  ...props
+}: IconFilterProps) => {
   return (
     <svg
       width={width}

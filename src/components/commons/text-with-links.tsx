@@ -22,9 +22,7 @@ export function TextWithLinks(text: string, className?: string): React.ReactNode
       parts.push(text.slice(lastIndex, index));
     }
 
-    const displayText = url.length > maxUrlLength
-      ? `${url.slice(0, maxUrlLength)}...`
-      : url;
+    const displayText = url.length > maxUrlLength ? `${url.slice(0, maxUrlLength)}...` : url;
 
     parts.push(
       <a
@@ -36,7 +34,7 @@ export function TextWithLinks(text: string, className?: string): React.ReactNode
         title={url}
       >
         {displayText}
-      </a>
+      </a>,
     );
 
     lastIndex = index + url.length;

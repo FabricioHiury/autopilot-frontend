@@ -50,7 +50,11 @@ export function GravadorMp4({ inputFileRef, onRecordStart, onRecordStop }: Grava
       { mime: 'audio/wav', ext: 'wav' },
     ];
     for (const c of candidates) {
-      if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c.mime)) {
+      if (
+        typeof MediaRecorder !== 'undefined' &&
+        MediaRecorder.isTypeSupported &&
+        MediaRecorder.isTypeSupported(c.mime)
+      ) {
         return c;
       }
     }
@@ -89,14 +93,19 @@ export function GravadorMp4({ inputFileRef, onRecordStart, onRecordStop }: Grava
             };
             recorder.addEventListener('stop', onStop as any, { once: true });
           });
-          try { recorder.requestData?.(); } catch {}
+          try {
+            recorder.requestData?.();
+          } catch {}
           if (recorder.state !== 'inactive') recorder.stop();
           await stopped;
         }
         // Only stop tracks after recorder finalized
         mediaStreamRef.current?.getTracks().forEach((t) => t.stop());
         const { mime, ext } = pickSupportedMime();
-        const blob = new Blob(chunksRef.current.filter((b) => (b as Blob)?.size ?? 0), { type: mime });
+        const blob = new Blob(
+          chunksRef.current.filter((b) => (b as Blob)?.size ?? 0),
+          { type: mime },
+        );
         if (!blob || blob.size === 0) {
           throw new Error('Falha ao capturar áudio: blob vazio.');
         }
@@ -121,16 +130,36 @@ export function GravadorMp4({ inputFileRef, onRecordStart, onRecordStop }: Grava
 
   return (
     <div className="flex gap-2 items-center">
-      <button onClick={handleRecordToggle} className="p-2 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#293856] data-[recording=true]:text-white data-[recording=true]:bg-[#293856]" data-recording={isRecording}>
+      <button
+        onClick={handleRecordToggle}
+        className="p-2 rounded-full flex items-center justify-center text-slate-400 hover:text-secondary-foreground hover:bg-[hsl(var(--secondary))] data-[recording=true]:text-secondary-foreground data-[recording=true]:bg-[hsl(var(--secondary))]"
+        data-recording={isRecording}
+      >
         {isRecording ? (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216,56V200a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V56A16,16,0,0,1,56,40H200A16,16,0,0,1,216,56Z"></path></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            viewBox="0 0 256 256"
+          >
+            <path d="M216,56V200a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V56A16,16,0,0,1,56,40H200A16,16,0,0,1,216,56Z"></path>
+          </svg>
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M80,128V64a48,48,0,0,1,96,0v64a48,48,0,0,1-96,0Zm128,0a8,8,0,0,0-16,0,64,64,0,0,1-128,0,8,8,0,0,0-16,0,80.11,80.11,0,0,0,72,79.6V240a8,8,0,0,0,16,0V207.6A80.11,80.11,0,0,0,208,128Z"></path></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            viewBox="0 0 256 256"
+          >
+            <path d="M80,128V64a48,48,0,0,1,96,0v64a48,48,0,0,1-96,0Zm128,0a8,8,0,0,0-16,0,64,64,0,0,1-128,0,8,8,0,0,0-16,0,80.11,80.11,0,0,0,72,79.6V240a8,8,0,0,0,16,0V207.6A80.11,80.11,0,0,0,208,128Z"></path>
+          </svg>
         )}
       </button>
-      {isRecording && <div className="text-[#485b7f] text-sm font-semibold">{formatTime(time)}</div>}
+      {isRecording && (
+        <div className="text-[#485b7f] text-sm font-semibold">{formatTime(time)}</div>
+      )}
     </div>
   );
 }
-
-

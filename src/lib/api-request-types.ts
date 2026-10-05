@@ -1,11 +1,11 @@
-export interface ApiRequestCreateColaboradorType {
-    email: string;
-    senha: string;
-    nome: string;
-    idFoto: string;
-    documentoFiscal: string;
-    whatsapp: string;
-    telefoneComplementar: string;
-    observacoes: string;
-    funcionalidades: string[];
+export interface CreateEmployeeRequest {
+  email: string;
+  password: string;
+  name: string;
+  photoUrl: string;
+  taxId: string;
+  whatsapp: string;
+  phoneAdditional: string;
+  notes: string;
+  features: string[];
 }

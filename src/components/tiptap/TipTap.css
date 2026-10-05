@@ -94,7 +94,7 @@
   background-color: #e9ecef;
   padding: 2px 4px;
   border-radius: 3px;
-  font-family: "Courier New", Courier, monospace;
+  font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
 }
 
@@ -103,6 +103,6 @@
   padding: 10px;
   border-radius: 4px;
   overflow-x: auto;
-  font-family: "Courier New", Courier, monospace;
+  font-family: 'Courier New', Courier, monospace;
   font-size: 14px;
 }

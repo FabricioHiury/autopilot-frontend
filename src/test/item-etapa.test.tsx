@@ -2,8 +2,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import ItemEtapa from '@/components/sections/atendimentos/item-etapa';
-import { STATUS_ATENDIMENTO } from '@/utils/types/status-atentimento-enum';
+import ItemEtapa from '@/components/sections/deals/item-etapa';
+import { DealStatus } from '@/types/deal-status';
 
 vi.mock('@dnd-kit/sortable', () => ({
   useSortable: () => ({
@@ -19,15 +19,15 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
 }));
 
-vi.mock('@/lib/api-app', () => ({
-  ApiApp: class {
-    chat = { arquivar: vi.fn() };
-    atendimento = { arquivar: vi.fn(), remover: vi.fn(), vincularTag: vi.fn() };
+vi.mock('@/services/app.services', () => ({
+  AppServices: class {
+    chat = { archive: vi.fn() };
+    deal = { archive: vi.fn(), remove: vi.fn(), linkTag: vi.fn() };
   },
 }));
 
 vi.mock('@/components/commons/avatar-canal', () => ({
-  default: (props: any) => <div data-testid="avatar-canal">{props.canal}</div>,
+  default: (props: any) => <div data-testid="avatar-canal">{props.channel}</div>,
 }));
 
 vi.mock('@/components/commons/avatar-user', () => ({
@@ -67,15 +67,17 @@ describe('ItemEtapa', () => {
       itemAtendimento: {
         id: '1',
         data: {
-          etapa: STATUS_ATENDIMENTO.PRE_ATENDIMENTO,
-          status: STATUS_ATENDIMENTO.PRE_ATENDIMENTO,
-          canais: ['whatsapp', 'instagram'] as ('whatsapp' | 'instagram' | 'facebook' | 'olx' | 'outros')[],
-          temperatura: 'morno' as const,
-          nome: 'Cliente Teste',
-          titulo: 'Título de teste',
-          responsaveis: [{ id: 'r1', nome: 'Resp', idUsuario: 'u1', whatsapp: null }],
-          totalNotas: 0,
-          totalTarefas: 0,
+          stage: DealStatus.PRE_DEAL,
+          status: DealStatus.PRE_DEAL,
+          channels: ['whatsapp', 'instagram'] as (
+            'whatsapp' | 'instagram' | 'facebook' | 'olx' | 'other'
+          )[],
+          temperature: 'WARM' as const,
+          name: 'Cliente Teste',
+          title: 'Título de teste',
+          assignees: [{ id: 'r1', name: 'Resp', userId: 'u1', whatsapp: null }],
+          commentCount: 0,
+          totalTasks: 0,
           tags: [],
         },
       },
@@ -104,15 +106,15 @@ describe('ItemEtapa', () => {
       itemAtendimento: {
         id: '2',
         data: {
-          etapa: STATUS_ATENDIMENTO.CHAT,
-          status: STATUS_ATENDIMENTO.CHAT,
-          canais: ['whatsapp'] as ('whatsapp' | 'instagram' | 'facebook' | 'olx' | 'outros')[],
-          temperatura: 'frio' as const,
-          nome: 'Fulano de Tal',
-          titulo: 'Chat',
-          responsaveis: [{ id: 'r2', nome: 'Resp 2', idUsuario: 'u2', whatsapp: null }],
-          totalNotas: 1,
-          totalTarefas: 2,
+          stage: DealStatus.CHAT,
+          status: DealStatus.CHAT,
+          channels: ['whatsapp'] as ('whatsapp' | 'instagram' | 'facebook' | 'olx' | 'other')[],
+          temperature: 'COLD' as const,
+          name: 'Fulano de Tal',
+          title: 'Chat',
+          assignees: [{ id: 'r2', name: 'Resp 2', userId: 'u2', whatsapp: null }],
+          commentCount: 1,
+          totalTasks: 2,
           tags: [],
         },
       },

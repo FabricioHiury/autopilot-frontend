@@ -1,43 +1,19 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-
+import { NextResponse, type NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const publicPaths = [
-    "/",
-    "/autenticacao",
-    "/app/configuracoes/integracoes/acesso/instagram",
-    "/app/configuracoes/integracoes/acesso/facebook",
-    "/app/configuracoes/integracoes/acesso/olx",
-  ];
-
-  const isPublicPath = publicPaths.some(
-    (pubPath) => path === pubPath || path.startsWith(pubPath + "/")
-  );
-  if (isPublicPath) {
+  if (path.startsWith('/backoffice/auth'))
+    return NextResponse.redirect(new URL('/auth/login', request.url));
+  const admin = path.startsWith('/backoffice/app');
+  const token = request.cookies.get(admin ? 'secure_token_backoffice' : 'secure_token')?.value;
+  try {
+    if (!token) throw new Error('Missing session');
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (!payload.exp || payload.exp * 1000 <= Date.now()) throw new Error('Expired session');
     return NextResponse.next();
+  } catch {
+    const login = new URL('/auth/login', request.url);
+    login.searchParams.set('redirect', path);
+    return NextResponse.redirect(login);
   }
-
-  const isPrivateArea =
-    path.startsWith("/app") || path.startsWith("/backoffice");
-  if (!isPrivateArea) {
-    return NextResponse.next();
-  }
-
-  const isBackofficePath = path.startsWith("/backoffice");
-  const cookieName = isBackofficePath
-    ? "secure_token_backoffice"
-    : "secure_token";
-  const token = request.cookies.get(cookieName)?.value;
-
-  if (!token) {
-    const loginUrl = `/autenticacao/login?redirect=${encodeURIComponent(path)}`;
-    return NextResponse.redirect(new URL(loginUrl, request.url));
-  }
-
-  return NextResponse.next();
 }
-
-export const config = {
-  matcher: ["/app/:path*", "/backoffice/:path*"],
-};
+export const config = { matcher: ['/app/:path*', '/backoffice/:path*'] };

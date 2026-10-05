@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.pnpm-store/
+out/
+build/
+coverage/
+public/
+next-env.d.ts
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+*.tsbuildinfo
+.env*
+docs/*.patch

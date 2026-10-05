@@ -3,7 +3,9 @@
  * @param fileUrl - The URL of the file
  * @returns The file type
  */
-export function getFileTypeByExtension(fileUrl: string | null | undefined): 'image' | 'audio' | 'video' | 'pdf' | 'document' | 'unknown' {
+export function getFileTypeByExtension(
+  fileUrl: string | null | undefined,
+): 'image' | 'audio' | 'video' | 'pdf' | 'document' | 'unknown' {
   if (!fileUrl) {
     return 'unknown';
   }
@@ -30,7 +32,6 @@ export function getFileTypeByExtension(fileUrl: string | null | undefined): 'ima
   return 'unknown';
 }
 
-
 /**
  * Gets the file type by MIME type
  * @param mime - The MIME type of the file
@@ -38,9 +39,9 @@ export function getFileTypeByExtension(fileUrl: string | null | undefined): 'ima
  */
 export function getFileTypeByMimeType(mimeType: string): 'image' | 'audio' | 'video' | 'document' {
   if (!mimeType) return 'document';
-  
+
   const mime = mimeType.toLowerCase();
-  
+
   if (mime.startsWith('image/')) {
     return 'image';
   }
@@ -74,7 +75,6 @@ export function formatSizeFile(size: number): string {
   return `${(size / (1024 * 1024)).toFixed(2)} MB`;
 }
 
-
 /**
  * Verifica se um arquivo MP4 de redes sociais (Instagram/Facebook) é áudio ou vídeo
  * @param fileUrl - URL do arquivo
@@ -83,7 +83,7 @@ export function formatSizeFile(size: number): string {
 export async function checkSocialMediaMp4Type(fileUrl: string): Promise<'audio' | 'video'> {
   try {
     const video = document.createElement('video');
-    
+
     return new Promise((resolve) => {
       const timeout = setTimeout(() => {
         resolve('video');
@@ -91,40 +91,40 @@ export async function checkSocialMediaMp4Type(fileUrl: string): Promise<'audio' 
 
       video.onloadedmetadata = () => {
         clearTimeout(timeout);
-        
+
         const hasVideoTrack = video.videoWidth > 0 && video.videoHeight > 0;
         const hasSmallDimensions = video.videoWidth < 100 && video.videoHeight < 100;
         const hasNoDimensions = video.videoWidth === 0 || video.videoHeight === 0;
-        
+
         if (hasNoDimensions) {
           resolve('audio');
           return;
         }
-        
+
         if (hasSmallDimensions) {
           resolve('audio');
           return;
         }
-        
+
         if (video.duration && video.duration > 0) {
           if (hasVideoTrack && video.videoWidth >= 100 && video.videoHeight >= 100) {
             resolve('video');
             return;
           }
         }
-        
+
         resolve('video');
       };
-      
+
       video.onerror = () => {
         clearTimeout(timeout);
         resolve('video');
       };
-      
+
       video.preload = 'metadata';
       video.src = fileUrl;
     });
   } catch {
-    return 'video'; 
+    return 'video';
   }
 }

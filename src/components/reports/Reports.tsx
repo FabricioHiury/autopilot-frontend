@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   ResponsiveContainer,
   LineChart,
@@ -23,16 +23,9 @@ import {
   Legend,
   Tooltip,
   ComposedChart,
-} from "recharts";
+} from 'recharts';
 
-type ChartType =
-  | "line"
-  | "bar"
-  | "area"
-  | "pie"
-  | "radar"
-  | "scatter"
-  | "composed";
+type ChartType = 'line' | 'bar' | 'area' | 'pie' | 'radar' | 'scatter' | 'composed';
 
 interface SeriesCommon {
   name?: string;
@@ -40,11 +33,11 @@ interface SeriesCommon {
   strokeWidth?: number;
   stackId?: string;
   fillOpacity?: number;
-  type?: "line" | "bar" | "area" | "scatter" | "radar";
+  type?: 'line' | 'bar' | 'area' | 'scatter' | 'radar';
 }
 
 interface CartesianSeries extends SeriesCommon {
-  dataKey: string; 
+  dataKey: string;
 }
 
 interface ScatterSeries extends SeriesCommon {
@@ -66,21 +59,18 @@ interface ReportsProps {
   height?: number;
   className?: string;
   icon?: React.ReactNode;
-  
-  xKey?: string; 
-  series?: (CartesianSeries | ScatterSeries)[]; 
-  layout?: "horizontal" | "vertical"; 
+
+  xKey?: string;
+  series?: (CartesianSeries | ScatterSeries)[];
+  layout?: 'horizontal' | 'vertical';
   showGrid?: boolean;
   showLegend?: boolean;
   showTooltip?: boolean;
-  
-  pieSeries?: PieSeries[]; 
+
+  pieSeries?: PieSeries[];
 }
 
-const PALETTE = [
-  "#2A3E65",
-  "#D33632",
-];
+const PALETTE = ['#2A3E65', 'hsl(var(--primary))'];
 
 function colorAt(index: number, override?: string) {
   return override ?? PALETTE[index % PALETTE.length];
@@ -95,7 +85,7 @@ export default function Reports(props: ReportsProps) {
     className,
     xKey,
     series = [],
-    layout = "horizontal",
+    layout = 'horizontal',
     showGrid = true,
     showLegend = true,
     showTooltip = true,
@@ -112,9 +102,7 @@ export default function Reports(props: ReportsProps) {
     </>
   );
 
-  const renderCartesianSeries = (
-    chartType: "line" | "bar" | "area",
-  ) => {
+  const renderCartesianSeries = (chartType: 'line' | 'bar' | 'area') => {
     const seen = new Set<string>();
     return series
       .filter((s: any) => (s.type ?? chartType) === chartType && (s as any).dataKey)
@@ -126,7 +114,7 @@ export default function Reports(props: ReportsProps) {
       })
       .map((s: any, i: number) => {
         const color = colorAt(i, s.color);
-        if (chartType === "line") {
+        if (chartType === 'line') {
           return (
             <Line
               key={`line-${s.dataKey}-${i}`}
@@ -140,7 +128,7 @@ export default function Reports(props: ReportsProps) {
             />
           );
         }
-        if (chartType === "bar") {
+        if (chartType === 'bar') {
           return (
             <Bar
               key={`bar-${s.dataKey}-${i}`}
@@ -178,7 +166,7 @@ export default function Reports(props: ReportsProps) {
         {showTooltip && <Tooltip />}
         {showLegend && <Legend />}
         {series
-          .filter((s: any) => (s.type ?? "radar") === "radar" && (s as any).dataKey)
+          .filter((s: any) => (s.type ?? 'radar') === 'radar' && (s as any).dataKey)
           .filter((s: any) => {
             const key = `radar:${(s as any).dataKey}`;
             if (seen.has(key)) return false;
@@ -200,7 +188,9 @@ export default function Reports(props: ReportsProps) {
   }
 
   function renderScatter() {
-    const scatters = series.filter((s: any) => (s.type ?? "scatter") === "scatter") as ScatterSeries[];
+    const scatters = series.filter(
+      (s: any) => (s.type ?? 'scatter') === 'scatter',
+    ) as ScatterSeries[];
     const usePerSeriesKeys = scatters.some((s) => !!s.xKey && !!s.yKey);
     const xKeyGlobal = usePerSeriesKeys ? undefined : (xKey as string);
     const yKeyGlobal = !usePerSeriesKeys && series.length ? (series[0] as any).dataKey : undefined;
@@ -239,7 +229,7 @@ export default function Reports(props: ReportsProps) {
   }
 
   function renderPie() {
-    const pies = pieSeries.length ? pieSeries : [{ dataKey: "value", nameKey: xKey }];
+    const pies = pieSeries.length ? pieSeries : [{ dataKey: 'value', nameKey: xKey }];
     return (
       <PieChart>
         {showTooltip && <Tooltip />}
@@ -273,50 +263,50 @@ export default function Reports(props: ReportsProps) {
       <ComposedChart data={data} layout={layout}>
         {commonCartesian}
         {/* Render mixed series based on series[].type */}
-        {renderCartesianSeries("area")}
-        {renderCartesianSeries("bar")}
-        {renderCartesianSeries("line")}
+        {renderCartesianSeries('area')}
+        {renderCartesianSeries('bar')}
+        {renderCartesianSeries('line')}
       </ComposedChart>
     );
   }
 
   function renderChart() {
     switch (type) {
-      case "line":
+      case 'line':
         return (
           <LineChart data={data}>
             {commonCartesian}
-            {renderCartesianSeries("line")}
+            {renderCartesianSeries('line')}
           </LineChart>
         );
-      case "bar":
+      case 'bar':
         return (
           <BarChart data={data} layout={layout}>
             {commonCartesian}
-            {renderCartesianSeries("bar")}
+            {renderCartesianSeries('bar')}
           </BarChart>
         );
-      case "area":
+      case 'area':
         return (
           <AreaChart data={data}>
             {commonCartesian}
-            {renderCartesianSeries("area")}
+            {renderCartesianSeries('area')}
           </AreaChart>
         );
-      case "pie":
+      case 'pie':
         return renderPie();
-      case "radar":
+      case 'radar':
         return renderRadar();
-      case "scatter":
+      case 'scatter':
         return renderScatter();
-      case "composed":
+      case 'composed':
       default:
         return renderComposed();
     }
   }
 
   return (
-    <div className={"flex flex-col gap-2 " + (className ?? "")}>
+    <div className={'flex flex-col gap-2 ' + (className ?? '')}>
       {icon && <div className="mb-1">{icon}</div>}
       <div className="w-full" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">

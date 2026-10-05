@@ -1,176 +1,208 @@
-import ButtonDefault from "@/components/inputs/buttons/ButtonDefault"
-import AvatarList from "../clientes/AvatarList"
-import CardGeneric from "./CardGeneric"
-import CardHistorico from "@/components/cards/CardHistorico"
-import { Atendimento } from "@/utils/types/cliente.type"
-import handleDate from "@/utils/classes/format/time"
-import { useRouter } from "next/navigation"
-import CenterModal from "@/components/commons/modais/center-modal"
-import { useEffect, useState } from "react"
-import { cn } from "@/lib/class-name.utils"
-import { profileImageUrl } from "@/lib/profile.utils"
-import { navigateToAtendimento } from "@/utils/navigation/atendimento-navigation"
+import ButtonDefault from '@/components/inputs/buttons/ButtonDefault';
+import AvatarList from '../customers/AvatarList';
+import CardGeneric from './CardGeneric';
+import CardHistorico from '@/components/cards/CardHistorico';
+import { Deal } from '@/types/customer-details';
+import handleDate from '@/utils/classes/format/time';
+import { useRouter } from 'next/navigation';
+import CenterModal from '@/components/commons/modais/center-modal';
+import { useEffect, useState } from 'react';
+import { cn } from '@/lib/class-name.utils';
+import { profileImageUrl } from '@/lib/profile.utils';
+import { navigateToDeal } from '@/utils/navigation/deal-navigation';
 
 interface props {
-  atendimento: Atendimento
+  deal: Deal;
 }
-const CardsHistorico: React.FC<props> = ({ atendimento }) => {
-
-
-  console.log(atendimento)
-  const responsaveis = atendimento.atendimentoResponsaveis.map((obj) => {
+const CardsHistorico: React.FC<props> = ({ deal }) => {
+  console.log(deal);
+  const assignees = deal.dealAssignee.map((obj) => {
     return {
-      nome: obj.colaborador.nome,
-      icon: process.env.NEXT_PUBLIC_API_URL + "/avatar/usuario" + obj.colaborador.idUsuario
-    }
-  })
+      name: obj.employee.name,
+      icon: process.env.NEXT_PUBLIC_API_URL + '/avatar/user' + obj.employee.userId,
+    };
+  });
 
-  const router = useRouter()
+  const router = useRouter();
 
-  const [currentImagem, setCurrentImagem] = useState<string>("")
-  const [modal, setModal] = useState<boolean>(false)
-  const [width, setWidth] = useState<number>(0)
+  const [currentImagem, setCurrentImagem] = useState<string>('');
+  const [modal, setModal] = useState<boolean>(false);
+  const [width, setWidth] = useState<number>(0);
 
   useEffect(() => {
     const myObserver = new ResizeObserver(
       (entries: ResizeObserverEntry[], observer: ResizeObserver) => {
         for (let entry of entries) {
-          setWidth(entry.target.clientWidth - 1)
+          setWidth(entry.target.clientWidth - 1);
         }
-      });
+      },
+    );
     const myElement = document.getElementById('refImage') as Element;
     myObserver.observe(myElement);
 
     return () => {
       myObserver.disconnect();
     };
-  }, [])
+  }, []);
 
   return (
     <>
       <div className="flex flex-col gap-4 w-full mt-2" id="refImage">
-
         <CardGeneric>
           <div className="flex w-full flex-wrap gap-2 justify-between">
             <div className="flex flex-col">
-              <h3 className="text-[#293856] font-semibold text-[18px]">
-                {responsaveis.map((obj) => {
-                  return obj.nome
-                }).join(" - ")}
+              <h3 className="text-[hsl(var(--secondary))] font-semibold text-[18px]">
+                {assignees
+                  .map((obj) => {
+                    return obj.name;
+                  })
+                  .join(' - ')}
               </h3>
               <h4 className="text-[#485B80] text-[12px]">
-                Atendimento iniciado em {handleDate.formatISODate(atendimento.criadoEm, "dd 'de' MMMM 'às' HH':'ss ")}
+                Atendimento iniciado em{' '}
+                {handleDate.formatISODate(deal.createdAt, "dd 'de' MMMM 'às' HH':'ss ")}
               </h4>
             </div>
             <div className="flex gap-5">
-              <AvatarList users={responsaveis} total={10} />
-              <ButtonDefault onClick={() => navigateToAtendimento(atendimento.id)} width="195px" background="#293856" label="Ver página do Atendimento" />
+              <AvatarList users={assignees} total={10} />
+              <ButtonDefault
+                onClick={() => navigateToDeal(deal.id)}
+                width="195px"
+                background="hsl(var(--secondary))"
+                label="Ver página do Atendimento"
+              />
             </div>
           </div>
         </CardGeneric>
 
         <div className="flex xl:flex-nowrap flex-wrap flex-row gap-4">
-
-          <CardGeneric titulo="Tarefas" flexLevel="flex-[2]">
-
-            {atendimento.tarefasAtendimento.length > 0 &&
+          <CardGeneric title="Tarefas" flexLevel="flex-[2]">
+            {deal.dealTask.length > 0 && (
               <div className="">
-                <AvatarList users={atendimento.tarefasAtendimento.map((obj) => {
-                  return {
-                    nome: obj.colaborador.nome,
-                    icon: profileImageUrl(obj.colaborador.idUsuario)
-                  }
-                })} total={10} />
+                <AvatarList
+                  users={deal.dealTask.map((obj) => {
+                    return {
+                      name: obj.employee.name,
+                      icon: profileImageUrl(obj.employee.userId),
+                    };
+                  })}
+                  total={10}
+                />
               </div>
-            }
+            )}
             <div className=" flex flex-row gap-2 items-center">
-              <h3 className="text-[#293856] text-[24px] font-bold">{atendimento.tarefasAtendimento.filter((obj) => obj.concluida).length}/{atendimento.tarefasAtendimento.length}</h3>
-              <div className="rounded-2xl text-[#FEFEFE] flex items-center justify-center w-[36px] h-[21px] flex-shrink-0 font-semibold flex-grow-0 bg-[#D33632] px-1 py-[2px] text-[12px]">
-                {atendimento.tarefasAtendimento.length > 0
-                  ?
-                  ((atendimento.tarefasAtendimento.filter((obj) => obj.concluida).length / atendimento.tarefasAtendimento.length) * 100) + "%"
-                  :
-                  "0%"
-                }
+              <h3 className="text-[hsl(var(--secondary))] text-[24px] font-bold">
+                {deal.dealTask.filter((obj) => obj.completed).length}/{deal.dealTask.length}
+              </h3>
+              <div className="rounded-2xl text-[#FEFEFE] flex items-center justify-center w-[36px] h-[21px] flex-shrink-0 font-semibold flex-grow-0 bg-[hsl(var(--primary))] px-1 py-[2px] text-[12px]">
+                {deal.dealTask.length > 0
+                  ? (deal.dealTask.filter((obj) => obj.completed).length / deal.dealTask.length) *
+                      100 +
+                    '%'
+                  : '0%'}
               </div>
             </div>
           </CardGeneric>
           <div className="flex xl:flex-row flex-col gap-4 w-full flex-wrap">
-            <CardGeneric titulo="Mensagens" flexLevel="flex-[1]">
-              <h3 className="text-[#293856] text-[28px] font-semibold">{atendimento.chat.length}</h3>
+            <CardGeneric title="Mensagens" flexLevel="flex-[1]">
+              <h3 className="text-[hsl(var(--secondary))] text-[28px] font-semibold">
+                {deal.chat.length}
+              </h3>
             </CardGeneric>
-            <CardGeneric titulo="Comentarios" flexLevel="flex-[1]">
-              <h3 className="text-[#293856] text-[28px] font-semibold">{atendimento.chat.length}</h3>
+            <CardGeneric title="Comentarios" flexLevel="flex-[1]">
+              <h3 className="text-[hsl(var(--secondary))] text-[28px] font-semibold">
+                {deal.chat.length}
+              </h3>
             </CardGeneric>
 
-            <CardGeneric titulo="Visitas" flexLevel="flex-[1]">
+            <CardGeneric title="Visitas" flexLevel="flex-[1]">
               <CardVisita />
             </CardGeneric>
           </div>
         </div>
-        {atendimento.anexos.length > 0
-          &&
+        {deal.attachments.length > 0 && (
           <>
-            <h3 className="text-[18px] text-[#293856] font-semibold mt-2">Alguns arquivos enviados neste atendimento</h3>
-            <div style={{ width: width + "px" }} className="duration-0 transition-none flex flex-grow-0 flex-shrink gap-3 overflow-x-auto p-2 scroll-padrao">
-              {
-                atendimento.anexos.map((obj, i) => {
-                  return (
-                    <div className="w-[190px] h-[140px] relative flex group items-center overflow-clip rounded-lg" key={i}>
-                      <button onClick={() => {
-                        setCurrentImagem(obj.arquivo.url)
-                        setModal(true)
-                      }} className="absolute top-0 left-0  w-full h-full z-10">
-
-                      </button>
-                      <object data={obj.arquivo.url}
-                        className="object-cover w-full absolute top-0 left-0 overflow-hidden" />
-                      {obj.arquivo.tipo.includes("application")
-                        &&
-                        <div className="absolute right-0 ">
-                          <div className="bg-[#293856] rounded-sm rounded-r-none text-[12px] text-white px-8 py-1">
-                            {obj.arquivo.tipo.replace("application/", "").toUpperCase()}
-                          </div>
+            <h3 className="text-[18px] text-[hsl(var(--secondary))] font-semibold mt-2">
+              Alguns arquivos enviados neste atendimento
+            </h3>
+            <div
+              style={{ width: width + 'px' }}
+              className="duration-0 transition-none flex flex-grow-0 flex-shrink gap-3 overflow-x-auto p-2 scroll-padrao"
+            >
+              {deal.attachments.map((obj, i) => {
+                return (
+                  <div
+                    className="w-[190px] h-[140px] relative flex group items-center overflow-clip rounded-lg"
+                    key={i}
+                  >
+                    <button
+                      onClick={() => {
+                        setCurrentImagem(obj.file.url);
+                        setModal(true);
+                      }}
+                      className="absolute top-0 left-0  w-full h-full z-10"
+                    ></button>
+                    <object
+                      data={obj.file.url}
+                      className="object-cover w-full absolute top-0 left-0 overflow-hidden"
+                    />
+                    {obj.file.type.includes('application') && (
+                      <div className="absolute right-0 ">
+                        <div className="bg-[hsl(var(--secondary))] rounded-sm rounded-r-none text-[12px] text-secondary-foreground px-8 py-1">
+                          {obj.file.type.replace('application/', '').toUpperCase()}
                         </div>
-                      }
-
-                    </div>
-                  )
-                })
-              }
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </>
-        }
+        )}
 
-        <h3 className="text-[18px] font-semibold text-[#293856] mt-3">Histórico de Atividades e Interações</h3>
+        <h3 className="text-[18px] font-semibold text-[hsl(var(--secondary))] mt-3">
+          Histórico de Atividades e Interações
+        </h3>
         <div className="flex flex-col gap-8 p-4 pt-2">
-          {atendimento.logsAtividadesAtendimento.map((obj: any, i: number) => {
+          {deal.dealActivityLogs.map((obj: any, i: number) => {
             return (
-              <CardHistorico key={i} icon="/icons/note.svg" criadoEm={handleDate.formatRelativeDate(new Date(obj.criadoEm))}>
-                {obj.mensagem}
-                {(i < atendimento.logsAtividadesAtendimento.length - 1) &&
+              <CardHistorico
+                key={i}
+                icon="/icons/note.svg"
+                createdAt={handleDate.formatRelativeDate(new Date(obj.createdAt))}
+              >
+                {obj.message}
+                {i < deal.dealActivityLogs.length - 1 && (
                   <div className="bg-[#DDE6F2] top-[50px] left-[23px] absolute w-[2px] h-full"></div>
-                }
+                )}
               </CardHistorico>
-            )
+            );
           })}
         </div>
       </div>
-      {modal &&
-        <CenterModal onClose={() => { setModal(false) }} idSelector="content-container">
+      {modal && (
+        <CenterModal
+          onClose={() => {
+            setModal(false);
+          }}
+          idSelector="content-container"
+        >
           <div className="flex flex-col w-[55vw] h-[75vh]">
             <object data={currentImagem} className="h-full w-full" />
-
           </div>
         </CenterModal>
-
-      }
-    </>)
+      )}
+    </>
+  );
   function CardVisita() {
-    if (atendimento.visitasAtendimento.length === 0) {
+    if (deal.dealVisit.length === 0) {
       return (
-        <div className={cn(
-          "w-full  flex flex-col items-center justify-center text-[#657380] gap-2", "")}>
+        <div
+          className={cn(
+            'w-full  flex flex-col items-center justify-center text-[#657380] gap-2',
+            '',
+          )}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width={22}
@@ -180,24 +212,16 @@ const CardsHistorico: React.FC<props> = ({ atendimento }) => {
           >
             <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"></path>
           </svg>
-          <div className="text-sm font-normal leading-3 text-center">
-            Nenhuma visita agendada
-          </div>
+          <div className="text-sm font-normal leading-3 text-center">Nenhuma visita agendada</div>
         </div>
-      )
+      );
     }
-    const visita = atendimento.visitasAtendimento[0]!
+    const visita = deal.dealVisit[0]!;
     return (
       <div className="flex flex-col justify-start items-start  gap-1 text-slate-700 font-semibold text-[12px]">
-
-        Tipo de visita: {visita.tipo}
+        Tipo de visita: {visita.type}
         <div className="p-1 bg-slate-200 px-2 rounded-lg inline-flex justify-start items-center gap-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width={14}
-            height={14}
-            fill="none"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} fill="none">
             <path
               stroke="#485B80"
               strokeLinecap="round"
@@ -214,20 +238,12 @@ const CardsHistorico: React.FC<props> = ({ atendimento }) => {
             />
           </svg>
           <div className="justify-start text-slate-600 text-xs font-semibold">
-            {handleDate.formatISODate(visita.data, "dd'/'MM'/'yy")} - {visita.horaInicio}
+            {handleDate.formatISODate(visita.data, "dd'/'MM'/'yy")} - {visita.hourStart}
           </div>
         </div>
-
       </div>
-
-    )
+    );
   }
+};
 
-
-}
-
-
-
-export default CardsHistorico
-
-
+export default CardsHistorico;

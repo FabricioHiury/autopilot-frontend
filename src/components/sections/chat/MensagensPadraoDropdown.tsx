@@ -1,29 +1,33 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import * as Popover from "@radix-ui/react-popover";
-import Input from "@/components/inputs/text/Input";
-import LoadingGlobal from "@/components/commons/estados/LoadingGlobal";
-import NoData from "@/components/commons/estados/NoData";
-import toast from "react-hot-toast";
-import { ApiApp, MensagemPadrao } from "@/lib/api-app";
-import { cn } from "@/lib/class-name.utils";
+import { useEffect, useMemo, useState } from 'react';
+import * as Popover from '@radix-ui/react-popover';
+import Input from '@/components/inputs/text/Input';
+import LoadingGlobal from '@/components/commons/estados/LoadingGlobal';
+import NoData from '@/components/commons/estados/NoData';
+import toast from 'react-hot-toast';
+import { AppServices, MessageTemplate } from '@/services/app.services';
+import { cn } from '@/lib/class-name.utils';
 
 interface MensagensPadraoDropdownProps {
-  onSelect?: (conteudo: string) => void;
-  api?: ApiApp;
+  onSelect?: (content: string) => void;
+  api?: AppServices;
   className?: string;
 }
 
 const emptyForm = {
   id: undefined as string | undefined,
-  titulo: "",
-  conteudo: "",
+  title: '',
+  content: '',
 };
 
-export function MensagensPadraoDropdown({ onSelect, api, className }: MensagensPadraoDropdownProps) {
-  const apiApp = useMemo(() => api ?? new ApiApp(), [api]);
-  const [mensagens, setMensagens] = useState<MensagemPadrao[]>([]);
+export function MensagensPadraoDropdown({
+  onSelect,
+  api,
+  className,
+}: MensagensPadraoDropdownProps) {
+  const apiApp = useMemo(() => api ?? new AppServices(), [api]);
+  const [messages, setMensagens] = useState<MessageTemplate[]>([]);
   const [listLoading, setListLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -32,9 +36,9 @@ export function MensagensPadraoDropdown({ onSelect, api, className }: MensagensP
 
   const loadMensagens = async () => {
     setListLoading(true);
-    const [data, error] = await apiApp.mensagensPadroes.listar();
+    const [data, error] = await apiApp.messageTemplates.list();
     if (error) {
-      toast.error(error.message || "Não foi possível listar as mensagens automáticas");
+      toast.error(error.message || 'Não foi possível listar as mensagens automáticas');
     } else {
       setMensagens(Array.isArray(data) ? data : []);
     }
@@ -47,115 +51,128 @@ export function MensagensPadraoDropdown({ onSelect, api, className }: MensagensP
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!formState.titulo.trim() || !formState.conteudo.trim()) {
-      toast.error("Preencha título e conteúdo");
+    if (!formState.title.trim() || !formState.content.trim()) {
+      toast.error('Preencha título e conteúdo');
       return;
     }
     setSaving(true);
     const payload = {
-      titulo: formState.titulo.trim(),
-      conteudo: formState.conteudo.trim(),
+      title: formState.title.trim(),
+      content: formState.content.trim(),
     };
     const [_, error] = formState.id
-      ? await apiApp.mensagensPadroes.atualizar(formState.id, payload)
-      : await apiApp.mensagensPadroes.criar(payload);
+      ? await apiApp.messageTemplates.update(formState.id, payload)
+      : await apiApp.messageTemplates.create(payload);
     setSaving(false);
     if (error) {
-      toast.error(error.message || "Erro ao salvar mensagem automática");
+      toast.error(error.message || 'Erro ao salvar mensagem automática');
       return;
     }
-    toast.success(formState.id ? "Mensagem atualizada" : "Mensagem criada");
+    toast.success(formState.id ? 'Mensagem atualizada' : 'Mensagem criada');
     setFormState(emptyForm);
     loadMensagens();
   };
 
-  const handleEdit = (mensagem: MensagemPadrao) => {
-    setFormState({ id: mensagem.id, titulo: mensagem.titulo, conteudo: mensagem.conteudo });
+  const handleEdit = (message: MessageTemplate) => {
+    setFormState({ id: message.id, title: message.title, content: message.content });
   };
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
-    const [_, error] = await apiApp.mensagensPadroes.remover(id);
+    const [_, error] = await apiApp.messageTemplates.remove(id);
     setDeletingId(null);
     setConfirmingId(null);
     if (error) {
-      toast.error(error.message || "Erro ao remover mensagem automática");
+      toast.error(error.message || 'Erro ao remover mensagem automática');
       return;
     }
-    toast.success("Mensagem removida");
+    toast.success('Mensagem removida');
     if (formState.id === id) {
       setFormState(emptyForm);
     }
     loadMensagens();
   };
 
-  const handleUseMessage = (conteudo: string) => {
+  const handleUseMessage = (content: string) => {
     if (onSelect) {
-      onSelect(conteudo);
+      onSelect(content);
     }
   };
 
   return (
-    <div className={cn("rounded-xl border border-[#DDE6F2] bg-white shadow-xl w-[20rem] max-h-[25vh] overflow-y-auto", className)}>
+    <div
+      className={cn(
+        'rounded-xl border border-[#DDE6F2] bg-white shadow-xl w-[20rem] max-h-[25vh] overflow-y-auto',
+        className,
+      )}
+    >
       <section className="flex flex-col gap-3">
         {listLoading ? (
           <div className="py-6">
             <LoadingGlobal />
           </div>
-        ) : mensagens.length === 0 ? (
+        ) : messages.length === 0 ? (
           <NoData label="Nenhuma mensagem automática cadastrada." />
         ) : (
-          Array.isArray(mensagens) && mensagens.map((mensagem) => (
-            <div key={mensagem.id} className="rounded-md border border-[#E5EEF8] bg-white p-2 flex items-start justify-between gap-3">
+          Array.isArray(messages) &&
+          messages.map((message) => (
+            <div
+              key={message.id}
+              className="rounded-md border border-[#E5EEF8] bg-white p-2 flex items-start justify-between gap-3"
+            >
               <div className="min-w-0">
-                <p className="font-semibold text-[#1B263A] text-xs truncate">{mensagem.titulo}</p>
-                <p className="text-[11px] text-[#6c7a96] whitespace-pre-wrap break-words">{mensagem.conteudo}</p>
+                <p className="font-semibold text-[#1B263A] text-xs truncate">{message.title}</p>
+                <p className="text-[11px] text-[#6c7a96] whitespace-pre-wrap break-words">
+                  {message.content}
+                </p>
               </div>
               <div className="flex flex-col gap-1">
                 {onSelect && (
                   <button
                     type="button"
-                    onClick={() => handleUseMessage(mensagem.conteudo)}
-                    className="text-[11px] font-semibold text-white bg-[#293856] rounded-md px-2 py-1 hover:bg-[#1b263a]"
+                    onClick={() => handleUseMessage(message.content)}
+                    className="text-[11px] font-semibold text-secondary-foreground bg-[hsl(var(--secondary))] rounded-md px-2 py-1 hover:bg-[#1b263a]"
                   >
                     Usar
                   </button>
                 )}
                 <button
                   type="button"
-                  onClick={() => handleEdit(mensagem)}
-                  className="text-[11px] font-semibold text-[#293856] bg-[#DDE6F2] rounded-md px-2 py-1 hover:bg-[#cfd9ec]"
+                  onClick={() => handleEdit(message)}
+                  className="text-[11px] font-semibold text-[hsl(var(--secondary))] bg-[#DDE6F2] rounded-md px-2 py-1 hover:bg-[#cfd9ec]"
                 >
                   Editar
                 </button>
 
-                {confirmingId === mensagem.id ? (
+                {confirmingId === message.id ? (
                   <div className="flex flex-col items-end gap-1">
-                    <span className="text-[11px] text-[#D33632]">Confirmar remoção?</span>
+                    <span className="text-[11px] text-[hsl(var(--primary))]">
+                      Confirmar remoção?
+                    </span>
                     <div className="flex gap-1">
                       <button
                         type="button"
                         onClick={() => setConfirmingId(null)}
-                        className="text-[11px] font-semibold text-[#293856] bg-[#DDE6F2] rounded-md px-2 py-1 hover:bg-[#cfd9ec]"
+                        className="text-[11px] font-semibold text-[hsl(var(--secondary))] bg-[#DDE6F2] rounded-md px-2 py-1 hover:bg-[#cfd9ec]"
                       >
                         Cancelar
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDelete(mensagem.id)}
-                        disabled={deletingId === mensagem.id}
-                        className="text-[11px] font-semibold text-white bg-[#D33632] rounded-md px-2 py-1 hover:bg-[#b02b29] disabled:opacity-70"
+                        onClick={() => handleDelete(message.id)}
+                        disabled={deletingId === message.id}
+                        className="text-[11px] font-semibold text-primary-foreground bg-[hsl(var(--primary))] rounded-md px-2 py-1 hover:bg-[#b02b29] disabled:opacity-70"
                       >
-                        {deletingId === mensagem.id ? "Removendo..." : "Excluir"}
+                        {deletingId === message.id ? 'Removendo...' : 'Excluir'}
                       </button>
                     </div>
                   </div>
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setConfirmingId(mensagem.id)}
-                    disabled={deletingId === mensagem.id}
-                    className="text-[11px] font-semibold text-white bg-[#D33632] rounded-md px-2 py-1 hover:bg-[#b02b29] disabled:opacity-70"
+                    onClick={() => setConfirmingId(message.id)}
+                    disabled={deletingId === message.id}
+                    className="text-[11px] font-semibold text-primary-foreground bg-[hsl(var(--primary))] rounded-md px-2 py-1 hover:bg-[#b02b29] disabled:opacity-70"
                   >
                     Remover
                   </button>
@@ -166,20 +183,23 @@ export function MensagensPadraoDropdown({ onSelect, api, className }: MensagensP
         )}
       </section>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2 border-t border-[#E5EEF8] pt-3 mt-3">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-2 border-t border-[#E5EEF8] pt-3 mt-3"
+      >
         <Input
           label="Título"
-          value={formState.titulo}
-          onChange={(e) => setFormState((prev) => ({ ...prev, titulo: e.target.value }))}
+          value={formState.title}
+          onChange={(e) => setFormState((prev) => ({ ...prev, title: e.target.value }))}
           placeholder="Ex.: Saudação inicial"
           disabled={saving}
         />
         <label className="flex flex-col gap-1 text-xs font-medium text-[#1B263A]">
           Conteúdo
           <textarea
-            value={formState.conteudo}
-            onChange={(e) => setFormState((prev) => ({ ...prev, conteudo: e.target.value }))}
-            className="min-h-[90px] rounded-md border border-[#DDE6F2] p-2 text-xs focus:border-[#293856] focus:ring-1 focus:ring-[#293856] outline-none"
+            value={formState.content}
+            onChange={(e) => setFormState((prev) => ({ ...prev, content: e.target.value }))}
+            className="min-h-[90px] rounded-md border border-[#DDE6F2] p-2 text-xs focus:border-[hsl(var(--secondary))] focus:ring-1 focus:ring-[hsl(var(--secondary))] outline-none"
             placeholder="Digite a mensagem automática..."
             disabled={saving}
           />
@@ -188,7 +208,7 @@ export function MensagensPadraoDropdown({ onSelect, api, className }: MensagensP
           {formState.id && (
             <button
               type="button"
-              className="text-xs font-semibold text-[#6c7a96] hover:text-[#D33632]"
+              className="text-xs font-semibold text-[#6c7a96] hover:text-[hsl(var(--primary))]"
               onClick={() => setFormState(emptyForm)}
               disabled={saving}
             >
@@ -198,9 +218,9 @@ export function MensagensPadraoDropdown({ onSelect, api, className }: MensagensP
           <button
             type="submit"
             disabled={saving}
-            className="w-20 bg-[#293856] rounded-[0.5rem] h-10 px-3 text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-not-allowed"
+            className="w-20 bg-[hsl(var(--secondary))] rounded-[0.5rem] h-10 px-3 text-secondary-foreground font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-not-allowed"
           >
-            {saving ? "Salvando..." : formState.id ? "Atualizar" : "Salvar"}
+            {saving ? 'Salvando...' : formState.id ? 'Atualizar' : 'Salvar'}
           </button>
         </div>
       </form>

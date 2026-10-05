@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import ImageModal from "@/components/commons/modais/image-modal";
-import { formatSizeFile } from "@/lib/files.utils";
-import { fetchFileMetadata } from "@/lib/file-metadata.utils";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import ImageModal from '@/components/commons/modais/image-modal';
+import { formatSizeFile } from '@/lib/files.utils';
+import { fetchFileMetadata } from '@/lib/file-metadata.utils';
 
 export function AnexoDocumento({ src }: { src: string }) {
-  const [nome, setNome] = useState("documento");
-  const [tamanho, setTamanho] = useState(0);
+  const [name, setNome] = useState('documento');
+  const [size, setTamanho] = useState(0);
 
   const loadFileMetadata = async () => {
-    const metadata = await fetchFileMetadata(src, "documento");
-    setNome(metadata.nome);
-    setTamanho(metadata.tamanho);
+    const metadata = await fetchFileMetadata(src, 'documento');
+    setNome(metadata.name);
+    setTamanho(metadata.size);
   };
 
   useEffect(() => {
@@ -41,10 +41,10 @@ export function AnexoDocumento({ src }: { src: string }) {
           </div>
           <div className="flex flex-col gap-1 w-full truncate">
             <span className="text-[#1b263a] text-sm font-semibold leading-tight truncate w-full">
-              {nome}
+              {name}
             </span>
             <span className="text-[#485b7f] text-xs font-medium leading-none">
-              {formatSizeFile(tamanho)}
+              {formatSizeFile(size)}
             </span>
           </div>
         </div>
@@ -53,13 +53,7 @@ export function AnexoDocumento({ src }: { src: string }) {
   );
 }
 
-export function AnexoImage({
-  src,
-  idContainer,
-}: {
-  src: string;
-  idContainer: string;
-}) {
+export function AnexoImage({ src, idContainer }: { src: string; idContainer: string }) {
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -69,21 +63,14 @@ export function AnexoImage({
         onClick={() => setOpenModal(true)}
         style={{
           backgroundImage: `url(${src})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       />
-      {openModal && typeof window !== "undefined" && (
-        <ImageModal
-          idSelector={idContainer}
-          onClose={() => setOpenModal(false)}
-        >
+      {openModal && typeof window !== 'undefined' && (
+        <ImageModal idSelector={idContainer} onClose={() => setOpenModal(false)}>
           <div className="w-full relative">
-            <img
-              src={src}
-              alt="Imagem anexada"
-              className="w-full h-full object-contain"
-            />
+            <img src={src} alt="Imagem anexada" className="w-full h-full object-contain" />
           </div>
         </ImageModal>
       )}
@@ -100,8 +87,12 @@ type AnexoAudioProps = {
 
 function formatTime(seconds: number) {
   if (!Number.isFinite(seconds) || seconds < 0) return '00:00';
-  const mm = Math.floor(seconds / 60).toString().padStart(2, '0');
-  const ss = Math.floor(seconds % 60).toString().padStart(2, '0');
+  const mm = Math.floor(seconds / 60)
+    .toString()
+    .padStart(2, '0');
+  const ss = Math.floor(seconds % 60)
+    .toString()
+    .padStart(2, '0');
   return `${mm}:${ss}`;
 }
 
@@ -143,7 +134,8 @@ export function AnexoAudio({
     if (!canAttemptBoost()) return;
 
     try {
-      const Ctx = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext;
+      const Ctx = (window.AudioContext ||
+        (window as any).webkitAudioContext) as typeof AudioContext;
       const ctx = new Ctx();
 
       const source = ctx.createMediaElementSource(el);
@@ -164,7 +156,9 @@ export function AnexoAudio({
       }
     } catch (e) {
       isBoostActiveRef.current = false;
-      try { audioCtxRef.current?.close(); } catch { }
+      try {
+        audioCtxRef.current?.close();
+      } catch {}
       audioCtxRef.current = null;
       sourceRef.current = null;
       gainRef.current = null;
@@ -176,7 +170,9 @@ export function AnexoAudio({
     if (!isBoostActiveRef.current) return;
     isBoostActiveRef.current = false;
 
-    try { await audioCtxRef.current?.close(); } catch { }
+    try {
+      await audioCtxRef.current?.close();
+    } catch {}
     audioCtxRef.current = null;
     sourceRef.current = null;
     gainRef.current = null;
@@ -203,10 +199,13 @@ export function AnexoAudio({
   const handleError = useCallback(() => {
     const code = audioRef.current?.error?.code;
     const message =
-      code === 2 ? 'Network error while loading audio.' :
-        code === 3 ? 'Cannot decode this audio format.' :
-          code === 4 ? 'Audio source not supported.' :
-            'Unable to play audio.';
+      code === 2
+        ? 'Network error while loading audio.'
+        : code === 3
+          ? 'Cannot decode this audio format.'
+          : code === 4
+            ? 'Audio source not supported.'
+            : 'Unable to play audio.';
     setError(message);
     setIsPlaying(false);
   }, []);
@@ -226,7 +225,9 @@ export function AnexoAudio({
     await ensureBoost();
 
     if (audioCtxRef.current?.state === 'suspended') {
-      try { await audioCtxRef.current.resume(); } catch { }
+      try {
+        await audioCtxRef.current.resume();
+      } catch {}
     }
 
     try {
@@ -239,20 +240,26 @@ export function AnexoAudio({
     }
   }, [ensureBoost, isPlaying, teardownBoost]);
 
-  const handleSeek = useCallback((newTime: number) => {
-    const el = audioRef.current;
-    if (!el) return;
-    const clamped = Math.max(0, Math.min(newTime, duration || 0));
-    el.currentTime = clamped;
-    setCurrentTime(clamped);
-  }, [duration]);
+  const handleSeek = useCallback(
+    (newTime: number) => {
+      const el = audioRef.current;
+      if (!el) return;
+      const clamped = Math.max(0, Math.min(newTime, duration || 0));
+      el.currentTime = clamped;
+      setCurrentTime(clamped);
+    },
+    [duration],
+  );
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === ' ' || e.key === 'Enter') {
-      e.preventDefault();
-      togglePlay();
-    }
-  }, [togglePlay]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        togglePlay();
+      }
+    },
+    [togglePlay],
+  );
 
   useEffect(() => {
     setCurrentTime(0);
@@ -266,7 +273,9 @@ export function AnexoAudio({
   }, [src, teardownBoost]);
 
   return (
-    <div className={`p-4 bg-gray-200 rounded-xl flex flex-col gap-2 w-full max-w-sm ${className ?? ''}`}>
+    <div
+      className={`p-4 bg-gray-200 rounded-xl flex flex-col gap-2 w-full max-w-sm ${className ?? ''}`}
+    >
       <audio
         ref={audioRef}
         src={src}
@@ -288,11 +297,25 @@ export function AnexoAudio({
           type="button"
         >
           {isPlaying ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" aria-hidden="true" viewBox="0 0 256 256" fill="currentColor">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              aria-hidden="true"
+              viewBox="0 0 256 256"
+              fill="currentColor"
+            >
               <path d="M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z" />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" aria-hidden="true" viewBox="0 0 256 256" fill="currentColor">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              aria-hidden="true"
+              viewBox="0 0 256 256"
+              fill="currentColor"
+            >
               <path d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z" />
             </svg>
           )}
@@ -303,7 +326,7 @@ export function AnexoAudio({
             currentTime={currentTime}
             duration={duration}
             onSeek={handleSeek}
-            activeColor="#d33632"
+            activeColor="hsl(var(--primary))"
             inactiveColor="#7F8999"
             height={30}
           />
@@ -333,8 +356,8 @@ export function AudioSpectrum({
   currentTime,
   duration,
   onSeek,
-  activeColor = "#d33632",
-  inactiveColor = "#7F8999",
+  activeColor = 'hsl(var(--primary))',
+  inactiveColor = '#7F8999',
   width = 200,
   height = 32,
 }: AudioSpectrumProps) {
@@ -374,7 +397,7 @@ export function AudioSpectrum({
       width={totalWidth}
       height={height}
       onClick={handleClick}
-      style={{ cursor: "pointer" }}
+      style={{ cursor: 'pointer' }}
       xmlns="http://www.w3.org/2000/svg"
     >
       {bars}
@@ -393,14 +416,14 @@ export const AnexoVideo: React.FC<AnexoVideoProps> = ({ src }) => {
   const handleVideoLoaded = () => setIsLoading(false);
   const handleVideoError = () => {
     setIsLoading(false);
-    console.error("Erro ao carregar o vídeo:", src);
+    console.error('Erro ao carregar o vídeo:', src);
   };
 
   return (
     <div className="w-full max-w-[300px] rounded-lg overflow-hidden bg-[#EBEEF2] relative">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-[#293856] border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-[hsl(var(--secondary))] border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
       <video

@@ -1,0 +1,19 @@
+--- a/src/core/store/store.controller.ts
++++ b/src/core/store/store.controller.ts
+@@ -15,6 +15,7 @@
+ } from '@nestjs/common';
+ import { StoreService } from './store.service';
+ import { JwtAuthGuard } from 'src/auth/auth/guards/jwt-auth.guard';
++import { ProfileGuard } from 'src/auth/auth/roles-decorators/profile/profile.guard';
+ import {
+   RegisterContactStoreDoc,
+   RegisterAddressStoreDoc,
+@@ -56,6 +57,8 @@
+ 
+   @RegistrationStoreDoc()
+   @Post('/register')
++  @UseGuards(JwtAuthGuard, ProfileGuard)
++  @Profile(USER_PROFILE.AUTOPILOT)
+   @HttpCode(201)
+   async createStoreOwner(
+     @Body() registrationStoreOwnerDto: RegistrationStoreOwnerDto,
