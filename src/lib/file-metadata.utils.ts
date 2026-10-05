@@ -1,14 +1,14 @@
 export interface FileMetadata {
-    nome: string;
-    tamanho: number;
-    success: boolean;
+  name: string;
+  size: number;
+  success: boolean;
 }
 
 export async function fetchFileMetadata(
-    src: string,
-    defaultName: string = "documento"
+  src: string,
+  defaultName: string = 'documento',
 ): Promise<FileMetadata> {
-    const result: FileMetadata = { nome: defaultName, tamanho: 0, success: false };
+  const result: FileMetadata = { name: defaultName, size: 0, success: false };
 
-    return result;
+  return result;
 }

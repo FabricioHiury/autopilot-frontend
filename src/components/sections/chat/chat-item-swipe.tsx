@@ -1,11 +1,11 @@
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { useRef, useState, ReactNode, useEffect } from "react";
-import { cn } from "@/lib/class-name.utils";
-import { Chat } from "@/model/chat";
-import { Archive, ArchiveRestore } from "lucide-react";
-import { useClickOutside } from "@/hooks/use-click-outside";
-import AvatarUser from "@/components/commons/avatar-user";
-import AvatarCanal from "@/components/commons/avatar-canal";
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { useRef, useState, ReactNode, useEffect } from 'react';
+import { cn } from '@/lib/class-name.utils';
+import { Chat } from '@/types/chat';
+import { Archive, ArchiveRestore } from 'lucide-react';
+import { useClickOutside } from '@/hooks/use-click-outside';
+import AvatarUser from '@/components/commons/avatar-user';
+import AvatarCanal from '@/components/commons/avatar-canal';
 
 export function ChatItemSwipe({
   chat,
@@ -53,17 +53,17 @@ export function ChatItemSwipe({
   useEffect(() => {
     if (!showArchiveButton) return;
     const handleScrollLike = () => {
-      animate(x, 0, { type: "spring", stiffness: 300, damping: 25 });
+      animate(x, 0, { type: 'spring', stiffness: 300, damping: 25 });
       setShowArchiveButton(false);
     };
     const opts: AddEventListenerOptions = { passive: true, capture: true };
-    document.addEventListener("scroll", handleScrollLike, opts);
-    document.addEventListener("wheel", handleScrollLike, opts);
-    document.addEventListener("touchmove", handleScrollLike, opts);
+    document.addEventListener('scroll', handleScrollLike, opts);
+    document.addEventListener('wheel', handleScrollLike, opts);
+    document.addEventListener('touchmove', handleScrollLike, opts);
     return () => {
-      document.removeEventListener("scroll", handleScrollLike, true);
-      document.removeEventListener("wheel", handleScrollLike, true);
-      document.removeEventListener("touchmove", handleScrollLike, true);
+      document.removeEventListener('scroll', handleScrollLike, true);
+      document.removeEventListener('wheel', handleScrollLike, true);
+      document.removeEventListener('touchmove', handleScrollLike, true);
     };
   }, [showArchiveButton, x]);
 
@@ -71,10 +71,10 @@ export function ChatItemSwipe({
     const thresholdClick = -60;
 
     if (info.offset.x < thresholdClick) {
-      await animate(x, -110, { type: "spring", stiffness: 250, damping: 22 });
+      await animate(x, -110, { type: 'spring', stiffness: 250, damping: 22 });
       setShowArchiveButton(true);
     } else {
-      await animate(x, 0, { type: "spring", stiffness: 300, damping: 25 });
+      await animate(x, 0, { type: 'spring', stiffness: 300, damping: 25 });
       setShowArchiveButton(false);
     }
   };
@@ -83,38 +83,36 @@ export function ChatItemSwipe({
     await animate(x, -110, { duration: 0.15 });
     if (isArchivedList && onUnarchive) onUnarchive(chat.id);
     else onArchive(chat.id);
-    await animate(x, 0, { type: "spring", stiffness: 300, damping: 25 });
+    await animate(x, 0, { type: 'spring', stiffness: 300, damping: 25 });
     setShowArchiveButton(false);
   };
 
   // === HELPERS ===
   const processName = (chat: Chat) =>
-    chat.clienteTemporario?.nome ?? chat.cliente?.nome ?? "Desconhecido";
+    chat.temporaryCustomer?.name ?? chat.customer?.name ?? 'Desconhecido';
 
   const processAvatar = (chat: Chat) =>
-    chat.clienteTemporario?.avatar?.trim() ??
-    chat.cliente?.urlAvatar?.trim() ??
-    "";
+    chat.temporaryCustomer?.avatar?.trim() ?? chat.customer?.avatarUrl?.trim() ?? '';
 
   const processContent = (chat: Chat) => {
     const term = debouncedSearch?.trim();
     const candidate =
-      term && (chat as any).mensagemEncontrada?.conteudo
-        ? (chat as any).mensagemEncontrada.conteudo
-        : chat.mensagem.length > 0
-        ? chat.mensagem[0].conteudo ?? ""
-        : "";
+      term && (chat as any).mensagemEncontrada?.content
+        ? (chat as any).mensagemEncontrada.content
+        : chat.message.length > 0
+          ? (chat.message[0].content ?? '')
+          : '';
 
     if (candidate) return renderPreviewText ? renderPreviewText(candidate, term) : candidate;
-    if (chat.mensagem.length > 0) return "Enviou um anexo";
-    return "Chat vazio";
+    if (chat.message.length > 0) return 'Enviou um anexo';
+    return 'Chat vazio';
   };
 
   const unread = getUnreadCount ? getUnreadCount(chat) : 0;
   const lastDate = getLastMessageDate
     ? getLastMessageDate(chat)
-    : new Date(chat.atualizadoEm || chat.criadoEm || Date.now());
-  const dateLabel = formatChatDate ? formatChatDate(lastDate) : "";
+    : new Date(chat.updatedAt || chat.createdAt || Date.now());
+  const dateLabel = formatChatDate ? formatChatDate(lastDate) : '';
 
   // Detecta movimento antes de soltar
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -157,9 +155,7 @@ export function ChatItemSwipe({
           ) : (
             <Archive size={16} strokeWidth={2} />
           )}
-          <span className="text-sm font-medium">
-            {isArchivedList ? "Desarquivar" : "Arquivar"}
-          </span>
+          <span className="text-sm font-medium">{isArchivedList ? 'Desarquivar' : 'Arquivar'}</span>
         </button>
       </motion.div>
 
@@ -180,24 +176,24 @@ export function ChatItemSwipe({
         }}
         onClick={handleClick}
         className={cn(
-          "relative z-10 cursor-pointer w-full",
-          "flex gap-2 items-center px-5 py-[.875rem]",
-          "rounded-lg transition-colors duration-200 hover:bg-[#cad0dc]",
-          unread > 0 && "font-semibold",
-          isDragging && "absolute left-0 right-0 top-0",
+          'relative z-10 cursor-pointer w-full',
+          'flex gap-2 items-center px-5 py-[.875rem]',
+          'rounded-lg transition-colors duration-200 hover:bg-[#cad0dc]',
+          unread > 0 && 'font-semibold',
+          isDragging && 'absolute left-0 right-0 top-0',
           // Estilo visual do chat selecionado
-          selectedChat === chat.id && "bg-[#eaeef6] shadow-sm"
+          selectedChat === chat.id && 'bg-[#eaeef6] shadow-sm',
         )}
       >
         <div className="relative flex-shrink-0">
           <AvatarUser name={processName(chat)} src={processAvatar(chat)} size={3} />
           <div className="absolute right-0 bottom-0">
-            <AvatarCanal canal={chat.canal} size={1.25} />
+            <AvatarCanal channel={chat.channel} size={1.25} />
           </div>
           {unread > 0 && (
             <div className="absolute -top-1 -left-1 min-w-[20px] h-5 bg-red-600 rounded-full flex items-center justify-center">
               <span className="text-white text-xs font-bold px-1">
-                {unread > 99 ? "99+" : unread}
+                {unread > 99 ? '99+' : unread}
               </span>
             </div>
           )}
@@ -207,16 +203,16 @@ export function ChatItemSwipe({
           <div className="flex justify-between items-center">
             <h2
               className={cn(
-                "text-[#293856] dark:text-gray-100 leading-5 truncate",
-                unread > 0 ? "font-bold" : "font-medium"
+                'text-[hsl(var(--secondary))] dark:text-gray-100 leading-5 truncate',
+                unread > 0 ? 'font-bold' : 'font-medium',
               )}
             >
               {processName(chat)}
             </h2>
             <span
               className={cn(
-                "text-xs text-[#485B80] dark:text-gray-400 ml-2 flex-shrink-0",
-                unread > 0 ? "font-semibold" : ""
+                'text-xs text-[#485B80] dark:text-gray-400 ml-2 flex-shrink-0',
+                unread > 0 ? 'font-semibold' : '',
               )}
             >
               {dateLabel}
@@ -224,8 +220,8 @@ export function ChatItemSwipe({
           </div>
           <span
             className={cn(
-              "text-xs text-[#485B80] dark:text-gray-400 truncate",
-              unread > 0 ? "font-semibold" : ""
+              'text-xs text-[#485B80] dark:text-gray-400 truncate',
+              unread > 0 ? 'font-semibold' : '',
             )}
           >
             {processContent(chat) as any}

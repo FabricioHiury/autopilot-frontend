@@ -1,99 +1,91 @@
 import React from 'react';
 import { Table, TableColumn } from './Table';
-const DEFAULT_AVATAR = '/images/default.png'
+const DEFAULT_AVATAR = '/images/default.png';
 export interface VendedorData {
   id: string;
-  nome: string;
+  name: string;
   avatar?: string | null;
-  cargo: string;
-  dataInicio: string;
+  role: string;
+  dataStart: string;
   leads: number;
   leadsAtendimento: number;
   leadsResgate: number;
-  leadsConvertidos: number;
-  mediaConversao: string;
+  leadsConverted: number;
+  averageConversion: string;
 }
 
 interface AtendimentoVendedorProps {
-  dados: VendedorData[];
-  titulo?: string;
+  data: VendedorData[];
+  title?: string;
   placeholderFiltro?: string;
   onVendedorClick?: (vendedorId: string) => void;
 }
 
 export default function AtendimentoVendedor({
-  dados,
-  titulo = "Leads e Conversões",
-  placeholderFiltro = "Procurar em vendedores",
-  onVendedorClick
+  data,
+  title = 'Leads e Conversões',
+  placeholderFiltro = 'Procurar em vendedores',
+  onVendedorClick,
 }: AtendimentoVendedorProps) {
-  const image = (record: VendedorData) => record.avatar ? record.avatar : DEFAULT_AVATAR;
+  const image = (record: VendedorData) => (record.avatar ? record.avatar : DEFAULT_AVATAR);
   const colunas: TableColumn<VendedorData>[] = [
     {
-      key: 'vendedor',
+      key: 'salesperson',
       title: 'Vendedores',
-      dataIndex: 'nome',
+      dataIndex: 'name',
       render: (value, record) => (
-        <div className={`flex items-center gap-3 ${onVendedorClick ? 'group-hover:text-blue-600 transition-colors' : ''}`}>
+        <div
+          className={`flex items-center gap-3 ${onVendedorClick ? 'group-hover:text-blue-600 transition-colors' : ''}`}
+        >
           <div className="w-8 h-8 rounded-full overflow-hidden shrink-0">
-            <img
-              src={image(record)}
-              alt={record.nome}
-              className="w-full h-full object-cover"
-            />
+            <img src={image(record)} alt={record.name} className="w-full h-full object-cover" />
           </div>
           <div>
-            <div className={`font-medium ${onVendedorClick ? 'text-gray-900 group-hover:text-blue-600' : 'text-gray-900'}`}>{record.nome}</div>
-            <div className="text-sm text-gray-500">Desde {record.dataInicio}</div>
+            <div
+              className={`font-medium ${onVendedorClick ? 'text-gray-900 group-hover:text-blue-600' : 'text-gray-900'}`}
+            >
+              {record.name}
+            </div>
+            <div className="text-sm text-gray-500">Desde {record.dataStart}</div>
           </div>
         </div>
       ),
-      width: '200px'
+      width: '200px',
     },
     {
       key: 'leads',
       title: 'Leads',
       dataIndex: 'leads',
       align: 'center',
-      render: (value) => (
-        <span className="font-medium text-gray-900">{value}</span>
-      )
+      render: (value) => <span className="font-medium text-gray-900">{value}</span>,
     },
     {
       key: 'leadsAtendimento',
       title: 'Leads em atendimento',
       dataIndex: 'leadsAtendimento',
       align: 'center',
-      render: (value) => (
-        <span className="font-medium text-gray-900">{value}</span>
-      )
+      render: (value) => <span className="font-medium text-gray-900">{value}</span>,
     },
     {
       key: 'leadsResgate',
       title: 'Leads em resgate',
       dataIndex: 'leadsResgate',
       align: 'center',
-      render: (value) => (
-        <span className="font-medium text-gray-900">{value}</span>
-      )
+      render: (value) => <span className="font-medium text-gray-900">{value}</span>,
     },
     {
-      key: 'leadsConvertidos',
+      key: 'leadsConverted',
       title: 'Leads convertidos',
-      dataIndex: 'leadsConvertidos',
+      dataIndex: 'leadsConverted',
       align: 'center',
-      render: (value) => (
-        <span className="font-medium text-gray-900">{value}</span>
-      )
+      render: (value) => <span className="font-medium text-gray-900">{value}</span>,
     },
     {
-      key: 'mediaConversao',
+      key: 'averageConversion',
       title: 'Média de conversão',
-      dataIndex: 'mediaConversao',
+      dataIndex: 'averageConversion',
       align: 'center',
-      render: (value) => (
-        <span className="font-medium text-gray-900">{value}</span>
-      )
+      render: (value) => <span className="font-medium text-gray-900">{value}</span>,
     },
   ];
 
@@ -106,7 +98,7 @@ export default function AtendimentoVendedor({
   return (
     <Table
       columns={colunas}
-      data={dados}
+      data={data}
       placeholderFiltro={placeholderFiltro}
       onRowClick={onVendedorClick ? handleRowClick : undefined}
     />

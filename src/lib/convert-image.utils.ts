@@ -5,7 +5,7 @@
  * @returns Promise<File> with the converted file or the original
  */
 export async function convertImageToJpeg(file: File): Promise<File> {
-  if (!file.type.startsWith("image")) {
+  if (!file.type.startsWith('image')) {
     return file;
   }
 
@@ -13,8 +13,8 @@ export async function convertImageToJpeg(file: File): Promise<File> {
   const image = await loadImage(dataURL);
   const jpegBlob = await imageToJpegBlob(image, 0.8);
 
-  const convertedFile = new File([jpegBlob], replaceExtension(file.name, "jpg"), {
-    type: "image/jpeg",
+  const convertedFile = new File([jpegBlob], replaceExtension(file.name, 'jpg'), {
+    type: 'image/jpeg',
     lastModified: Date.now(),
   });
 
@@ -28,10 +28,10 @@ function readFileAsDataURL(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
-      if (typeof reader.result === "string") {
+      if (typeof reader.result === 'string') {
         resolve(reader.result);
       } else {
-        reject(new Error("Falha ao ler o arquivo como DataURL."));
+        reject(new Error('Falha ao ler o arquivo como DataURL.'));
       }
     };
     reader.onerror = (error) => reject(error);
@@ -57,13 +57,13 @@ function loadImage(dataURL: string): Promise<HTMLImageElement> {
  */
 function imageToJpegBlob(img: HTMLImageElement, quality = 0.8): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     canvas.width = img.width;
     canvas.height = img.height;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
 
     if (!ctx) {
-      reject(new Error("Falha ao obter contexto 2D do canvas."));
+      reject(new Error('Falha ao obter contexto 2D do canvas.'));
       return;
     }
 
@@ -71,13 +71,17 @@ function imageToJpegBlob(img: HTMLImageElement, quality = 0.8): Promise<Blob> {
     ctx.drawImage(img, 0, 0, img.width, img.height);
 
     // Convert to JPEG blob
-    canvas.toBlob((blob) => {
-      if (blob) {
-        resolve(blob);
-      } else {
-        reject(new Error("Falha ao converter canvas em Blob."));
-      }
-    }, "image/jpeg", quality);
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error('Falha ao converter canvas em Blob.'));
+        }
+      },
+      'image/jpeg',
+      quality,
+    );
   });
 }
 
@@ -86,6 +90,6 @@ function imageToJpegBlob(img: HTMLImageElement, quality = 0.8): Promise<Blob> {
  */
 function replaceExtension(fileName: string, newExt: string): string {
   // Extract the name without extension
-  const baseName = fileName.replace(/\.[^/.]+$/, "");
+  const baseName = fileName.replace(/\.[^/.]+$/, '');
   return `${baseName}.${newExt}`;
 }

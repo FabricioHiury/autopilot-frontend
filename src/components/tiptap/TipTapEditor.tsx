@@ -1,97 +1,89 @@
 // src/Tiptap.tsx
-import {
-  EditorProvider,
-  FloatingMenu,
-  BubbleMenu,
-  useCurrentEditor,
-} from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import "./TipTap.css";
-import SelectRedMin from "../inputs/select/SelectRedMin";
-import Document from "@tiptap/extension-document";
-import Heading, { Level } from "@tiptap/extension-heading";
-import Paragraph from "@tiptap/extension-paragraph";
-import Text from "@tiptap/extension-text";
-import Image from "@tiptap/extension-image";
-import TextAlign from "@tiptap/extension-text-align";
-import BulletList from "@tiptap/extension-bullet-list";
+import { EditorProvider, FloatingMenu, BubbleMenu, useCurrentEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import './TipTap.css';
+import SelectRedMin from '../inputs/select/SelectRedMin';
+type Level = 1 | 2 | 3 | 4 | 5 | 6;
+import Image from '@tiptap/extension-image';
+import TextAlign from '@tiptap/extension-text-align';
 
-import ListKeymap from "@tiptap/extension-list-keymap";
-import OrderedList from "@tiptap/extension-ordered-list";
-import { Label } from "../commons/label";
-import { cn } from "@/lib/class-name.utils";
-import { useEffect, useRef, useState } from "react";
-import api, { apiAdmin } from "@/utils/classes/api";
+import { Label } from '../commons/label';
+import { cn } from '@/lib/class-name.utils';
+import { useEffect, useRef, useState } from 'react';
+import api, { apiAdmin } from '@/utils/classes/api';
 
 // define your extension array
 const extensions = [
   StarterKit,
-  Document,
-  Paragraph,
-  BulletList,
-  OrderedList,
-  ListKeymap,
   Image,
-  Text,
-  Heading,
   TextAlign.configure({
-    types: ["heading", "paragraph"],
+    types: ['heading', 'paragraph'],
   }),
 ];
 
-function Tiptap({content,onChange = () => {},viewOnly=false}:{content:string,onChange?: (v:string)=>void,viewOnly?:boolean}){
+function Tiptap({
+  content,
+  onChange = () => {},
+  viewOnly = false,
+}: {
+  content: string;
+  onChange?: (v: string) => void;
+  viewOnly?: boolean;
+}) {
+  function updateContent(e: any) {
+    onChange(e.editor.getHTML());
+  }
 
-
-    function updateContent(e:any){        
-        onChange(e.editor.getHTML())
-    }
-    
-    return (
-    <div className={cn(viewOnly ? "" : "pt-10","relative")}>
-      <EditorProvider extensions={extensions}  editable={!viewOnly} content={content} onUpdate={updateContent}>
-        {!viewOnly && 
-        <div className="absolute top-0">
+  return (
+    <div className={cn(viewOnly ? '' : 'pt-10', 'relative')}>
+      <EditorProvider
+        extensions={extensions}
+        editable={!viewOnly}
+        content={content}
+        onUpdate={updateContent}
+      >
+        {!viewOnly && (
+          <div className="absolute top-0">
             <MenuTop />
-        </div>
-        } 
-
+          </div>
+        )}
       </EditorProvider>
     </div>
   );
-};
+}
 
 const MenuTop = () => {
   const { editor } = useCurrentEditor();
   const refImage = useRef<HTMLInputElement>(null);
 
-  const inserirImagem = async(event:any) => {
+  const inserirImagem = async (event: any) => {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
 
-    if (!file) return
-    const url = await sendFile(file)
-    if(!url) return
-    if(!editor) return
+    if (!file) return;
+    const url = await sendFile(file);
+    if (!url) return;
+    if (!editor) return;
 
     editor.commands.setImage({
-        src: url,
-        alt: file.name,
-        title: file.name,
-    })
-    input.value = "";
+      src: url,
+      alt: file.name,
+      title: file.name,
+    });
+    input.value = '';
   };
 
-  const sendFile = async(file:File) => {
-    const formData = new FormData()
-    formData.append("file",file)
-    const [r,e] = await apiAdmin.formData("/faq/imagem",formData,"POST")
-    if(e){
-        console.error(e)
-        return null
+  const sendFile = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const [r, e] = await apiAdmin.formData('/faq/image', formData, 'POST');
+    if (e) {
+      console.error(e);
+      return null;
     }
-    console.log(r)
-    return r.data.url
-  }
+    console.log(r);
+    return r.data.url;
+  };
 
   if (!editor) {
     return null;
@@ -104,20 +96,20 @@ const MenuTop = () => {
           <SelectRedMin
             options={[
               {
-                label: "Titulo 1",
-                value: "1",
+                label: 'Titulo 1',
+                value: '1',
               },
               {
-                label: "Titulo 2",
-                value: "2",
+                label: 'Titulo 2',
+                value: '2',
               },
               {
-                label: "Titulo 3",
-                value: "3",
+                label: 'Titulo 3',
+                value: '3',
               },
             ]}
             onChange={(v) => {
-              console.log("change");
+              console.log('change');
               editor
                 .chain()
                 .focus()
@@ -130,10 +122,7 @@ const MenuTop = () => {
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
           disabled={!editor.can().chain().focus().toggleBold().run()}
-          className={cn(
-            editor.isActive("bold") ? "" : "",
-            "shrink-0  flex p-0"
-          )}
+          className={cn(editor.isActive('bold') ? '' : '', 'shrink-0  flex p-0')}
         >
           <svg
             width="21"
@@ -165,7 +154,7 @@ const MenuTop = () => {
         <button
           onClick={() => editor.chain().focus().toggleItalic().run()}
           disabled={!editor.can().chain().focus().toggleItalic().run()}
-          className={editor.isActive("italic") ? "is-active" : ""}
+          className={editor.isActive('italic') ? 'is-active' : ''}
         >
           <svg
             width="21"
@@ -195,9 +184,9 @@ const MenuTop = () => {
           </svg>
         </button>
         <button
-          onClick={() => editor.commands.setTextAlign("left")}
+          onClick={() => editor.commands.setTextAlign('left')}
           disabled={!editor.can().chain().focus().toggleStrike().run()}
-          className={editor.isActive("strike") ? "is-active" : ""}
+          className={editor.isActive('strike') ? 'is-active' : ''}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -223,9 +212,9 @@ const MenuTop = () => {
           </svg>
         </button>
         <button
-          onClick={() => editor.commands.setTextAlign("center")}
+          onClick={() => editor.commands.setTextAlign('center')}
           disabled={!editor.can().chain().focus().toggleStrike().run()}
-          className={editor.isActive("strike") ? "is-active" : ""}
+          className={editor.isActive('strike') ? 'is-active' : ''}
         >
           <svg
             width="21"
@@ -265,16 +254,11 @@ const MenuTop = () => {
           </svg>
         </button>
         <button
-          onClick={() => editor.commands.setTextAlign("right")}
+          onClick={() => editor.commands.setTextAlign('right')}
           disabled={!editor.can().chain().focus().toggleStrike().run()}
-          className={editor.isActive("strike") ? "is-active" : ""}
+          className={editor.isActive('strike') ? 'is-active' : ''}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width={21}
-            height={21}
-            fill="none"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width={21} height={21} fill="none">
             <path
               stroke="#24292E"
               strokeLinecap="round"
@@ -304,12 +288,7 @@ const MenuTop = () => {
               strokeWidth={1.3}
               d="M9.668 5.5h8.333M9.668 10.5h8.333"
             />
-            <path
-              stroke="#24292E"
-              strokeLinecap="round"
-              strokeWidth={1.25}
-              d="M9.668 15.5h8.333"
-            />
+            <path stroke="#24292E" strokeLinecap="round" strokeWidth={1.25} d="M9.668 15.5h8.333" />
             <path
               stroke="#24292E"
               strokeLinecap="round"
@@ -324,18 +303,8 @@ const MenuTop = () => {
             editor.chain().focus().toggleBulletList().run();
           }}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width={21}
-            height={21}
-            fill="none"
-          >
-            <path
-              stroke="#24292E"
-              strokeLinecap="round"
-              strokeWidth={1.3}
-              d="M7.168 4.667h10"
-            />
+          <svg xmlns="http://www.w3.org/2000/svg" width={21} height={21} fill="none">
+            <path stroke="#24292E" strokeLinecap="round" strokeWidth={1.3} d="M7.168 4.667h10" />
             <path
               stroke="#24292E"
               strokeLinecap="round"
@@ -361,8 +330,8 @@ const MenuTop = () => {
         <BordaBonitinha />
         <button
           onClick={() => {
-            if(!refImage.current) return
-            refImage.current.click()
+            if (!refImage.current) return;
+            refImage.current.click();
           }}
         >
           <svg
@@ -413,25 +382,14 @@ const MenuTop = () => {
           </svg>
         </button>
       </div>
-      <input
-        type="file"
-        className="hidden"
-        ref={refImage}
-        onChange={inserirImagem}
-      />
+      <input type="file" className="hidden" ref={refImage} onChange={inserirImagem} />
     </div>
   );
 };
 
 const BordaBonitinha = () => {
   return (
-    <svg
-      width="3"
-      height="13"
-      viewBox="0 0 3 13"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="3" height="13" viewBox="0 0 3 13" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M0.858 12.9V0.789999H2.412V12.9H0.858Z" fill="#D7E0EA" />
     </svg>
   );

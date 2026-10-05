@@ -1,5 +1,13 @@
 import React, { PureComponent } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 const data = [
   {
@@ -46,39 +54,41 @@ const data = [
   },
 ];
 
-export default function AreaCustom(){
+export default function AreaCustom() {
+  return (
+    <div className="h-full w-full overflow-x-auto">
+      <ResponsiveContainer width="100%" height={'100%'}>
+        <AreaChart
+          height={200}
+          data={data}
+          syncId="anyId"
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
 
-    return (
-      <div className='h-full w-full overflow-x-auto'>
-        <ResponsiveContainer width="100%" height={"100%"} >
-          <AreaChart
-            height={200}
-            data={data}
-            syncId="anyId"
-            margin={{
-              top: 10,
-              right: 30,
-              left: 0,
-              bottom: 0,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            
-            <defs>
-                    <linearGradient  x1="0" y1="0" x2="0" y2="1" id="grad">
-                    <stop offset="5%" stopColor="rgba(211,54,50,.3)" />
-                    <stop offset="95%" stopColor="rgba(255,255,255,.1)" />
-                    </linearGradient>
-            </defs>
-            <Area type="monotone" dataKey="uv" stroke="#d33632" strokeWidth={3} fill="url(#grad)">
-            
-                
-            </Area>
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
+          <defs>
+            <linearGradient x1="0" y1="0" x2="0" y2="1" id="grad">
+              <stop offset="5%" stopColor="rgba(211,54,50,.3)" />
+              <stop offset="95%" stopColor="rgba(255,255,255,.1)" />
+            </linearGradient>
+          </defs>
+          <Area
+            type="monotone"
+            dataKey="uv"
+            stroke="hsl(var(--primary))"
+            strokeWidth={3}
+            fill="url(#grad)"
+          ></Area>
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}

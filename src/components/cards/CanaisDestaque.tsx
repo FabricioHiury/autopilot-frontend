@@ -1,54 +1,54 @@
 import React from 'react';
 
 interface CanalDestaque {
-  canal: string;
-  nomeExibicao: string;
-  iconeUrl?: string;
+  channel: string;
+  nameDisplay: string;
+  iconUrl?: string;
   leads: number;
-  conversoes: number;
+  conversions: number;
   porcentagemLeads: number;
   porcentagemConversoes: number;
 }
 
 interface CanaisDestaqueProps {
-  titulo?: string;
+  title?: string;
   data?: string;
   canaisLeads: CanalDestaque[];
   canaisConversoes: CanalDestaque[];
 }
 
 export default function CanaisDestaque({
-  titulo = "Seus Canais em Destaque",
-  data = "JUN 24",
+  title = 'Seus Canais em Destaque',
+  data = 'JUN 24',
   canaisLeads,
-  canaisConversoes
+  canaisConversoes,
 }: CanaisDestaqueProps) {
-  const getIconPath = (canal: string) => {
+  const getIconPath = (channel: string) => {
     const iconMap: { [key: string]: string } = {
-      'facebook': '/icons/facebook.svg',
-      'instagram': '/icons/instagram.svg',
-      'olx': '/icons/olx.svg',
-      'whatsapp': '/icons/whatsapp.svg',
-      'outros': '/icons/outros.svg',
-      'webmotors': '/avatar/avatar_webmotors.webp',
-      'icarros': '/avatar/avatar_icarros.webp',
-      'mobiauto': '/avatar/avatar_mobiauto.webp',
-      'usadosbr': '/avatar/avatar_usadosbr.webp',
-      'showroom': '/avatar/avatar_showroom.webp',
-      'ligacao': '/avatar/avatar_ligacao.webp',
-      'mercadolivre': '/icons/outros.svg'
+      facebook: '/icons/facebook.svg',
+      instagram: '/icons/instagram.svg',
+      olx: '/icons/olx.svg',
+      whatsapp: '/icons/whatsapp.svg',
+      other: '/icons/outros.svg',
+      webmotors: '/avatar/avatar_webmotors.webp',
+      icarros: '/avatar/avatar_icarros.webp',
+      mobiauto: '/avatar/avatar_mobiauto.webp',
+      usadosbr: '/avatar/avatar_usadosbr.webp',
+      showroom: '/avatar/avatar_showroom.webp',
+      ligacao: '/avatar/avatar_ligacao.webp',
+      mercadolivre: '/icons/outros.svg',
     };
-    
-    return iconMap[canal.toLowerCase()] || '/icons/outros.svg';
+
+    return iconMap[channel.toLowerCase()] || '/icons/outros.svg';
   };
 
-  const renderCanalItem = (canal: CanalDestaque, tipo: 'leads' | 'conversoes') => (
-    <div key={`${canal.canal}-${tipo}`} className="flex items-center justify-between py-1">
+  const renderCanalItem = (channel: CanalDestaque, type: 'leads' | 'conversions') => (
+    <div key={`${channel.channel}-${type}`} className="flex items-center justify-between py-1">
       <div className="flex items-center gap-2">
         <div className="w-6 h-6 rounded-full bg-white border flex items-center justify-center">
           <img
-            src={canal.iconeUrl || getIconPath(canal.canal)}
-            alt={canal.nomeExibicao}
+            src={channel.iconUrl || getIconPath(channel.channel)}
+            alt={channel.nameDisplay}
             className="w-4 h-4 object-contain"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
@@ -56,13 +56,11 @@ export default function CanaisDestaque({
             }}
           />
         </div>
-        <span className="text-xs font-medium text-gray-700">
-          {canal.nomeExibicao}
-        </span>
+        <span className="text-xs font-medium text-gray-700">{channel.nameDisplay}</span>
       </div>
       <div className="text-right">
         <div className="text-sm font-bold text-gray-900">
-          {tipo === 'leads' ? canal.leads : canal.conversoes}
+          {type === 'leads' ? channel.leads : channel.conversions}
         </div>
       </div>
     </div>
@@ -73,13 +71,9 @@ export default function CanaisDestaque({
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 leading-tight">
-            {titulo}
-          </h3>
+          <h3 className="text-sm font-semibold text-gray-900 leading-tight">{title}</h3>
         </div>
-        <span className="text-xs text-gray-400 font-medium">
-          {data}
-        </span>
+        <span className="text-xs text-gray-400 font-medium">{data}</span>
       </div>
 
       {/* Leads Section */}
@@ -90,7 +84,7 @@ export default function CanaisDestaque({
           <span className="text-xs text-green-500 font-medium ml-auto">30%</span>
         </div>
         <div className="space-y-1">
-          {canaisLeads.map(canal => renderCanalItem(canal, 'leads'))}
+          {canaisLeads.map((channel) => renderCanalItem(channel, 'leads'))}
         </div>
       </div>
 
@@ -102,7 +96,7 @@ export default function CanaisDestaque({
           <span className="text-xs text-green-500 font-medium ml-auto">30%</span>
         </div>
         <div className="space-y-1">
-          {canaisConversoes.map(canal => renderCanalItem(canal, 'conversoes'))}
+          {canaisConversoes.map((channel) => renderCanalItem(channel, 'conversions'))}
         </div>
       </div>
     </div>

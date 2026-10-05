@@ -1,5 +1,5 @@
-import React from "react";
-import { cn } from "@/lib/class-name.utils";
+import React from 'react';
+import { cn } from '@/lib/class-name.utils';
 
 export interface TabButtonsItem {
   key: string;
@@ -31,22 +31,24 @@ export function TabButtons<T extends string = string>({
   unselectedClassName,
 }: TabButtonsProps<T>) {
   const normalized = items.map((it) =>
-    typeof it === "string"
+    typeof it === 'string'
       ? ({ key: it, label: capitalize(it) } as TabButtonsItem)
-      : ({ ...it, label: it.label ?? capitalize(it.key) } as TabButtonsItem)
+      : ({ ...it, label: it.label ?? capitalize(it.key) } as TabButtonsItem),
   );
 
   return (
-    <div className={cn("flex flex-wrap xl:flex-nowrap gap-2 mb-4 justify-start", containerClassName)}>
+    <div
+      className={cn('flex flex-wrap xl:flex-nowrap gap-2 mb-4 justify-start', containerClassName)}
+    >
       {normalized.map(({ key, label, icon: ItemIcon }) => {
         const IconComp = ItemIcon ?? icon;
         const isActive = value === (key as T);
         const classes = cn(
-          "px-4 py-2 text-sm font-medium transition-colors rounded-[.25rem] flex gap-2 items-center",
+          'px-4 py-2 text-sm font-medium transition-colors rounded-[.25rem] flex gap-2 items-center',
           buttonClassName,
           isActive
-            ? selectedClassName ?? "bg-white text-[#1B263A]"
-            : unselectedClassName ?? "text-[#7F8999] hover:text-blue-900"
+            ? (selectedClassName ?? 'bg-white text-[#1B263A]')
+            : (unselectedClassName ?? 'text-[#7F8999] hover:text-blue-900'),
         );
 
         return (

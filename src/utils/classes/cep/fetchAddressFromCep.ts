@@ -1,12 +1,12 @@
 import axios from 'axios';
 
 interface ViaCepResponse {
-  cep: string;
+  postalCode: string;
   logradouro: string;
-  complemento: string;
-  bairro: string;
+  complement: string;
+  district: string;
   localidade: string;
-  uf: string;
+  state: string;
   ibge: string;
   gia: string;
   ddd: string;
@@ -14,30 +14,30 @@ interface ViaCepResponse {
   erro?: boolean;
 }
 
-export async function fetchAddressFromCep(cep: string): Promise<{
-  endereco: string;
-  bairro: string;
-  municipio: string;
-  uf: string;
+export async function fetchAddressFromCep(postalCode: string): Promise<{
+  address: string;
+  district: string;
+  city: string;
+  state: string;
 } | null> {
   try {
-    const cleanCep = cep.replace(/\D/g, '');
-    
+    const cleanCep = postalCode.replace(/\D/g, '');
+
     if (cleanCep.length !== 8) {
       return null;
     }
-    
+
     const response = await axios.get<ViaCepResponse>(`https://viacep.com.br/ws/${cleanCep}/json/`);
-    
+
     if (response.data.erro) {
       return null;
     }
-    
+
     return {
-      endereco: response.data.logradouro,
-      bairro: response.data.bairro,
-      municipio: response.data.localidade,
-      uf: response.data.uf,
+      address: response.data.logradouro,
+      district: response.data.district,
+      city: response.data.localidade,
+      state: response.data.state,
     };
   } catch (error) {
     console.error('Error fetching address from CEP:', error);

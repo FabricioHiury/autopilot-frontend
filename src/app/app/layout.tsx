@@ -1,18 +1,20 @@
-"use client"
-import { MobileNav } from "@/components/nav/mobile-nav";
-import { MobileTopBar } from "@/components/nav/mobile-topbar";
-import { Sidebar } from "@/components/nav/sidebar";
-import { AuthAppProvider } from "@/contexts/auth-app-context";
-import { SidebarProvider, useSidebar } from "@/contexts/sidebar-context";
-import { storeSignal } from "@/redux/store";
-import { Suspense, createContext, useState, useEffect } from "react";
-import { Provider } from "react-redux";
-import SplashScreen from "../page";
+'use client';
+import { RealtimeProvider } from '@/contexts/RealtimeContext';
+import { TenantProvider } from '@/contexts/TenantContext';
+
+import { MobileNav } from '@/components/nav/mobile-nav';
+import { MobileTopBar } from '@/components/nav/mobile-topbar';
+import { Sidebar } from '@/components/nav/sidebar';
+import { AuthAppProvider } from '@/contexts/auth-app-context';
+import { SidebarProvider, useSidebar } from '@/contexts/sidebar-context';
+import { storeSignal } from '@/redux/store';
+import { Suspense, createContext, useState, useEffect } from 'react';
+import { Provider } from 'react-redux';
 
 type Observer = {
-  tipo: string,
-  data: any
-}
+  type: string;
+  data: any;
+};
 type ObserverContextType = {
   observer: Observer;
   setObserver: Function;
@@ -20,32 +22,22 @@ type ObserverContextType = {
 
 export const ObserverContext = createContext<ObserverContextType | undefined>(undefined);
 
-export default function AppLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
+export default function AppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const [observer, setObserver] = useState<Observer>({
-    tipo: "",
-    data: {}
+    type: '',
+    data: {},
   });
-  const [showSplash, setShowSplash] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (showSplash) {
-    return <SplashScreen />;
-  }
-
   return (
     <ObserverContext.Provider value={{ observer, setObserver }}>
       <Provider store={storeSignal}>
         <AuthAppProvider>
-          <SidebarProvider>
-            <AppContent>{children}</AppContent>
-          </SidebarProvider>
+          <TenantProvider>
+            <RealtimeProvider>
+              <SidebarProvider>
+                <AppContent>{children}</AppContent>
+              </SidebarProvider>
+            </RealtimeProvider>
+          </TenantProvider>
         </AuthAppProvider>
       </Provider>
     </ObserverContext.Provider>
@@ -54,28 +46,36 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const { isCollapsed, toggleCollapsed } = useSidebar();
-  
+
   return (
-    <div className="bg-white md:bg-[#0F1522] w-screen h-screen overflow-hidden relative flex flex-col md:flex-row">
-      <div className={`hidden md:block max-h-screen transition-all duration-300 relative ${isCollapsed ? 'w-20' : 'min-w-[300px]'}`}>
+    <div className="bg-white md:bg-[hsl(var(--secondary))] w-screen h-screen overflow-hidden relative flex flex-col md:flex-row">
+      <div
+        className={`hidden md:block max-h-screen transition-all duration-300 relative ${isCollapsed ? 'w-20' : 'min-w-[300px]'}`}
+      >
         <Sidebar />
       </div>
-      
-      <button 
+
+      <button
         onClick={toggleCollapsed}
-        className="hidden md:block absolute top-12 z-[100] bg-[#1B2841] border border-[#2A3E65] text-white hover:text-[#D33632] transition-all duration-200 p-1.5 rounded-lg hover:bg-[#222D4280] shadow-lg"
+        className="hidden md:block absolute top-12 z-[100] bg-[hsl(var(--secondary))] border border-[#2A3E65] text-secondary-foreground hover:text-[hsl(var(--primary))] transition-all duration-200 p-1.5 rounded-lg hover:bg-[#222D4280] shadow-lg"
         style={{
           left: isCollapsed ? '90px' : '310px',
-          transform: 'translateX(-50%)'
+          transform: 'translateX(-50%)',
         }}
         aria-label={isCollapsed ? 'Expandir menu' : 'Retrair menu'}
       >
-        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path 
-            d={isCollapsed ? "M7 4L13 10L7 16" : "M13 4L7 10L13 16"} 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d={isCollapsed ? 'M7 4L13 10L7 16' : 'M13 4L7 10L13 16'}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>

@@ -1,20 +1,28 @@
-"use client";
+'use client';
 
-import LoadingGlobal from "@/components/commons/estados/LoadingGlobal";
-import NoData from "@/components/commons/estados/NoData";
-import IconEnviar from "@/components/icons/icon-enviar";
-import IconX from "@/components/icons/icon-x";
-import Input from "@/components/inputs/text/Input";
-import toast from "react-hot-toast";
-import CenterModal from "@/components/commons/modais/center-modal";
-import { ApiApp } from "@/lib/api-app";
-import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useState, useCallback, useMemo, useRef } from "react";
-import { convertImageToJpeg } from "@/lib/convert-image.utils";
-import { GravadorMp3 } from "@/components/sections/chat/gravador-mp3";
-import { MensagensPadraoDropdown } from "@/components/sections/chat/MensagensPadraoDropdown";
+import LoadingGlobal from '@/components/commons/estados/LoadingGlobal';
+import NoData from '@/components/commons/estados/NoData';
+import IconEnviar from '@/components/icons/icon-enviar';
+import IconX from '@/components/icons/icon-x';
+import Input from '@/components/inputs/text/Input';
+import toast from 'react-hot-toast';
+import CenterModal from '@/components/commons/modais/center-modal';
+import { AppServices } from '@/services/app.services';
+import { useRouter } from 'next/navigation';
+import { ChangeEvent, useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { convertImageToJpeg } from '@/lib/convert-image.utils';
+import { GravadorMp3 } from '@/components/sections/chat/gravador-mp3';
+import { MensagensPadraoDropdown } from '@/components/sections/chat/MensagensPadraoDropdown';
 
-function MiniAudioPlayer({ src, fileName, sizeLabel }: { src: string; fileName: string; sizeLabel?: string }) {
+function MiniAudioPlayer({
+  src,
+  fileName,
+  sizeLabel,
+}: {
+  src: string;
+  fileName: string;
+  sizeLabel?: string;
+}) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -66,13 +74,17 @@ function MiniAudioPlayer({ src, fileName, sizeLabel }: { src: string; fileName: 
         type="button"
         onClick={togglePlay}
         className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F8FAFC] border border-[#E5EEF8] text-[#1B263A] hover:bg-white"
-        aria-label={playing ? "Pausar áudio" : "Reproduzir áudio"}
-        title={playing ? "Pausar" : "Reproduzir"}
+        aria-label={playing ? 'Pausar áudio' : 'Reproduzir áudio'}
+        title={playing ? 'Pausar' : 'Reproduzir'}
       >
         {playing ? (
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z" /></svg>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M6 5h4v14H6zm8 0h4v14h-4z" />
+          </svg>
         ) : (
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
         )}
       </button>
 
@@ -85,11 +97,16 @@ function MiniAudioPlayer({ src, fileName, sizeLabel }: { src: string; fileName: 
             step={0.1}
             value={currentTime}
             onChange={handleSeek}
-            className="w-full accent-[#D33632]"
+            className="w-full accent-[hsl(var(--primary))]"
           />
-          <span className="text-[11px] text-[#6c7a96] whitespace-nowrap">{fmt(currentTime)} / {fmt(duration)}</span>
+          <span className="text-[11px] text-[#6c7a96] whitespace-nowrap">
+            {fmt(currentTime)} / {fmt(duration)}
+          </span>
         </div>
-        <div className="text-xs text-[#1B263A] truncate">{fileName}{sizeLabel ? ` • ${sizeLabel}` : ""}</div>
+        <div className="text-xs text-[#1B263A] truncate">
+          {fileName}
+          {sizeLabel ? ` • ${sizeLabel}` : ''}
+        </div>
       </div>
 
       <audio
@@ -108,7 +125,7 @@ function MiniAudioPlayer({ src, fileName, sizeLabel }: { src: string; fileName: 
 }
 
 export interface ConteudoNovoAtendimentoProps {
-  onSucess?: (idChat: string) => void;
+  onSucess?: (chatId: string) => void;
   onCancel?: () => void;
   onError?: () => void;
   clienteId?: string;
@@ -120,20 +137,20 @@ export interface ConteudoNovoAtendimentoProps {
 
 export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
   const router = useRouter();
-  const api = new ApiApp();
+  const api = new AppServices();
   const [carregandoIntegracao, setCarregandoIntegracao] = useState<boolean>(true);
   const [integracaoDisponivel, setIntegracaoDisponivel] = useState<boolean>(true);
-  const [nome, setNome] = useState<string>(props.prefillNome || "");
-  const [whatsapp, setWhatsapp] = useState<string>(props.prefillWhatsapp || "");
-  const [tipoCliente, setTipoCliente] = useState<string>("cliente");
+  const [name, setNome] = useState<string>(props.prefillNome || '');
+  const [whatsapp, setWhatsapp] = useState<string>(props.prefillWhatsapp || '');
+  const [typeCustomer, setTipoCliente] = useState<string>('customer');
   const [clienteId, setClienteId] = useState<string | undefined>(props.clienteId);
   const [chat, setChat] = useState<{
-    cliente: { id: string; nome: string; whatsapp: string } | null;
-    clienteTemporario: { id: string; nome: string; whatsapp: string } | null;
+    customer: { id: string; name: string; whatsapp: string } | null;
+    temporaryCustomer: { id: string; name: string; whatsapp: string } | null;
   }>();
   const [whatsappError, setWhatsappError] = useState<string | undefined>();
   const [formError, setFormError] = useState<string | undefined>();
-  const [mensagem, setMensagem] = useState<string>("");
+  const [message, setMensagem] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [verificado, setVerificado] = useState<boolean>(false);
   const [bloqueado, setBloqueado] = useState<boolean>(false);
@@ -142,13 +159,19 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
   // Anexos
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const previewUrls = useMemo(() => selectedFiles.map(f => URL.createObjectURL(f)), [selectedFiles]);
+  const previewUrls = useMemo(
+    () => selectedFiles.map((f) => URL.createObjectURL(f)),
+    [selectedFiles],
+  );
   useEffect(() => {
     return () => {
       previewUrls.forEach((u) => URL.revokeObjectURL(u));
     };
   }, [previewUrls]);
-  const fileCards = useMemo(() => selectedFiles.map((f, i) => ({ file: f, url: previewUrls[i], index: i })), [selectedFiles, previewUrls]);
+  const fileCards = useMemo(
+    () => selectedFiles.map((f, i) => ({ file: f, url: previewUrls[i], index: i })),
+    [selectedFiles, previewUrls],
+  );
 
   const filesByType = useMemo(() => {
     const g = {
@@ -161,16 +184,17 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
     };
     fileCards.forEach((it) => {
       const t = it.file.type;
-      if (t.startsWith("image/")) g.image.push(it);
-      else if (t.startsWith("video/")) g.video.push(it);
-      else if (t.startsWith("audio/")) g.audio.push(it);
-      else if (t === "application/pdf") g.pdf.push(it);
+      if (t.startsWith('image/')) g.image.push(it);
+      else if (t.startsWith('video/')) g.video.push(it);
+      else if (t.startsWith('audio/')) g.audio.push(it);
+      else if (t === 'application/pdf') g.pdf.push(it);
       else if (
-        t === "application/msword" ||
-        t === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-        t === "application/vnd.ms-excel" ||
-        t === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      ) g.doc.push(it);
+        t === 'application/msword' ||
+        t === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+        t === 'application/vnd.ms-excel' ||
+        t === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      )
+        g.doc.push(it);
       else g.other.push(it);
     });
     return g;
@@ -184,26 +208,27 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
 
   const isMimeAllowedForWhatsapp = useCallback((mime: string): boolean => {
     if (!mime) return false;
-    if (mime.startsWith("image/")) return true;
-    if (mime.startsWith("audio/")) return true;
-    if (mime.startsWith("video/")) return true;
-    if (mime === "application/pdf") return true;
-    if (mime === "application/msword") return true;
-    if (mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") return true;
-    if (mime === "application/vnd.ms-excel") return true;
-    if (mime === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") return true;
+    if (mime.startsWith('image/')) return true;
+    if (mime.startsWith('audio/')) return true;
+    if (mime.startsWith('video/')) return true;
+    if (mime === 'application/pdf') return true;
+    if (mime === 'application/msword') return true;
+    if (mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      return true;
+    if (mime === 'application/vnd.ms-excel') return true;
+    if (mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') return true;
     return false;
   }, []);
 
-  const formatarNumero = (numero: string) => {
-    return numero.replace(/[^0-9]/g, "");
+  const formatarNumero = (number: string) => {
+    return number.replace(/[^0-9]/g, '');
   };
 
   const fetchData = async () => {
     if (props.prefillWhatsapp) {
-      const numero = formatarNumero(props.prefillWhatsapp || "");
-      setWhatsapp(numero);
-      checarNumeroWhatsapp(numero);
+      const number = formatarNumero(props.prefillWhatsapp || '');
+      setWhatsapp(number);
+      checarNumeroWhatsapp(number);
     }
 
     if (props.prefillNome) {
@@ -211,9 +236,9 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
     }
 
     if (props.chatId) {
-      const [data, error] = await api.chat.pegarChat(props.chatId);
+      const [data, error] = await api.chat.getChat(props.chatId);
       if (error || !data) {
-        setWhatsappError("Erro ao carregar dados");
+        setWhatsappError('Erro ao carregar dados');
         if (props.onError) {
           props.onError();
         }
@@ -223,29 +248,29 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
       setLoading(false);
       setChat(data as any);
 
-      if (data.cliente) {
-        setNome(data.cliente.nome);
-        const numero = formatarNumero(data.cliente.whatsapp || "");
-        setWhatsapp(numero);
-        checarNumeroWhatsapp(numero);
-        setTipoCliente("cliente");
-        setClienteId(data.cliente.id);
+      if (data.customer) {
+        setNome(data.customer.name);
+        const number = formatarNumero(data.customer.whatsapp || '');
+        setWhatsapp(number);
+        checarNumeroWhatsapp(number);
+        setTipoCliente('customer');
+        setClienteId(data.customer.id);
       }
 
-      if (data.clienteTemporario) {
-        setNome(data.clienteTemporario.nome || "");
-        const numero = formatarNumero(data.clienteTemporario.whatsapp || "");
-        setWhatsapp(numero);
-        checarNumeroWhatsapp(numero);
-        setTipoCliente("temporario");
-        setClienteId(data.clienteTemporario.id);
+      if (data.temporaryCustomer) {
+        setNome(data.temporaryCustomer.name || '');
+        const number = formatarNumero(data.temporaryCustomer.whatsapp || '');
+        setWhatsapp(number);
+        checarNumeroWhatsapp(number);
+        setTipoCliente('temporary');
+        setClienteId(data.temporaryCustomer.id);
       }
     }
 
     if (props.atendimentoId) {
-      const [data, error] = await api.atendimento.pegar(props.atendimentoId);
+      const [data, error] = await api.deal.get(props.atendimentoId);
       if (error || !data) {
-        setWhatsappError("Erro ao carregar dados");
+        setWhatsappError('Erro ao carregar dados');
         if (props.onError) {
           props.onError();
         }
@@ -254,56 +279,52 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
 
       setLoading(false);
 
-      if (data.cliente) {
-        setNome(data.cliente.nome);
-        const numero = parseCodigoPais(data.cliente.whatsapp || "");
-        setWhatsapp(numero);
-        checarNumeroWhatsapp(numero);
-        setTipoCliente("cliente");
-        setClienteId(data.idCliente);
-      } else if (data.clienteTemporario) {
-        setNome(data.clienteTemporario.nome || "");
-        const numero = parseCodigoPais(data.clienteTemporario.whatsapp || "");
-        setWhatsapp(numero);
-        checarNumeroWhatsapp(numero);
-        setTipoCliente("temporario");
-        setClienteId(data.clienteTemporario?.id);
+      if (data.customer) {
+        setNome(data.customer.name);
+        const number = parseCodigoPais(data.customer.whatsapp || '');
+        setWhatsapp(number);
+        checarNumeroWhatsapp(number);
+        setTipoCliente('customer');
+        setClienteId(data.customerId);
+      } else if (data.temporaryCustomer) {
+        setNome(data.temporaryCustomer.name || '');
+        const number = parseCodigoPais(data.temporaryCustomer.whatsapp || '');
+        setWhatsapp(number);
+        checarNumeroWhatsapp(number);
+        setTipoCliente('temporary');
+        setClienteId(data.temporaryCustomer?.id);
       }
 
       if (data.chats && data.chats.length > 0) {
-        const chatWhatsJaExiste = data.chats.find(
-          (c) => c.canal === "whatsapp"
-        );
+        const chatWhatsJaExiste = data.chats.find((c) => c.channel === 'whatsapp');
         if (chatWhatsJaExiste) {
           setBloqueado(true);
         }
       }
     }
 
-    const [response, error] = await api.integracoes.listar();
+    const [response, error] = await api.integrations.list();
     if (error) {
       return toast.error(error.message);
     }
     setCarregandoIntegracao(false);
     const whatsappIntegracao = response.statusIntegrations.find(
-      (i: any) => i.channel === "whatsapp"
+      (i: any) => i.channel === 'whatsapp',
     );
-    setIntegracaoDisponivel(
-      whatsappIntegracao && whatsappIntegracao.status === "ok"
-    );
+    setIntegracaoDisponivel(whatsappIntegracao && whatsappIntegracao.status === 'ok');
   };
 
-  const checarNumeroWhatsapp = useCallback(async (numero: string) => {
-    const whatsapp = formatarNumero(numero);
+  const checarNumeroWhatsapp = useCallback(async (number: string) => {
+    const whatsapp = formatarNumero(number);
 
     if (!whatsapp || whatsapp.length < 10) {
-      setWhatsappError("Número muito curto");
+      setWhatsappError('Número muito curto');
       setVerificado(false);
       return;
     }
 
     if (whatsapp.length > 15) {
-      setWhatsappError("Número muito longo");
+      setWhatsappError('Número muito longo');
       setVerificado(false);
       return;
     }
@@ -313,27 +334,27 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
     setVerificado(false);
 
     try {
-      const [data, error] = await api.chat.verificarWhastapp(whatsapp);
+      const [data, error] = await api.chat.verifyWhatsapp(whatsapp);
 
       if (error) {
-        setWhatsappError(error.message || "Erro ao verificar WhatsApp");
+        setWhatsappError(error.message || 'Erro ao verificar WhatsApp');
         return;
       }
 
       if (!data) {
-        setWhatsappError("Resposta inválida do servidor");
+        setWhatsappError('Resposta inválida do servidor');
         return;
       }
 
-      if (data.existe && data.numero) {
+      if (data.exists && data.number) {
         setVerificado(true);
-        setWhatsapp(data.numero);
+        setWhatsapp(data.number);
         setWhatsappError(undefined);
       } else {
-        setWhatsappError("Número não encontrado no WhatsApp");
+        setWhatsappError('Número não encontrado no WhatsApp');
       }
     } catch (err) {
-      setWhatsappError("Falha na conexão");
+      setWhatsappError('Falha na conexão');
     } finally {
       setValidandoWhatsapp(false);
     }
@@ -357,42 +378,51 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
   }, [whatsapp, checarNumeroWhatsapp]);
 
   // Handlers de anexos
-  const addFiles = useCallback((files: FileList | File[]) => {
-    const list = Array.from(files);
+  const addFiles = useCallback(
+    (files: FileList | File[]) => {
+      const list = Array.from(files);
 
-    const validated: File[] = [];
-    for (const f of list) {
-      if (f.size > QTD_MAX_SIZE_ATTACHMENT) {
-        toast.error("Arquivo muito grande. O limite é de 5 MB.");
-        continue;
+      const validated: File[] = [];
+      for (const f of list) {
+        if (f.size > QTD_MAX_SIZE_ATTACHMENT) {
+          toast.error('Arquivo muito grande. O limite é de 5 MB.');
+          continue;
+        }
+        if (!isMimeAllowedForWhatsapp(f.type)) {
+          toast.error('Tipo de arquivo não permitido para WhatsApp.');
+          continue;
+        }
+        validated.push(f);
       }
-      if (!isMimeAllowedForWhatsapp(f.type)) {
-        toast.error("Tipo de arquivo não permitido para WhatsApp.");
-        continue;
+
+      if (validated.length > 0) {
+        setSelectedFiles((prev) => [...prev, ...validated]);
       }
-      validated.push(f);
-    }
+    },
+    [isMimeAllowedForWhatsapp],
+  );
 
-    if (validated.length > 0) {
-      setSelectedFiles((prev) => [...prev, ...validated]);
-    }
-  }, [isMimeAllowedForWhatsapp]);
+  const handleFileChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        addFiles(files);
+        // limpar para permitir adicionar o mesmo arquivo novamente, se necessário
+        e.target.value = '';
+      }
+    },
+    [addFiles],
+  );
 
-  const handleFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      addFiles(files);
-      // limpar para permitir adicionar o mesmo arquivo novamente, se necessário
-      e.target.value = "";
-    }
-  }, [addFiles]);
-
-  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    const items = e.clipboardData?.files;
-    if (items && items.length > 0) {
-      addFiles(items);
-    }
-  }, [addFiles]);
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      const items = e.clipboardData?.files;
+      if (items && items.length > 0) {
+        addFiles(items);
+      }
+    },
+    [addFiles],
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -403,23 +433,26 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
     setDragOver(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(false);
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      addFiles(files);
-    }
-  }, [addFiles]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragOver(false);
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        addFiles(files);
+      }
+    },
+    [addFiles],
+  );
 
   const removeFile = useCallback((index: number) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   const handleSubmit = async () => {
-    if (!tipoCliente || !whatsapp || !verificado) {
-      if (!whatsapp) setWhatsappError("WhatsApp é obrigatório");
-      if (whatsapp && !verificado) setWhatsappError("Número não verificado");
+    if (!typeCustomer || !whatsapp || !verificado) {
+      if (!whatsapp) setWhatsappError('WhatsApp é obrigatório');
+      if (whatsapp && !verificado) setWhatsappError('Número não verificado');
       return;
     }
     let idClienteParaEnviar: string | undefined;
@@ -428,42 +461,42 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
       idClienteParaEnviar = clienteId;
     } else if (props.clienteId) {
       idClienteParaEnviar = props.clienteId;
-    } else if (tipoCliente === "cliente" && chat?.cliente?.id) {
-      idClienteParaEnviar = chat.cliente.id;
-    } else if (tipoCliente === "temporario" && chat?.clienteTemporario?.id) {
-      idClienteParaEnviar = chat.clienteTemporario.id;
+    } else if (typeCustomer === 'customer' && chat?.customer?.id) {
+      idClienteParaEnviar = chat.customer.id;
+    } else if (typeCustomer === 'temporary' && chat?.temporaryCustomer?.id) {
+      idClienteParaEnviar = chat.temporaryCustomer.id;
     }
 
     setLoading(true);
 
     // 1) Criar o chat com a mensagem de texto (se houver)
-    const [newChat, error] = await api.chat.novoChat(
+    const [newChat, error] = await api.chat.newChat(
       {
-        idCliente: idClienteParaEnviar ?? "",
-        tipoCliente: tipoCliente as "cliente" | "temporario",
-        nome: nome || "",
+        customerId: idClienteParaEnviar ?? '',
+        typeCustomer: typeCustomer as 'customer' | 'temporary',
+        name: name || '',
       },
       {
-        destinatario: whatsapp,
-        mensagem: mensagem || "",
-        canal: "whatsapp",
-      }
+        recipient: whatsapp,
+        message: message || '',
+        channel: 'whatsapp',
+      },
     );
 
     if (error || !newChat) {
-      setFormError("Erro ao criar chat");
+      setFormError('Erro ao criar chat');
       setLoading(false);
       return;
     }
 
     // 2) Vincular ao atendimento, se necessário
     if (props.atendimentoId) {
-      const [data, error] = await api.chat.alterarAtendimento({
-        idChat: newChat.idChat,
-        idAtendimento: props.atendimentoId,
+      const [data, error] = await api.chat.updateDeal({
+        chatId: newChat.chatId,
+        dealId: props.atendimentoId,
       });
       if (error || !data) {
-        setFormError("Erro ao vincular chat ao atendimento");
+        setFormError('Erro ao vincular chat ao atendimento');
         setLoading(false);
         return;
       }
@@ -472,36 +505,39 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
     // 3) Enviar anexos (cada um em uma mensagem separada)
     for (const f of selectedFiles) {
       try {
-        const fileToSend = f.type.startsWith("image/") ? await convertImageToJpeg(f) : f;
-        const [anexo, errAnexo] = await api.chat.gerarAnexo(newChat.idChat, fileToSend);
-        if (errAnexo || !anexo) {
-          toast.error("Falha ao processar um dos arquivos");
+        const fileToSend = f.type.startsWith('image/') ? await convertImageToJpeg(f) : f;
+        const [attachment, errAnexo] = await api.chat.generateAttachment(
+          newChat.chatId,
+          fileToSend,
+        );
+        if (errAnexo || !attachment) {
+          toast.error('Falha ao processar um dos arquivos');
           continue;
         }
 
-        await api.chat.enviarMensagemChat(newChat.idChat, {
-          destinatario: whatsapp,
-          mensagem: "",
-          anexoMensagem: anexo.src,
-          tipoAnexo: anexo.mimetype,
-          canal: "whatsapp",
+        await api.chat.sendMessageChat(newChat.chatId, {
+          recipient: whatsapp,
+          message: '',
+          attachmentUrl: attachment.src,
+          attachmentType: attachment.mimetype,
+          channel: 'whatsapp',
         });
       } catch (e) {
         console.error(e);
-        toast.error("Falha ao enviar um dos arquivos");
+        toast.error('Falha ao enviar um dos arquivos');
       }
     }
 
     if (props.onSucess) {
-      props.onSucess(newChat.idChat);
+      props.onSucess(newChat.chatId);
     }
 
     setLoading(false);
   };
 
-  const parseCodigoPais = (numero: string) => {
-    const numeroFormatado = formatarNumero(numero);
-    const temCodigo = numeroFormatado.startsWith("55");
+  const parseCodigoPais = (number: string) => {
+    const numeroFormatado = formatarNumero(number);
+    const temCodigo = numeroFormatado.startsWith('55');
     if (temCodigo) {
       return numeroFormatado;
     } else {
@@ -517,10 +553,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
     return (
       <div>
         <div className="flex flex-col gap-5 pb-8">
-          <button
-            onClick={() => props.onCancel && props.onCancel()}
-            className="self-end"
-          >
+          <button onClick={() => props.onCancel && props.onCancel()} className="self-end">
             <IconX />
           </button>
           <div className="flex justify-between">
@@ -532,7 +565,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
           </div>
 
           <div className="block w-full h-1.5 rounded-full bg-[#DDE6F2]">
-            <div className="w-[7rem] h-1.5 rounded-full bg-[#D33632]"></div>
+            <div className="w-[7rem] h-1.5 rounded-full bg-[hsl(var(--primary))]"></div>
           </div>
         </div>
 
@@ -547,10 +580,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
     return (
       <div>
         <div className="flex flex-col gap-5 pb-8">
-          <button
-            onClick={() => props.onCancel && props.onCancel()}
-            className="self-end"
-          >
+          <button onClick={() => props.onCancel && props.onCancel()} className="self-end">
             <IconX />
           </button>
           <div className="flex justify-between">
@@ -562,7 +592,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
           </div>
 
           <div className="block w-full h-1.5 rounded-full bg-[#DDE6F2]">
-            <div className="w-[7rem] h-1.5 rounded-full bg-[#D33632]"></div>
+            <div className="w-[7rem] h-1.5 rounded-full bg-[hsl(var(--primary))]"></div>
           </div>
         </div>
 
@@ -577,10 +607,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
     return (
       <div>
         <div className="flex flex-col gap-5 pb-8">
-          <button
-            onClick={() => props.onCancel && props.onCancel()}
-            className="self-end"
-          >
+          <button onClick={() => props.onCancel && props.onCancel()} className="self-end">
             <IconX />
           </button>
           <div className="flex justify-between">
@@ -592,7 +619,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
           </div>
 
           <div className="block w-full h-1.5 rounded-full bg-[#DDE6F2]">
-            <div className="w-[7rem] h-1.5 rounded-full bg-[#D33632]"></div>
+            <div className="w-[7rem] h-1.5 rounded-full bg-[hsl(var(--primary))]"></div>
           </div>
         </div>
 
@@ -606,10 +633,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
   return (
     <div>
       <div className="flex flex-col gap-5 pb-8">
-        <button
-          onClick={() => props.onCancel && props.onCancel()}
-          className="self-end"
-        >
+        <button onClick={() => props.onCancel && props.onCancel()} className="self-end">
           <IconX />
         </button>
         <div className="flex justify-between">
@@ -621,20 +645,18 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
         </div>
 
         <div className="block w-full h-1.5 rounded-full bg-[#DDE6F2]">
-          <div className="w-[7rem] h-1.5 rounded-full bg-[#D33632]"></div>
+          <div className="w-[7rem] h-1.5 rounded-full bg-[hsl(var(--primary))]"></div>
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
-        <h3 className="font-semibold text-[#1B263A] text-lg ">
-          Dados do contato
-        </h3>
+        <h3 className="font-semibold text-[#1B263A] text-lg ">Dados do contato</h3>
 
         <Input
           label="Nome do contato"
-          value={nome}
+          value={name}
           onChange={(e) => setNome(e.target.value)}
-          placeholder={"Insira um nome"}
+          placeholder={'Insira um nome'}
           disabled={loading}
         />
 
@@ -651,9 +673,28 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
             {validandoWhatsapp && (
               <div className="text-blue-600 animate-spin">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="31.416" strokeDashoffset="31.416">
-                    <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite" />
-                    <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite" />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray="31.416"
+                    strokeDashoffset="31.416"
+                  >
+                    <animate
+                      attributeName="stroke-dasharray"
+                      dur="2s"
+                      values="0 31.416;15.708 15.708;0 31.416"
+                      repeatCount="indefinite"
+                    />
+                    <animate
+                      attributeName="stroke-dashoffset"
+                      dur="2s"
+                      values="0;-15.708;-31.416"
+                      repeatCount="indefinite"
+                    />
                   </circle>
                 </svg>
               </div>
@@ -667,20 +708,22 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
               </div>
             )}
 
-            {!validandoWhatsapp && !verificado && whatsapp && whatsapp.length >= 10 && whatsappError && (
-              <div className="text-red-600">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                </svg>
-              </div>
-            )}
+            {!validandoWhatsapp &&
+              !verificado &&
+              whatsapp &&
+              whatsapp.length >= 10 &&
+              whatsappError && (
+                <div className="text-red-600">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                  </svg>
+                </div>
+              )}
           </div>
         </div>
 
         {whatsappError && (
-          <p className="text-red-500 font-semibold text-xs pb-2">
-            {whatsappError}
-          </p>
+          <p className="text-red-500 font-semibold text-xs pb-2">{whatsappError}</p>
         )}
       </div>
 
@@ -689,15 +732,15 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
 
         {/* Área de drag & drop e colar */}
         <div
-          className={`relative ${dragOver ? "ring-2 ring-[#D33632]" : ""}`}
+          className={`relative ${dragOver ? 'ring-2 ring-[hsl(var(--primary))]' : ''}`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
           <textarea
-            className="resize-none w-full h-40 p-4 pb-12 text-sm rounded-md bg-white border border-[#DDE6F2] disabled:opacity-50 disabled:cursor-not-allowed focus:border-[#D33632] focus:ring-transparent focus:ring-1 focus:outline-none"
+            className="resize-none w-full h-40 p-4 pb-12 text-sm rounded-md bg-white border border-[#DDE6F2] disabled:opacity-50 disabled:cursor-not-allowed focus:border-[hsl(var(--primary))] focus:ring-transparent focus:ring-1 focus:outline-none"
             placeholder="Digite sua mensagem ou arraste/cole arquivos aqui"
-            value={mensagem}
+            value={message}
             onChange={(e) => setMensagem(e.target.value)}
             onPaste={handlePaste}
             disabled={loading || !verificado}
@@ -710,13 +753,29 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
                 {(['image', 'video', 'audio', 'pdf', 'doc', 'other'] as const).map((key) => {
                   const items = filesByType[key];
                   if (items.length === 0) return null;
-                  const label = key === 'image' ? 'Imagens' : key === 'video' ? 'Vídeos' : key === 'audio' ? 'Áudios' : key === 'pdf' ? 'PDFs' : key === 'doc' ? 'Documentos' : 'Outros';
+                  const label =
+                    key === 'image'
+                      ? 'Imagens'
+                      : key === 'video'
+                        ? 'Vídeos'
+                        : key === 'audio'
+                          ? 'Áudios'
+                          : key === 'pdf'
+                            ? 'PDFs'
+                            : key === 'doc'
+                              ? 'Documentos'
+                              : 'Outros';
                   return (
                     <div key={key} className="w-full flex flex-col gap-2">
-                      <div className="text-[12px] text-[#6c7a96] font-medium px-1">{label} ({items.length})</div>
+                      <div className="text-[12px] text-[#6c7a96] font-medium px-1">
+                        {label} ({items.length})
+                      </div>
                       {items.map(({ file, url, index }) => {
                         const sizeKb = file.size / 1024;
-                        const sizeLabel = sizeKb >= 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${Math.round(sizeKb)} KB`;
+                        const sizeLabel =
+                          sizeKb >= 1024
+                            ? `${(sizeKb / 1024).toFixed(1)} MB`
+                            : `${Math.round(sizeKb)} KB`;
                         const isAudio = key === 'audio';
                         if (isAudio) {
                           return (
@@ -725,7 +784,11 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
                               className="flex w-full items-center gap-3 rounded-xl border border-[#E5EEF8] bg-white px-3 py-2 shadow-sm hover:shadow transition-all"
                             >
                               <div className="flex-1 min-w-0">
-                                <MiniAudioPlayer src={url} fileName={file.name} sizeLabel={sizeLabel} />
+                                <MiniAudioPlayer
+                                  src={url}
+                                  fileName={file.name}
+                                  sizeLabel={sizeLabel}
+                                />
                               </div>
                               <button
                                 onClick={() => removeFile(index)}
@@ -752,13 +815,28 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
                                 <video src={url} className="w-10 h-10" controls muted />
                               )}
                               {key === 'pdf' && (
-                                <svg viewBox="0 0 24 24" width="24" height="24" className="text-[#D33632]" fill="currentColor">
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" opacity=".2" />
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  width="24"
+                                  height="24"
+                                  className="text-[hsl(var(--primary))]"
+                                  fill="currentColor"
+                                >
+                                  <path
+                                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"
+                                    opacity=".2"
+                                  />
                                   <path d="M14 2v6h6M8 13h2a2 2 0 0 1 0 4H8v-4zm5 0h1.5a1.5 1.5 0 0 1 0 3H13v-3zm-8 0h1v4H5v-4z" />
                                 </svg>
                               )}
                               {key !== 'image' && key !== 'video' && key !== 'pdf' && (
-                                <svg viewBox="0 0 24 24" width="24" height="24" className="text-[#6c7a96]" fill="currentColor">
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  width="24"
+                                  height="24"
+                                  className="text-[#6c7a96]"
+                                  fill="currentColor"
+                                >
                                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
                                 </svg>
                               )}
@@ -770,7 +848,9 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
                               rel="noopener noreferrer"
                               className="flex flex-col flex-1 min-w-0 max-w-full"
                             >
-                              <span className="text-sm font-semibold text-[#1B263A] truncate">{file.name}</span>
+                              <span className="text-sm font-semibold text-[#1B263A] truncate">
+                                {file.name}
+                              </span>
                               <span className="text-[11px] text-[#6c7a96]">{sizeLabel}</span>
                             </a>
 
@@ -799,25 +879,26 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
                   className="flex-none inline-flex items-center justify-center w-12 h-12 rounded-xl border border-dashed border-[#E5EEF8] bg-white text-[#6c7a96] hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                    <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path
+                      d="M12 5v14M5 12h14"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 </button>
               </div>
             </div>
           )}
 
-          {formError && (
-            <p className="text-red-500 font-semibold text-xs py-2">
-              {formError}
-            </p>
-          )}
+          {formError && <p className="text-red-500 font-semibold text-xs py-2">{formError}</p>}
 
           {/* Ações */}
           <div className="flex items-center justify-between gap-2 mt-2">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowMensagensPadrao(true)}
-                className="bg-[#DDE6F2] hover:bg-[#293856] duration-300 ease-in-out h-10 aspect-square group flex justify-center items-center p-2 rounded-lg z-10 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-[#DDE6F2] hover:bg-[hsl(var(--secondary))] duration-300 ease-in-out h-10 aspect-square group flex justify-center items-center p-2 rounded-lg z-10 disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Automação / Robô"
                 type="button"
               >
@@ -825,12 +906,20 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
               </button>
 
               {showMensagensPadrao && (
-                <CenterModal idSelector="content-container" onClose={() => setShowMensagensPadrao(false)} allowClickOutsideToClose={false}>
+                <CenterModal
+                  idSelector="content-container"
+                  onClose={() => setShowMensagensPadrao(false)}
+                  allowClickOutsideToClose={false}
+                >
                   <div className="w-[400px]" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-start justify-between gap-4 p-4 border-b border-[#E5EEF8]">
                       <div>
-                        <h3 className="text-base font-semibold text-[#1B263A]">Mensagens automáticas</h3>
-                        <p className="text-xs text-[#6c7a96]">Crie, edite e reutilize respostas padrão.</p>
+                        <h3 className="text-base font-semibold text-[#1B263A]">
+                          Mensagens automáticas
+                        </h3>
+                        <p className="text-xs text-[#6c7a96]">
+                          Crie, edite e reutilize respostas padrão.
+                        </p>
                       </div>
                       <button
                         type="button"
@@ -844,11 +933,11 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
                     </div>
                     <div className="p-4">
                       <MensagensPadraoDropdown
-                        onSelect={(conteudo) => {
+                        onSelect={(content) => {
                           setMensagem((prev) => {
-                            if (!prev) return conteudo;
-                            const sep = prev.endsWith("\n") ? "" : "\n";
-                            return prev + sep + conteudo;
+                            if (!prev) return content;
+                            const sep = prev.endsWith('\n') ? '' : '\n';
+                            return prev + sep + content;
                           });
                           setShowMensagensPadrao(false);
                         }}
@@ -872,20 +961,32 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
               <button
                 onClick={() => inputFileRef.current?.click()}
                 disabled={loading || !verificado}
-                className="bg-[#DDE6F2] hover:bg-[#293856] duration-300 ease-in-out h-10 aspect-square group flex justify-center items-center p-2 rounded-lg z-10 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-[#DDE6F2] hover:bg-[hsl(var(--secondary))] duration-300 ease-in-out h-10 aspect-square group flex justify-center items-center p-2 rounded-lg z-10 disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Adicionar anexos"
                 type="button"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
 
               {/* Gravador de áudio */}
               <GravadorMp3
                 inputFileRef={inputFileRef}
-                onRecordStart={() => { }}
-                onRecordStop={() => { }}
+                onRecordStart={() => {}}
+                onRecordStop={() => {}}
               />
             </div>
 
@@ -894,7 +995,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
                 onClick={() => props.onCancel && props.onCancel()}
                 disabled={loading}
                 className="flex justify-center items-center gap-1 w-full h-10 rounded-md bg-white border px-3
-                            border-[#293856] text-[#293856] font-semibold text-sm disabled:cursor-not-allowed disabled:opacity-80"
+                            border-[hsl(var(--secondary))] text-[hsl(var(--secondary))] font-semibold text-sm disabled:cursor-not-allowed disabled:opacity-80"
               >
                 Cancelar
               </button>
@@ -902,12 +1003,27 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
                 onClick={handleSubmit}
                 disabled={loading || !verificado}
                 aria-busy={loading}
-                className="w-full bg-[#293856] rounded-[0.5rem] h-10 px-3 text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-not-allowed"
+                className="w-full bg-[hsl(var(--secondary))] rounded-[0.5rem] h-10 px-3 text-secondary-foreground font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>
-                    <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeDasharray="31.416" strokeDashoffset="15.708" />
+                    <svg
+                      className="animate-spin"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeDasharray="31.416"
+                        strokeDashoffset="15.708"
+                      />
                     </svg>
                     <span className="hidden md:block">Enviando...</span>
                   </>

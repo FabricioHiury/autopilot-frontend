@@ -2,12 +2,12 @@ import React from 'react';
 import { Table, TableColumn } from './Table';
 
 export interface AtendimentoCanalData {
-  canal: string;
-  nomeExibicao: string;
-  iconeUrl?: string;
+  channel: string;
+  nameDisplay: string;
+  iconUrl?: string;
   leadsTotal: number;
-  conversoes: number;
-  taxaConversao: number;
+  conversions: number;
+  rateConversion: number;
 }
 
 interface AtendimentoCanalTableProps {
@@ -16,41 +16,41 @@ interface AtendimentoCanalTableProps {
 }
 
 export function AtendimentoCanalTable({ data, loading = false }: AtendimentoCanalTableProps) {
-  const getIconPath = (canal: string) => {
+  const getIconPath = (channel: string) => {
     const iconMap: { [key: string]: string } = {
-      'facebook': '/icons/facebook.svg',
-      'instagram': '/icons/instagram.svg',
-      'olx': '/icons/olx.svg',
-      'whatsapp': '/icons/whatsapp.svg',
-      'outros': '/icons/outros.svg',
-      'webmotors': '/icons/webmotors.svg',
-      'icarros': '/icons/icarros.svg',
-      'mobiauto': '/icons/mobiauto.svg',
-      'usadosbr': '/icons/usadosbr.svg',
-      'showroom': '/icons/showroom.svg',
-      'ligação': '/avatar/avatar_ligacao.webp',
-      'mercadolivre': '/icons/outros.svg',
-      'carteira': '/icons/carteira.svg',
-      'site': '/icons/site.svg',
-      'indicação': '/icons/indicacao.png',
+      facebook: '/icons/facebook.svg',
+      instagram: '/icons/instagram.svg',
+      olx: '/icons/olx.svg',
+      whatsapp: '/icons/whatsapp.svg',
+      other: '/icons/outros.svg',
+      webmotors: '/icons/webmotors.svg',
+      icarros: '/icons/icarros.svg',
+      mobiauto: '/icons/mobiauto.svg',
+      usadosbr: '/icons/usadosbr.svg',
+      showroom: '/icons/showroom.svg',
+      ligação: '/avatar/avatar_ligacao.webp',
+      mercadolivre: '/icons/outros.svg',
+      carteira: '/icons/carteira.svg',
+      site: '/icons/site.svg',
+      indicação: '/icons/indicacao.png',
     };
-    
-    return iconMap[canal.toLowerCase()] || '/icons/outros.svg';
+
+    return iconMap[channel.toLowerCase()] || '/icons/outros.svg';
   };
 
   const columns: TableColumn<AtendimentoCanalData>[] = [
     {
-      key: 'canal',
+      key: 'channel',
       title: 'Canal',
-      dataIndex: 'nomeExibicao',
+      dataIndex: 'nameDisplay',
       render: (_, record) => (
         <div className="flex items-center space-x-3">
           <div className="flex-shrink-0">
             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
               <img
                 className="w-6 h-6 object-contain"
-                src={getIconPath(record.canal)}
-                alt={record.nomeExibicao}
+                src={getIconPath(record.channel)}
+                alt={record.nameDisplay}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = '/icons/outros.svg';
@@ -59,8 +59,8 @@ export function AtendimentoCanalTable({ data, loading = false }: AtendimentoCana
             </div>
           </div>
           <div>
-            <div className="text-sm font-medium text-gray-900">{record.nomeExibicao}</div>
-            <div className="text-sm text-gray-500 capitalize">{record.canal}</div>
+            <div className="text-sm font-medium text-gray-900">{record.nameDisplay}</div>
+            <div className="text-sm text-gray-500 capitalize">{record.channel}</div>
           </div>
         </div>
       ),
@@ -70,23 +70,19 @@ export function AtendimentoCanalTable({ data, loading = false }: AtendimentoCana
       title: 'Total de Leads',
       dataIndex: 'leadsTotal',
       align: 'center',
-      render: (value) => (
-        <span className="text-sm font-medium text-gray-900">{value}</span>
-      ),
+      render: (value) => <span className="text-sm font-medium text-gray-900">{value}</span>,
     },
     {
-      key: 'conversoes',
+      key: 'conversions',
       title: 'Conversões',
-      dataIndex: 'conversoes',
+      dataIndex: 'conversions',
       align: 'center',
-      render: (value) => (
-        <span className="text-sm font-medium text-gray-900">{value}</span>
-      ),
+      render: (value) => <span className="text-sm font-medium text-gray-900">{value}</span>,
     },
     {
-      key: 'taxaConversao',
+      key: 'rateConversion',
       title: 'Taxa de Conversão',
-      dataIndex: 'taxaConversao',
+      dataIndex: 'rateConversion',
       align: 'center',
       render: (value) => {
         const percentage = Math.round(value);
@@ -98,11 +94,7 @@ export function AtendimentoCanalTable({ data, loading = false }: AtendimentoCana
           colorClass = 'text-yellow-600';
         }
 
-        return (
-          <span className={`text-sm font-medium ${colorClass}`}>
-            {percentage}%
-          </span>
-        );
+        return <span className={`text-sm font-medium ${colorClass}`}>{percentage}%</span>;
       },
     },
   ];

@@ -47,7 +47,16 @@ export function parseCallMessage(content: string): CallInfo {
   const dateTimeMatch = content.match(/Data\/?Hora:\s*([^\n]+)/i);
   const dateTime = dateTimeMatch?.[1]?.trim();
 
-  return { isCall: true, isVideo, missed, ended, received, accepted, duration, dateTime } as CallInfo;
+  return {
+    isCall: true,
+    isVideo,
+    missed,
+    ended,
+    received,
+    accepted,
+    duration,
+    dateTime,
+  } as CallInfo;
 }
 
 export function parseLocationMessage(content: string): LocationInfo {
@@ -59,7 +68,8 @@ export function parseLocationMessage(content: string): LocationInfo {
   const urlMatch = text.match(/https?:\/\/www\.google\.com\/maps\?q=([^\s]+)/i);
   const lat = latMatch?.[1];
   const lng = lngMatch?.[1];
-  const mapUrl = urlMatch?.[0] || (lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : undefined);
+  const mapUrl =
+    urlMatch?.[0] || (lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : undefined);
   return { isLocation: true, lat, lng, mapUrl } as LocationInfo;
 }
 
@@ -76,7 +86,10 @@ export function parseContactMessage(content: string): ContactInfo {
 export function parseLinkMessage(content: string): LinkInfo {
   const text = content || '';
 
-  const lines = text.trim().split(/\r?\n/).filter(line => line.trim().length > 0);
+  const lines = text
+    .trim()
+    .split(/\r?\n/)
+    .filter((line) => line.trim().length > 0);
 
   if (lines.length > 1) {
     return { isLink: false, url: '' };
@@ -90,7 +103,9 @@ export function parseLinkMessage(content: string): LinkInfo {
     return { isLink: true, url: cleaned };
   }
 
-  const domainMatch = singleLine.match(/^(?:www\.)?([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?:\/[^\s<>"']*)?$/i);
+  const domainMatch = singleLine.match(
+    /^(?:www\.)?([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?:\/[^\s<>"']*)?$/i,
+  );
 
   if (domainMatch) {
     const cleaned = domainMatch[0].replace(/[),.;!?]+$/g, '');
@@ -114,5 +129,3 @@ export function analyzeMessage(content: string): {
   const isPix = isPixCopiaCola(content);
   return { isPix, callInfo, locationInfo, contactInfo, linkInfo };
 }
-
-

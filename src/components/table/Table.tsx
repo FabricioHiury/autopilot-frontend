@@ -33,7 +33,7 @@ export function Table<T = any>({
   loading = false,
   emptyText = 'Nenhum dado encontrado',
   onRowClick,
-  placeholderFiltro = ""
+  placeholderFiltro = '',
 }: TableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -48,14 +48,13 @@ export function Table<T = any>({
     if (!searchTerm) return data;
     const lowerSearch = searchTerm.toLowerCase();
     return data.filter((record) => {
-      return columns.some(col => {
+      return columns.some((col) => {
         const val = (record as any)[col.dataIndex];
         return String(val).toLowerCase().includes(lowerSearch);
       });
     });
-
   }, [data, searchTerm, columns]);
-  
+
   if (loading) {
     return (
       <div className={`bg-white rounded-lg shadow-sm border ${className}`}>
@@ -94,9 +93,13 @@ export function Table<T = any>({
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${column.align === 'center' ? 'text-center' :
-                    column.align === 'right' ? 'text-right' : 'text-left'
-                    } ${column.className || ''}`}
+                  className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                    column.align === 'center'
+                      ? 'text-center'
+                      : column.align === 'right'
+                        ? 'text-right'
+                        : 'text-left'
+                  } ${column.className || ''}`}
                   style={{ width: column.width }}
                 >
                   {column.title}
@@ -115,8 +118,9 @@ export function Table<T = any>({
               filteredData.map((record, index) => (
                 <tr
                   key={index}
-                  className={`group hover:bg-gray-50 transition-colors ${onRowClick ? 'cursor-pointer' : ''
-                    } ${getRowClassName(record, index)}`}
+                  className={`group hover:bg-gray-50 transition-colors ${
+                    onRowClick ? 'cursor-pointer' : ''
+                  } ${getRowClassName(record, index)}`}
                   onClick={() => onRowClick?.(record, index)}
                 >
                   {columns.map((column) => {
@@ -126,9 +130,13 @@ export function Table<T = any>({
                     return (
                       <td
                         key={column.key}
-                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-900 ${column.align === 'center' ? 'text-center' :
-                          column.align === 'right' ? 'text-right' : 'text-left'
-                          }`}
+                        className={`px-6 py-4 whitespace-nowrap text-sm text-gray-900 ${
+                          column.align === 'center'
+                            ? 'text-center'
+                            : column.align === 'right'
+                              ? 'text-right'
+                              : 'text-left'
+                        }`}
                       >
                         {content}
                       </td>

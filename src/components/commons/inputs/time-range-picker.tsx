@@ -1,95 +1,81 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { cn } from "@/lib/class-name.utils"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import IconRelogio from "../../sections/atendimentos/icons/icon-relogio"
-import IconArrowNext from "../../icons/icon-next-arrow"
+import * as React from 'react';
+import { cn } from '@/lib/class-name.utils';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import IconRelogio from '../../sections/deals/icons/icon-relogio';
+import IconArrowNext from '../../icons/icon-next-arrow';
 
 type TimeRangePickerProps = {
-  onChange: (value: { start: string; end: string }) => void
-}
+  onChange: (value: { start: string; end: string }) => void;
+};
 
 export function TimeRangePicker({ onChange }: TimeRangePickerProps) {
-  const buttonRef = React.useRef<HTMLButtonElement>(null)
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   // Estado para horas e minutos de INÍCIO
-  const [startHour, setStartHour] = React.useState<number>(new Date().getHours())
-  const [startMinute, setStartMinute] = React.useState<number>(
-    new Date().getMinutes()
-  )
+  const [startHour, setStartHour] = React.useState<number>(new Date().getHours());
+  const [startMinute, setStartMinute] = React.useState<number>(new Date().getMinutes());
 
   // Estado para horas e minutos de FIM
-  const [endHour, setEndHour] = React.useState<number>(new Date().getHours()+1)
-  const [endMinute, setEndMinute] = React.useState<number>(
-    new Date().getMinutes()
-  )
+  const [endHour, setEndHour] = React.useState<number>(new Date().getHours() + 1);
+  const [endMinute, setEndMinute] = React.useState<number>(new Date().getMinutes());
 
   // Atualiza o onChange quando qualquer valor de start ou end muda
   React.useEffect(() => {
     onChange({
-      start: `${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}`,
-      end: `${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`,
-    })
-  }, [startHour, startMinute, endHour, endMinute])
+      start: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+      end: `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
+    });
+  }, [startHour, startMinute, endHour, endMinute]);
 
   // A estrutura de UI para selecionar hora/minuto
   const TimerRange = () => {
-    const handleHourPlus = (type: "start" | "end") => {
-      if (type === "start") {
-        setStartHour((prev) => (prev < 23 ? prev + 1 : 0))
+    const handleHourPlus = (type: 'start' | 'end') => {
+      if (type === 'start') {
+        setStartHour((prev) => (prev < 23 ? prev + 1 : 0));
       } else {
-        setEndHour((prev) => (prev < 23 ? prev + 1 : 0))
+        setEndHour((prev) => (prev < 23 ? prev + 1 : 0));
       }
-    }
+    };
 
-    const handleHourMinus = (type: "start" | "end") => {
-      if (type === "start") {
-        setStartHour((prev) => (prev > 0 ? prev - 1 : 23))
+    const handleHourMinus = (type: 'start' | 'end') => {
+      if (type === 'start') {
+        setStartHour((prev) => (prev > 0 ? prev - 1 : 23));
       } else {
-        setEndHour((prev) => (prev > 0 ? prev - 1 : 23))
+        setEndHour((prev) => (prev > 0 ? prev - 1 : 23));
       }
-    }
+    };
 
-    const handleMinutePlus = (type: "start" | "end") => {
-      if (type === "start") {
-        setStartMinute((prev) => (prev < 59 ? prev + 1 : 0))
+    const handleMinutePlus = (type: 'start' | 'end') => {
+      if (type === 'start') {
+        setStartMinute((prev) => (prev < 59 ? prev + 1 : 0));
       } else {
-        setEndMinute((prev) => (prev < 59 ? prev + 1 : 0))
+        setEndMinute((prev) => (prev < 59 ? prev + 1 : 0));
       }
-    }
+    };
 
-    const handleMinuteMinus = (type: "start" | "end") => {
-      if (type === "start") {
-        setStartMinute((prev) => (prev > 0 ? prev - 1 : 59))
+    const handleMinuteMinus = (type: 'start' | 'end') => {
+      if (type === 'start') {
+        setStartMinute((prev) => (prev > 0 ? prev - 1 : 59));
       } else {
-        setEndMinute((prev) => (prev > 0 ? prev - 1 : 59))
+        setEndMinute((prev) => (prev > 0 ? prev - 1 : 59));
       }
-    }
+    };
 
-    const handleInputHour = (
-      e: React.ChangeEvent<HTMLInputElement>,
-      type: "start" | "end"
-    ) => {
-      const value = parseInt(e.target.value)
+    const handleInputHour = (e: React.ChangeEvent<HTMLInputElement>, type: 'start' | 'end') => {
+      const value = parseInt(e.target.value);
       if (value >= 0 && value <= 23) {
-        type === "start" ? setStartHour(value) : setEndHour(value)
+        type === 'start' ? setStartHour(value) : setEndHour(value);
       }
-    }
+    };
 
-    const handleInputMinute = (
-      e: React.ChangeEvent<HTMLInputElement>,
-      type: "start" | "end"
-    ) => {
-      const value = parseInt(e.target.value)
+    const handleInputMinute = (e: React.ChangeEvent<HTMLInputElement>, type: 'start' | 'end') => {
+      const value = parseInt(e.target.value);
       if (value >= 0 && value <= 59) {
-        type === "start" ? setStartMinute(value) : setEndMinute(value)
+        type === 'start' ? setStartMinute(value) : setEndMinute(value);
       }
-    }
+    };
 
     return (
       <div
@@ -103,19 +89,19 @@ export function TimeRangePicker({ onChange }: TimeRangePickerProps) {
           {/* Coluna de INÍCIO */}
           <div className="flex flex-col items-center">
             <button
-              onClick={() => handleHourPlus("start")}
+              onClick={() => handleHourPlus('start')}
               className="-rotate-90 bg-slate-300 h-8 w-8 rounded-full flex items-center justify-center"
             >
               <IconArrowNext />
             </button>
             <input
               value={startHour}
-              onChange={(e) => handleInputHour(e, "start")}
+              onChange={(e) => handleInputHour(e, 'start')}
               type="text"
               className="border p-2 text-lg rounded-[0.5rem] w-14 text-center font-semibold my-1"
             />
             <button
-              onClick={() => handleHourMinus("start")}
+              onClick={() => handleHourMinus('start')}
               className="rotate-90 bg-slate-300 h-8 w-8 rounded-full flex items-center justify-center"
             >
               <IconArrowNext />
@@ -126,19 +112,19 @@ export function TimeRangePicker({ onChange }: TimeRangePickerProps) {
 
           <div className="flex flex-col items-center">
             <button
-              onClick={() => handleMinutePlus("start")}
+              onClick={() => handleMinutePlus('start')}
               className="-rotate-90 bg-slate-300 h-8 w-8 rounded-full flex items-center justify-center"
             >
               <IconArrowNext />
             </button>
             <input
               value={startMinute}
-              onChange={(e) => handleInputMinute(e, "start")}
+              onChange={(e) => handleInputMinute(e, 'start')}
               type="text"
               className="border p-2 text-lg rounded-[0.5rem] w-14 text-center font-semibold my-1"
             />
             <button
-              onClick={() => handleMinuteMinus("start")}
+              onClick={() => handleMinuteMinus('start')}
               className="rotate-90 bg-slate-300 h-8 w-8 rounded-full flex items-center justify-center"
             >
               <IconArrowNext />
@@ -151,19 +137,19 @@ export function TimeRangePicker({ onChange }: TimeRangePickerProps) {
           {/* Coluna de FIM */}
           <div className="flex flex-col items-center">
             <button
-              onClick={() => handleHourPlus("end")}
+              onClick={() => handleHourPlus('end')}
               className="-rotate-90 bg-slate-300 h-8 w-8 rounded-full flex items-center justify-center"
             >
               <IconArrowNext />
             </button>
             <input
               value={endHour}
-              onChange={(e) => handleInputHour(e, "end")}
+              onChange={(e) => handleInputHour(e, 'end')}
               type="text"
               className="border p-2 text-lg rounded-[0.5rem] w-14 text-center font-semibold my-1"
             />
             <button
-              onClick={() => handleHourMinus("end")}
+              onClick={() => handleHourMinus('end')}
               className="rotate-90 bg-slate-300 h-8 w-8 rounded-full flex items-center justify-center"
             >
               <IconArrowNext />
@@ -174,19 +160,19 @@ export function TimeRangePicker({ onChange }: TimeRangePickerProps) {
 
           <div className="flex flex-col items-center">
             <button
-              onClick={() => handleMinutePlus("end")}
+              onClick={() => handleMinutePlus('end')}
               className="-rotate-90 bg-slate-300 h-8 w-8 rounded-full flex items-center justify-center"
             >
               <IconArrowNext />
             </button>
             <input
               value={endMinute}
-              onChange={(e) => handleInputMinute(e, "end")}
+              onChange={(e) => handleInputMinute(e, 'end')}
               type="text"
               className="border p-2 text-lg rounded-[0.5rem] w-14 text-center font-semibold my-1"
             />
             <button
-              onClick={() => handleMinuteMinus("end")}
+              onClick={() => handleMinuteMinus('end')}
               className="rotate-90 bg-slate-300 h-8 w-8 rounded-full flex items-center justify-center"
             >
               <IconArrowNext />
@@ -194,24 +180,24 @@ export function TimeRangePicker({ onChange }: TimeRangePickerProps) {
           </div>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   // Formata o texto para exibição no botão
-  const startString = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`
-  const endString = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`
+  const startString = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
+  const endString = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
 
   const displayLabel =
     startHour !== null && startMinute !== null && endHour !== null && endMinute !== null
       ? `${startString} - ${endString}`
-      : "Selecione um intervalo"
+      : 'Selecione um intervalo';
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <button
           className={cn(
-            "flex h-9 w-full rounded-[0.5rem] border border-input bg-white px-3 py-1 text-sm transition-colors items-center justify-between",
+            'flex h-9 w-full rounded-[0.5rem] border border-input bg-white px-3 py-1 text-sm transition-colors items-center justify-between',
           )}
           ref={buttonRef}
         >
@@ -234,5 +220,5 @@ export function TimeRangePicker({ onChange }: TimeRangePickerProps) {
         <TimerRange />
       </PopoverContent>
     </Popover>
-  )
+  );
 }

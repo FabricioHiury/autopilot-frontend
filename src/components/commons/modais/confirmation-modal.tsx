@@ -1,9 +1,9 @@
 'use client';
 
-import { createPortal } from "react-dom";
-import { useEffect, useRef, useState } from "react";
-import { BtnStrong, BtnTransparent } from "../buttons/buttons";
-import ButtonAlertIcon from "../buttons/button-circle/icons/button-alert-icon";
+import { createPortal } from 'react-dom';
+import { useEffect, useRef, useState } from 'react';
+import { BtnStrong, BtnTransparent } from '../buttons/buttons';
+import ButtonAlertIcon from '../buttons/button-circle/icons/button-alert-icon';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -19,10 +19,10 @@ export default function ConfirmationModal({
   isOpen,
   title,
   message,
-  confirmText = "Sim, sair e descartar",
-  cancelText = "Voltar ao preenchimento",
+  confirmText = 'Sim, sair e descartar',
+  cancelText = 'Voltar ao preenchimento',
   onConfirm,
-  onCancel
+  onCancel,
 }: ConfirmationModalProps) {
   const [isClosing, setIsClosing] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -59,12 +59,12 @@ export default function ConfirmationModal({
 
   if (!isOpen) return null;
 
-  return createPortal((
-    <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in data-[close=true]:animate-fade-out" 
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in data-[close=true]:animate-fade-out"
       data-close={isClosing}
     >
-      <div 
+      <div
         ref={modalRef}
         className="bg-white rounded-lg shadow-xl animate-fade-in data-[close=true]:animate-fade-out"
         data-close={isClosing}
@@ -75,15 +75,18 @@ export default function ConfirmationModal({
               <ButtonAlertIcon />
             </div>
 
-            <h2 className="text-[28px] leading-8 mb-2 text-[#24292E] font-semibold text-center">{title}</h2>
+            <h2 className="text-[28px] leading-8 mb-2 text-[#24292E] font-semibold text-center">
+              {title}
+            </h2>
           </div>
           <p className="text-[16px] text-[#657380] text-center">{message}</p>
           <div className="flex flex-col gap-2 w-full mt-5">
-            <BtnTransparent label={cancelText} onClick={handleCancel}/>
-            <BtnStrong label={confirmText} onClick={handleConfirm}/>
+            <BtnTransparent label={cancelText} onClick={handleCancel} />
+            <BtnStrong label={confirmText} onClick={handleConfirm} />
           </div>
         </div>
       </div>
-    </div>
-  ), document.body);
+    </div>,
+    document.body,
+  );
 }

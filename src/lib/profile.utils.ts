@@ -4,8 +4,8 @@
  * @returns The avatar source URL
  */
 export function profileImageUrl(id: string | null): string {
-  if (!id) return "";
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!id) return '';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003';
 
-  return `${baseUrl}/avatar/usuario/${id}`;
+  return `${baseUrl}/avatar/user/${id}`;
 }
