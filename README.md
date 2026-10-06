@@ -62,4 +62,4 @@ pnpm test:run
 pnpm build
 ```
 
-Os testes cobrem sessão persistente, erro de permissão, envelope REST, limpeza do tema, reconciliação de mensagens e revisão humana da IA. A validação com os serviços reais depende de iniciar backend e microservice. Veja os pontos de alinhamento e o roteiro de teste em [docs/BACKEND_ALIGNMENT.md](docs/BACKEND_ALIGNMENT.md).
+Os testes cobrem sessão persistente, erro de permissão, envelope REST, limpeza do tema, reconciliação de mensagens e revisão humana da IA. A validação com os serviços reais depende de iniciar backend e microservice. Siga os READMEs desses projetos para configurar o ambiente e validar os fluxos integrados.

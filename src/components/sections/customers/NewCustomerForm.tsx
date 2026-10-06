@@ -152,7 +152,7 @@ const NewCustomerForm: React.FC<NewCustomerFormProps> = ({
         return;
       }
 
-      const newId = response?.data?.data?.id;
+      const newId = response?.data?.id;
       if (file && newId) {
         await uploadAttachment(newId, file);
       }

@@ -37,6 +37,7 @@ function Tiptap({
   return (
     <div className={cn(viewOnly ? '' : 'pt-10', 'relative')}>
       <EditorProvider
+        immediatelyRender={false}
         extensions={extensions}
         editable={!viewOnly}
         content={content}

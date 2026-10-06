@@ -8,19 +8,10 @@ import { Sidebar } from '@/components/nav/sidebar';
 import { AuthAppProvider } from '@/contexts/auth-app-context';
 import { SidebarProvider, useSidebar } from '@/contexts/sidebar-context';
 import { storeSignal } from '@/redux/store';
-import { Suspense, createContext, useState, useEffect } from 'react';
+import { Suspense, useState } from 'react';
 import { Provider } from 'react-redux';
 
-type Observer = {
-  type: string;
-  data: any;
-};
-type ObserverContextType = {
-  observer: Observer;
-  setObserver: Function;
-};
-
-export const ObserverContext = createContext<ObserverContextType | undefined>(undefined);
+import { ObserverContext, type Observer } from '@/contexts/observer.context';
 
 export default function AppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const [observer, setObserver] = useState<Observer>({

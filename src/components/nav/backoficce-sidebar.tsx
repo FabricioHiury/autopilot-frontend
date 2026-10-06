@@ -1,10 +1,9 @@
 'use client';
 
 import Image from 'next/image';
+import { AutoPilotLogo } from './AutoPilotLogo';
 import CustomerIcon from './icons/customer-icon';
 import HomeIcon from './icons/home-icon';
-import ServiceIcon from './icons/service-icon';
-import ConfigIcon from './icons/config-icon';
 import Link from 'next/link';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import ExitIcon from './icons/exit-icon';
@@ -12,10 +11,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import HelpIcon from './icons/help-icon';
 import AvatarUser from '../commons/avatar-user';
 import { profileImageUrl } from '@/lib/profile.utils';
-import PlansIcon from './icons/plans-icon';
 import { useAuthBackOffice } from '@/contexts/auth-backoffice-context';
 import { useSidebar } from '@/contexts/sidebar-context';
 import { AdminPermission } from '@/types/permissions';
+import { useBackofficePermissions } from '@/hooks/use-backoffice-permissions';
 
 const BACKOFFICE_MENU_ITEMS = [
   {
@@ -63,68 +62,32 @@ const BACKOFFICE_MENU_ITEMS = [
 ];
 
 export const BackofficeSidebar = () => {
-  const [user, setUser] = useState<any>(null);
-  const [permissions, setPermissoes] = useState<AdminPermission[]>([]);
+  const { permissions, isLoading, error, retry } = useBackofficePermissions();
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
-  const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
-  const { isCollapsed, toggleCollapsed } = useSidebar();
+  const { isCollapsed } = useSidebar();
   const router = useRouter();
   const authContext = useAuthBackOffice();
 
-  const hasPermissionCheck = (required: AdminPermission | AdminPermission[] | null): boolean => {
-    if (required === null) return true;
-    if (Array.isArray(required)) {
-      return required.some((p) => permissions.includes(p));
-    }
-    return permissions.includes(required);
-  };
+  const user = authContext.getUser();
 
   const visibleMenuItems = useMemo(() => {
-    if (!permissions) {
-      return [];
-    }
-
-    const filtered = BACKOFFICE_MENU_ITEMS.map((item) => {
-      const subItems =
-        item.subItems?.filter((sub) => {
-          const hasPermission = hasPermissionCheck(sub.permissionKey);
-          return hasPermission;
-        }) || [];
-      return { ...item, subItems };
-    }).filter((item) => {
-      const hasPermission =
-        hasPermissionCheck(item.permissionKey) || (item.subItems && item.subItems.length > 0);
-      return hasPermission;
-    });
-
-    return filtered;
+    const hasPermission = (required: AdminPermission | null) =>
+      required === null || permissions.includes(required);
+    return BACKOFFICE_MENU_ITEMS.map((item) => ({
+      ...item,
+      subItems: item.subItems?.filter((sub) => hasPermission(sub.permissionKey)) || [],
+    })).filter((item) => hasPermission(item.permissionKey) || item.subItems.length > 0);
   }, [permissions]);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const storedUser = localStorage.getItem('usuario-backoffice');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-        const access = await authContext.fetchPermissions();
-        if (access) {
-          setPermissoes(access.permissions);
-        }
-      }
-    };
-    fetchUserData();
-  }, [authContext]);
 
   const handleLogout = () => {
     authContext.logout();
     router.push('/backoffice/auth/login');
   };
 
-  if (!permissions || permissions.length === 0) {
-    return null;
-  }
-
   return (
     <nav
+      aria-label="Menu do backoffice"
+      aria-busy={isLoading}
       className={`h-full flex flex-col bg-[hsl(var(--secondary))] text-white transition-all duration-300 ${isCollapsed ? 'w-[4.5rem]' : 'w-[18.75rem]'}`}
     >
       <div className={`px-4 ${isCollapsed ? 'px-2' : 'px-4'}`}>
@@ -133,22 +96,10 @@ export const BackofficeSidebar = () => {
           className={`block mt-10 ${isCollapsed ? 'flex justify-center' : ''}`}
         >
           {isCollapsed ? (
-            <Image
-              src="/images/logo-simple.png"
-              alt="AutoPilot"
-              width={32}
-              height={32}
-              priority={true}
-            />
+            <AutoPilotLogo dark compact />
           ) : (
             <>
-              <Image
-                src="/images/logo_autopilot.svg"
-                alt="AutoPilot"
-                width={163}
-                height={33}
-                priority={true}
-              />
+              <AutoPilotLogo dark />
               <span className="font-normal text-xs">Seu sistema n1 em gestão veicular.</span>
             </>
           )}
@@ -156,6 +107,24 @@ export const BackofficeSidebar = () => {
       </div>
 
       <ul className="mt-16 flex-1 overflow-y-auto">
+        {isLoading && (
+          <li className="px-4 py-3 text-sm text-secondary-foreground" role="status">
+            {isCollapsed ? '…' : 'Carregando acessos…'}
+          </li>
+        )}
+        {error && (
+          <li className="px-4 py-3 text-sm text-secondary-foreground">
+            {!isCollapsed && <p role="alert">{error}</p>}
+            <button
+              onClick={retry}
+              className="mt-2 underline underline-offset-4"
+              aria-label="Tentar carregar acessos novamente"
+              title={error}
+            >
+              {isCollapsed ? '↻' : 'Tentar novamente'}
+            </button>
+          </li>
+        )}
         {visibleMenuItems.map((item) =>
           item.subItems && item.subItems.length > 0 ? (
             <SidebarItemExpanded
@@ -169,8 +138,6 @@ export const BackofficeSidebar = () => {
                 !isCollapsed && setExpandedMenu(isExpanded ? item.id : null)
               }
               isCollapsed={isCollapsed}
-              isHovered={hoveredMenu === item.id}
-              onHover={(hovered) => setHoveredMenu(hovered ? item.id : null)}
             />
           ) : (
             <SidebarItem
@@ -191,7 +158,10 @@ export const BackofficeSidebar = () => {
           className={`mt-4 flex gap-2 items-center ${isCollapsed ? 'justify-center' : 'justify-start'}`}
         >
           <div className="rounded-full font-semibold text-[1.125rem] flex items-center justify-center text-primary-foreground bg-[hsl(var(--primary))] relative">
-            <AvatarUser name={user ? user.name : ' '} src={user && profileImageUrl(user.id)} />
+            <AvatarUser
+              name={user ? user.name : ' '}
+              src={user ? profileImageUrl(user.id) : undefined}
+            />
             <span className="block bg-[#24AE6C] w-[.625rem] h-[.625rem] rounded-full absolute bottom-0.5 right-0"></span>
           </div>
           {!isCollapsed && (
@@ -238,8 +208,6 @@ interface SidebarItemExpandedProps extends SidebarItemProps {
     badge?: number;
     permissionKey?: AdminPermission;
   }[];
-  isHovered?: boolean;
-  onHover?: (hovered: boolean) => void;
 }
 
 const SidebarItemExpanded = ({
@@ -250,8 +218,6 @@ const SidebarItemExpanded = ({
   onChangeExpanded,
   items,
   isCollapsed = false,
-  isHovered = false,
-  onHover,
 }: SidebarItemExpandedProps) => {
   const [isExpanded, setIsExpanded] = useState(expanded);
   const pathname = usePathname();
@@ -274,14 +240,12 @@ const SidebarItemExpanded = ({
   };
 
   const handleMouseEnter = () => {
-    if (onHover) onHover(true);
     if (isCollapsed) {
       setShowTooltip(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (onHover) onHover(false);
     if (isCollapsed) {
       setShowTooltip(false);
     }

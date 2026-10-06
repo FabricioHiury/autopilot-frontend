@@ -63,7 +63,7 @@ export function ChartServiceOrigin() {
   const [data, setData] = useState<AgrupamentoDados>();
   const [loading, setLoading] = useState<boolean>(true);
   const [filtros, setFiltros] = useState<any>({
-    grouping: 'mensal',
+    grouping: 'monthly',
     period: {
       from: null,
       to: null,
@@ -79,11 +79,10 @@ export function ChartServiceOrigin() {
         dataEnd: filtros.period.to ? filtros.period.to.toISOString() : null,
       })}`,
     );
+    setLoading(false);
     if (error) {
       return toast.error(error.message);
     }
-    console.log(response.data);
-    setLoading(false);
     setData(response.data);
   }
 
@@ -111,19 +110,19 @@ export function ChartServiceOrigin() {
             options={[
               {
                 label: 'Ano',
-                value: 'anual',
+                value: 'annual',
               },
               {
                 label: 'Mês',
-                value: 'mensal',
+                value: 'monthly',
               },
               {
                 label: 'Semana',
-                value: 'semanal',
+                value: 'weekly',
               },
               {
                 label: 'Dia',
-                value: 'diario',
+                value: 'daily',
               },
             ]}
             value={filtros.grouping}
@@ -146,7 +145,7 @@ export function ChartServiceOrigin() {
         </div>
       </div>
 
-      {loading || !data ? (
+      {loading ? (
         <div className="flex justify-center items-center w-full p-3">
           <LoadingGlobal minH="min-h-[130px]" />
         </div>
@@ -156,23 +155,23 @@ export function ChartServiceOrigin() {
             <ChartContainer config={chartConfig} className="min-h-[16.25rem] h-[16.25rem] w-full">
               <LineChart
                 accessibilityLayer
-                data={data.data.map((obj, i) => {
+                data={(data?.data ?? []).map((obj, i) => {
                   const date = new Date(obj.data);
                   let name;
-                  if (filtros.grouping === 'mensal') {
+                  if (filtros.grouping === 'monthly') {
                     name = date.toLocaleString('pt-br', { month: 'long' });
                   }
-                  if (filtros.grouping === 'anual') {
+                  if (filtros.grouping === 'annual') {
                     name = date.toLocaleString('pt-br', { year: 'numeric' });
                   }
-                  if (filtros.grouping === 'diario') {
+                  if (filtros.grouping === 'daily') {
                     name = date.toLocaleString('pt-br', { day: 'numeric' });
                   }
-                  if (filtros.grouping === 'semanal') {
+                  if (filtros.grouping === 'weekly') {
                     const weekNumber = Math.ceil((date.getDate() - date.getDay()) / 7);
                     name = `Semana ${weekNumber}`;
                   }
-                  if (filtros.grouping === 'trimestral') {
+                  if (filtros.grouping === 'quarterly') {
                     const quarter = Math.floor((date.getMonth() + 3) / 3);
                     name = `Trimestre ${quarter}`;
                   }

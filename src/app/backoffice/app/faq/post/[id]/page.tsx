@@ -16,7 +16,7 @@ type FAQItem = {
   id: string;
   title: string;
   category: string;
-  status: 'publicado' | 'rascunho' | 'archived';
+  status: 'published' | 'draft';
   resumo: string;
   views: number;
   createdAt: string;

@@ -79,7 +79,7 @@ export default function RelatorioGeralAtendimentoVendas({
   const [segmentationStatus, setSegmentacaoStatus] = useState<
     { status: string; limit: number; color: string }[]
   >([]);
-  const [desempenhoVendas, setDesempenhoVendas] = useState<DailySalespersonSales | null>(null);
+  const [desempenhoVendas, setDesempenhoVendas] = useState<DailySalespersonSales>([]);
   const [desempenhoVendedorMesAnterior, setDesempenhoVendedorMesAnterior] = useState<
     { data: string; sales: number }[] | null
   >(null);

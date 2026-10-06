@@ -299,7 +299,7 @@ export default function Page() {
             <div className="h-5 justify-start items-start inline-flex">
               <div className="px-2 py-1 bg-[#586e9d] rounded-xl justify-center items-center gap-2.5 flex">
                 <div className="text-white text-xs font-semibold font-['BR Sonoma'] leading-none capitalize">
-                  {ticket.status}
+                  {supportLabel(ticket.status)}
                 </div>
               </div>
             </div>
@@ -314,7 +314,7 @@ export default function Page() {
                 <div className="justify-start items-start flex">
                   <div className="px-2 py-0.5 bg-[#e3ebf3] rounded-xl justify-center items-center gap-0.5 flex">
                     <div className="text-[#434d56] text-xs font-semibold font-['BR Sonoma'] leading-none capitalize">
-                      {ticket.category}
+                      {supportLabel(ticket.category)}
                     </div>
                   </div>
                 </div>

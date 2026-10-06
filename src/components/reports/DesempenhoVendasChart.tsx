@@ -14,7 +14,7 @@ import {
 import { profileImageUrl } from '@/lib/profile.utils';
 
 export default function DesempenhoVendasChart({
-  data = [],
+  data: rawData = [],
   yourSellerId,
   previousSeries,
   height = 360,
@@ -22,7 +22,9 @@ export default function DesempenhoVendasChart({
   initialMonth,
   initialYear,
 }: any) {
-  const [year, setAno] = useState(initialYear || 2025);
+  const data = useMemo(() => (Array.isArray(rawData) ? rawData : []), [rawData]);
+  const currentYear = new Date().getFullYear();
+  const [year, setAno] = useState(initialYear || currentYear);
   const [period, setPeriodo] = useState('Mês');
   const [month, setMes] = useState<number>(Number(initialMonth || new Date().getMonth() + 1));
 
@@ -30,7 +32,7 @@ export default function DesempenhoVendasChart({
     if (!Array.isArray(data) || data.length === 0) return null as number | null;
     let maxMes: number | null = null;
     data.forEach((salesperson: any) => {
-      salesperson.seriesSales.forEach((cur: any) => {
+      (salesperson.seriesSales ?? []).forEach((cur: any) => {
         const [y, m] = cur.data.split('-').map(Number);
         if (y === year) {
           maxMes = maxMes == null ? m : Math.max(maxMes, m);
@@ -63,7 +65,7 @@ export default function DesempenhoVendasChart({
     data.forEach((salesperson: any) => {
       const vendasPorDia: Record<number, number> = {};
       let ultimoDia: number | null = null;
-      salesperson.seriesSales.forEach((cur: any) => {
+      (salesperson.seriesSales ?? []).forEach((cur: any) => {
         const [y, m, d] = cur.data.split('-').map(Number);
         if (y === year && m === month) {
           vendasPorDia[d] = (vendasPorDia[d] || 0) + cur.sales;
@@ -185,8 +187,9 @@ export default function DesempenhoVendasChart({
             onChange={(e) => setAno(Number(e.target.value))}
             className="w-full sm:w-auto border border-gray-200 rounded-lg px-3 py-2 text-gray-700 text-sm sm:text-base"
           >
-            <option>2025</option>
-            <option>2024</option>
+            {Array.from(new Set([year, currentYear, currentYear - 1, currentYear - 2])).map((value) => (
+              <option key={value} value={value}>{value}</option>
+            ))}
           </select>
         </div>
       </div>

@@ -13,7 +13,6 @@ class HandleDate {
    * @returns {string} - A data formatada como uma string.
    */
   formatDate = (date: Date, dateFormat: string = 'dd/MM/yyyy'): string => {
-    date.setDate(date.getDate() + 1);
     return format(new Date(date), dateFormat, { locale: ptBR });
   };
 
@@ -58,12 +57,11 @@ class HandleDate {
    * @returns {string} - A data formatada, convertida a partir da string ISO.
    */
   formatISODate = (isoDate: string, dateFormat: string = 'dd/MM/yyyy') => {
-    if (isoDate.includes('T00:00:00.000Z')) {
-      const tmpDate = new Date(isoDate);
-      tmpDate.setDate(tmpDate.getDate() + 1);
-      isoDate = tmpDate.toISOString();
-    }
-    return format(parseISO(isoDate), dateFormat, { locale: ptBR });
+    // Date-only fields are persisted at UTC midnight; preserve their calendar date.
+    const calendarDate = /T00:00:00(?:\.000)?Z$/.test(isoDate)
+      ? isoDate.slice(0, 10)
+      : isoDate;
+    return format(parseISO(calendarDate), dateFormat, { locale: ptBR });
   };
 }
 

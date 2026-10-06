@@ -103,7 +103,7 @@ export const enderecoSchema = z
 export const contatoSchema = z
   .object({
     id: z.string(),
-    idContato: z.string().optional(),
+    idContact: z.string().optional(),
     site: z.string().nullable(),
     name: z.string({ message: 'Insira o seu nome de contato' }),
     mobile: telefoneSchema,
@@ -116,7 +116,8 @@ export const contatoSchema = z
     const { id, ...form } = value;
     return {
       ...form,
-      idContato: id,
+      idContact: id || undefined,
+      site: form.site ?? undefined,
     };
   });
 

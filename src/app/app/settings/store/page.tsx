@@ -553,7 +553,16 @@ export default function ConfigDataStorePage() {
       return toast.error(error.message);
     }
     setLoading(false);
-    setStore(response.data);
+    const loaded: Store = response.data;
+    setStore({
+      ...loaded,
+      storeAddress: loaded.storeAddress ?? [],
+      storeContact: loaded.storeContact?.length ? loaded.storeContact : [{
+        id: '', storeId: '', name: loaded.storeOwner?.user.name ?? '',
+        email: loaded.storeOwner?.user.email ?? '', mobile: '', phone: '', site: '',
+        createdAt: '', updatedAt: '',
+      }],
+    });
   }
 
   async function saveContact() {
@@ -570,6 +579,7 @@ export default function ConfigDataStorePage() {
       return toast.error(error.message);
     }
 
+    setContact(response.data);
     return toast.success('Contato salvo com sucesso');
   }
 
