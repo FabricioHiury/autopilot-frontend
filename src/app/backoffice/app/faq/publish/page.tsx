@@ -19,26 +19,21 @@ import { apiAdmin } from '@/utils/classes/api';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
+import { faqSchema } from '@/lib/faq-schema';
 
 const categorias = [
-  { label: 'Anúncios', value: 'anuncios' },
-  { label: 'Contas', value: 'contas' },
-  { label: 'Estoque', value: 'estoque' },
+  { label: 'Integração', value: 'Integration' },
+  { label: 'Chat', value: 'Chat' },
+  { label: 'Negociações', value: 'Deals' },
+  { label: 'Contas', value: 'Account' },
+  { label: 'Outros', value: 'Other' },
 ];
 
-const schema = z
-  .object({
-    title: z.string(),
-    category: z.string().min(1, 'A categoria não pode estar vazia'),
-    status: z.string().min(1, 'Insira o status'),
-    tags: z.array(z.string()).min(1, 'Escolha pelo menos uma tag'),
-    content: z.string(),
-    id: z.string().optional(),
-  })
+const schema = faqSchema
   .transform(async (obj, ctx) => {
     const post = async () => {
-      delete obj.id;
-      const [r, e] = await apiAdmin.post('/faq', obj);
+      const { id, ...payload } = obj;
+      const [r, e] = await apiAdmin.post('/faq', payload);
       if (e) {
         ctx.addIssue({
           code: 'custom',
@@ -78,7 +73,7 @@ export default function PagePublicar() {
     status: '',
     category: '',
     content: '',
-    id: -1,
+    id: '',
   });
 
   const [loadingEdit, setLoadingEdit] = useState<boolean>(true);
@@ -110,21 +105,21 @@ export default function PagePublicar() {
     setLoadingR(true);
     const parse = await schema.safeParseAsync({
       ...form,
-      status: 'rascunho',
+      status: 'draft',
     });
     setLoadingR(false);
     if (!parse.success) {
       return toast.error(parse.error.issues[0].message);
     }
     setCurrentFaq(parse.data);
-    if (form.id === -1)
+    if (form.id === '')
       setForm((old) => {
         return {
-          id: -1,
+          id: '',
           title: '',
           tags: [],
           status: '',
-          category: 'asdas',
+          category: '',
           content: '',
         };
       });
@@ -135,17 +130,17 @@ export default function PagePublicar() {
     setLoading(true);
     const parse = await schema.safeParseAsync({
       ...form,
-      status: 'publicado',
+      status: 'published',
     });
     setLoading(false);
     if (!parse.success) {
       return toast.error(parse.error.issues[0].message);
     }
     setCurrentFaq(parse.data);
-    if (form.id === -1)
+    if (form.id === '')
       setForm((old) => {
         return {
-          id: -1,
+          id: '',
           title: '',
           tags: [],
           status: '',

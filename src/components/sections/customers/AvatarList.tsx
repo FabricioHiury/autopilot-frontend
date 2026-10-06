@@ -1,6 +1,5 @@
 import AvatarMore from '@/components/commons/avatar-mais';
 import AvatarUser from '@/components/commons/avatar-user';
-import { profileImageUrl } from '@/lib/profile.utils';
 import { UserType } from '@/types/customer';
 
 interface AvatarListProps {
@@ -14,7 +13,7 @@ const AvatarList: React.FC<AvatarListProps> = ({ users, total = 1, size = 4 }) =
     <ul className="flex flex-row gap-0 items-center -space-x-3">
       {users.slice(0, size).map((user, index) => (
         <li key={index}>
-          <AvatarUser name={user.name} src={user.id ? profileImageUrl(user.id) : ''} />
+          <AvatarUser name={user.name} src={user.icon ?? ''} />
         </li>
       ))}
 

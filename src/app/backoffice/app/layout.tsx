@@ -6,18 +6,9 @@ import { MobileTopBar } from '@/components/nav/mobile-topbar';
 import SucessMessage from '@/components/sections/ModalInfo';
 import SucessMessageMiddle from '@/components/sections/dashboard/ModalInfoMiddel';
 import { SidebarProvider, useSidebar } from '@/contexts/sidebar-context';
-import { Suspense, createContext, useState } from 'react';
+import { Suspense, useState } from 'react';
 
-type Observer = {
-  type: string;
-  data: any;
-};
-type ObserverContextType = {
-  observer: Observer;
-  setObserver: Function;
-};
-
-export const ObserverContext = createContext<ObserverContextType | undefined>(undefined);
+import { ObserverContext, type Observer } from '@/contexts/observer.context';
 
 export default function BackofficeAppLayout({
   children,
@@ -76,7 +67,7 @@ function BackofficeAppContent({ children }: { children: React.ReactNode }) {
       </button>
 
       <div className="block md:hidden">
-        <MobileTopBar />
+        <MobileTopBar dashboardHref="/backoffice/app/dashboard" />
       </div>
 
       <div className="block md:hidden z-50">

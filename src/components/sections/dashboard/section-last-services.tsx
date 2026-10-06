@@ -123,8 +123,8 @@ export default function SectionLastServices() {
         )}
         {!loading && data && (
           <div className="p-4 w-full flex gap-4 overflow-x-auto min-h-[60px] scroll-padrao">
-            {data.deals.map((obj, i) => {
-              return <CardServiceMini deal={obj} />;
+            {data.deals.map((obj) => {
+              return <CardServiceMini key={obj.id} deal={obj} />;
             })}
             {data.deals.length === 0 && (
               <p className="text-neutral-700 text-[12px] gap-1  flex items-center ">

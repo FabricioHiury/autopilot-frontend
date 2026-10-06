@@ -428,7 +428,7 @@ export class DealService {
   }): Promise<ApiResult<DealAttachmentList>> {
     try {
       const { data: response } = await apiClient.get(
-        `/deals/${params.dealId}/attachments?itemsPerPage=${params.limit}&page=${params.page}`,
+        `/deals/${params.dealId}/attachments?itemsByPage=${params.limit}&page=${params.page}`,
       );
       return [response.data as DealAttachmentList, null];
     } catch (error) {
@@ -823,9 +823,9 @@ export class DealService {
         params: {
           userId,
           description,
-          startDateInicio,
-          startDateFim,
-          ativas,
+          startDateStart: startDateInicio,
+          startDateEnd: startDateFim,
+          active: ativas,
           page: Number(page),
           itemsPage: Number(itemsPage),
         },

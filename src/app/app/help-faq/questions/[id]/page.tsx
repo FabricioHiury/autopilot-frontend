@@ -1,7 +1,7 @@
 'use client';
 
 import Loading from '@/components/commons/estados/LoadingGlobal';
-import LexicalView from '@/components/lex/LexicalView';
+import Tiptap from '@/components/tiptap/TipTapEditor';
 import ShareIcon from '@/components/sections/deals/icons/icon-compartilhar';
 import GoBack from '@/components/sections/go-back-page';
 import time from '@/utils/classes/format/time';
@@ -17,7 +17,7 @@ type FAQItem = {
   id: string;
   title: string;
   category: string;
-  status: 'publicado' | 'rascunho' | 'archived';
+  status: 'published' | 'draft';
   resumo: string;
   views: number;
   createdAt: string;
@@ -153,7 +153,7 @@ function getReadingTime(value: string): string {
 }
 
 function Content({ item, loading }: { item?: FAQItem; loading: boolean }) {
-  const [text, setText] = useState('');
+
 
   const handleShare = useCallback(async () => {
     try {
@@ -194,7 +194,7 @@ function Content({ item, loading }: { item?: FAQItem; loading: boolean }) {
   return (
     <>
       <div className="flex gap-3 font-semibold text-[#434D56] items-center">
-        <Link href="/backoffice/app/faq" className="text-[#434D56] hover:underline">
+        <Link href="/app/help-faq/questions" className="text-[#434D56] hover:underline">
           Dúvidas Frequentes
         </Link>
         <span className="text-[#434D56]">{` > `}</span>
@@ -206,7 +206,7 @@ function Content({ item, loading }: { item?: FAQItem; loading: boolean }) {
           {item.category}
         </div>
         <DotSeparator />
-        <span className="text-[#434D56]">{getReadingTime(text)}</span>
+        <span className="text-[#434D56]">{getReadingTime(item.content.replace(/<[^>]*>/g, ''))}</span>
         <DotSeparator />
         <span className="text-[#434D56] mr-2">
           {time.formatRelativeDate(new Date(item.updatedAt))}
@@ -219,7 +219,7 @@ function Content({ item, loading }: { item?: FAQItem; loading: boolean }) {
       <div className="flex flex-col gap-0 mt-8">
         <h1 className="text-[36px] text-[#24292E] font-semibold leading-6">{item.title}</h1>
         <div className="w-full h-[1px] bg-slate-300 my-7" />
-        <LexicalView setText={setText} editorState={item.content} />
+        <Tiptap key={item.id} content={item.content} viewOnly />
       </div>
     </>
   );

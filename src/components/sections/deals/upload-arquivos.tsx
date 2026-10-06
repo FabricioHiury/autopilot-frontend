@@ -72,7 +72,7 @@ export default function UploadArquivosAtandimento({ dealId }: UploadArquivosAtan
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [excluindo, setExcluindo] = useState<Set<string>>(new Set());
-  const [totalPages, setTotalPaginas] = useState<number>(2);
+  const [totalPages, setTotalPaginas] = useState<number>(0);
   const [page, setPagina] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
   const apiApp = new AppServices();
@@ -183,8 +183,6 @@ export default function UploadArquivosAtandimento({ dealId }: UploadArquivosAtan
       page,
       limit: 4,
     });
-
-    console.log(data);
 
     setLoading(false);
     if (error) {
@@ -318,16 +316,16 @@ export default function UploadArquivosAtandimento({ dealId }: UploadArquivosAtan
 
       <div className="w-full flex items-center justify-between text-sm">
         <span className="text-[#7F8999]">
-          Mostrando {page} de {totalPages}
+          {totalPages === 0 ? 'Nenhum anexo' : `Página ${page} de ${totalPages}`}
         </span>
         <div className="flex items-center gap-2">
-          <button onClick={prevPage}>
+          <button onClick={prevPage} disabled={page <= 1}>
             <IconArrowNext
               color="#7F8999"
               className="rotate-180 transition-colors hover:stroke-red-600"
             />
           </button>
-          <button onClick={nextPage}>
+          <button onClick={nextPage} disabled={page >= totalPages}>
             <IconArrowNext color="#7F8999" className="transition-colors hover:stroke-red-600" />
           </button>
         </div>

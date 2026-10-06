@@ -46,7 +46,7 @@ export default function PageAcessos() {
       to: null,
     },
     search: '',
-    status: 'todos',
+    status: 'all',
   });
 
   const [popVisible, setPopVisible] = useState<boolean>(false);
@@ -65,11 +65,11 @@ export default function PageAcessos() {
     const [response, error] = await apiAdmin.get(
       `/backoffice/admin/users${apiAdmin.query.searchInMemoryQuerys({
         page: page,
-        itemsPerPage: limit,
+        itemsByPage: limit,
         search: filtros.search,
         status: filtros.status,
-        dataStart: filtros.period.from ? filtros.period.from.toISOString() : null,
-        dataEnd: filtros.period.to ? filtros.period.to.toISOString() : null,
+        dataInitial: filtros.period.from ? filtros.period.from.toISOString() : null,
+        dataFinal: filtros.period.to ? filtros.period.to.toISOString() : null,
       })}`,
     );
     setLoading(false);
@@ -190,7 +190,7 @@ function Header({
     {
       icon: '/icons/todos.svg',
       label: 'Todos',
-      value: 'todos',
+      value: 'all',
       selected: true,
     },
     {

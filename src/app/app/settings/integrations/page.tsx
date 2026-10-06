@@ -208,7 +208,7 @@ export default function IntegracoesPage() {
         receivedDeals: integration.receivedDeals ?? 0,
         configured:
           integration.configured ??
-          (integration.status !== 'erro' && integration.status !== 'nao_configurado'),
+          !['not_configured', 'nao_configurado'].includes(integration.status),
       }));
 
       setListIntegrations(enrichedData);
@@ -397,12 +397,9 @@ function CardIntegration({
     message: string;
     onConfirm: () => void;
   } | null>(null);
-  const isActive =
-    integration.status !== 'erro' &&
-    integration.status !== 'inactive' &&
-    integration.status !== 'nao_configurado';
+  const isActive = integration.status === 'ok';
   const isConfigured = integration.configured !== false;
-  const hasError = integration.status === 'erro' || !!integration.error;
+  const hasError = ['error', 'erro'].includes(integration.status) || !!integration.error;
 
   const getStatusInfo = () => {
     if (hasError) {

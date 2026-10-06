@@ -111,8 +111,8 @@ export const dealSchema = z
 
     //Para criar cliente novo
     if (!schema.vincularCliente) {
-      const { customerId, vincularCliente, ...form } = schema;
-      return form;
+      const { customerId, vincularCliente, nomeCompleto, ...form } = schema;
+      return { ...form, nameComplete: nomeCompleto };
     }
 
     //Caso já tenha um cliente cadastrado, enviamos só o id

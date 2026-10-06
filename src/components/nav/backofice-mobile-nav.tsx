@@ -2,16 +2,12 @@
 
 import Link from 'next/link';
 import HomeIcon from './icons/home-icon';
-import ServiceIcon from './icons/service-icon';
-import ChatIcon from './icons/chat-icon';
 import CustomerIcon from './icons/customer-icon';
-import ConfigIcon from './icons/config-icon';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import HelpIcon from './icons/help-icon';
-import PlansIcon from './icons/plans-icon';
-import { useAuthBackOffice } from '@/contexts/auth-backoffice-context';
 import { AdminPermission } from '@/types/permissions';
+import { useBackofficePermissions } from '@/hooks/use-backoffice-permissions';
 
 const BACKOFFICE_MOBILE_MENU_ITEMS = [
   {
@@ -45,35 +41,34 @@ const BACKOFFICE_MOBILE_MENU_ITEMS = [
 ];
 
 export const BackofficeMobileNav = () => {
-  const [permissions, setPermissoes] = useState<AdminPermission[]>([]);
-  const authContext = useAuthBackOffice();
-
-  const temPermissao = (required: AdminPermission | null): boolean => {
-    if (required === null) return true;
-    return permissions.includes(required);
-  };
-
-  const visibleMenuItems = useMemo(() => {
-    if (!permissions) return [];
-    return BACKOFFICE_MOBILE_MENU_ITEMS.filter((item) => temPermissao(item.permissionKey));
-  }, [permissions]);
-
-  useEffect(() => {
-    const fetchPermissions = async () => {
-      const access = await authContext.fetchPermissions();
-      if (access) {
-        setPermissoes(access.permissions);
-      }
-    };
-    fetchPermissions();
-  }, [authContext]);
-
-  if (!permissions || permissions.length === 0 || visibleMenuItems.length === 0) {
-    return null; // Não renderiza o mobile nav se não há permissões
-  }
+  const { permissions, isLoading, error, retry } = useBackofficePermissions();
+  const visibleMenuItems = useMemo(
+    () =>
+      BACKOFFICE_MOBILE_MENU_ITEMS.filter(
+        (item) => item.permissionKey === null || permissions.includes(item.permissionKey),
+      ),
+    [permissions],
+  );
 
   return (
-    <nav className="text-secondary-foreground z-10 fixed bottom-0 left-0 w-full bg-[hsl(var(--secondary))] px-4 py-6 rounded-t-2xl">
+    <nav
+      aria-label="Menu móvel do backoffice"
+      aria-busy={isLoading}
+      className="text-secondary-foreground z-10 fixed bottom-0 left-0 w-full bg-[hsl(var(--secondary))] px-4 py-6 rounded-t-2xl"
+    >
+      {isLoading && (
+        <p role="status" className="mb-3 text-sm">
+          Carregando acessos…
+        </p>
+      )}
+      {error && (
+        <div className="mb-3 text-sm">
+          <p role="alert">{error}</p>
+          <button onClick={retry} className="mt-1 underline underline-offset-4">
+            Tentar novamente
+          </button>
+        </div>
+      )}
       <ul className="flex items-center justify-between gap-6">
         {visibleMenuItems.map((item) => (
           <MobileNavItem key={item.id} href={item.href} title={item.title} icon={item.icon} />

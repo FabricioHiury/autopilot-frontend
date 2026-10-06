@@ -29,12 +29,9 @@ export default function CustomerLayout({ children }: Readonly<{ children: React.
   function closeModal() {
     setIsModalOpen(false);
 
-    setTimeout(() => {
-      setObserver({
-        type: '',
-        data: undefined,
-      });
-    }, 0);
+    setObserver((current: typeof observer) =>
+      current.type.startsWith('abrirPopCliente') ? { type: '', data: undefined } : current,
+    );
   }
 
   return (
@@ -53,7 +50,6 @@ export default function CustomerLayout({ children }: Readonly<{ children: React.
             editing={isEditing}
             data={customerData}
             onExitPop={closeModal}
-            onNewCustomer={closeModal}
           />
         </SideModal>
       )}

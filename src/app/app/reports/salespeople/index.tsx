@@ -106,7 +106,7 @@ export default function RelatorioAtendimentosPorVendedor({
       }
     } catch (err) {
       console.error('Erro ao carregar dados do vendedor:', err);
-      throw new Error('Erro ao carregar dados do vendedor');
+      setError('Erro ao carregar dados do vendedor');
     }
   };
 
@@ -172,7 +172,7 @@ export default function RelatorioAtendimentosPorVendedor({
   }
 
   if (error || !dadosRelatorio) {
-    return <NoData label={error || 'Não foi possível carregar os dados do vendedor'} />;
+    return <NoData label={error || 'Nenhum vendedor com dados no período selecionado'} />;
   }
   const totalLeads = dadosRelatorio?.totalLeads || 0;
   const segQualificacao = dadosRelatorio.segmentationTemperatureQualification;

@@ -2,19 +2,10 @@
 import { TenantLogo } from './TenantLogo';
 
 import Link from 'next/link';
-import HomeIcon from './icons/home-icon';
-import ServiceIcon from './icons/service-icon';
-import ChatIcon from './icons/chat-icon';
-import CustomerIcon from './icons/customer-icon';
-import ConfigIcon from './icons/config-icon';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-
-export const MobileTopBar = () => {
+export const MobileTopBar = ({ dashboardHref = '/app/dashboard' }: { dashboardHref?: string }) => {
   return (
     <nav className="text-secondary-foreground z-10 sticky top-0 left-0 w-full bg-[hsl(var(--secondary))] px-4 py-5 flex items-center justify-between">
-      <Link href={'/app/dashboard'} className="flex flex-col gap-0">
+      <Link href={dashboardHref} className="flex flex-col gap-0">
         <TenantLogo dark />
         <span className="font-normal text-[0.6rem]">Seu sistema n1 em gestão veicular.</span>
       </Link>
