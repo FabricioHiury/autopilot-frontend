@@ -4,7 +4,7 @@
 
 This frontend uses Next.js 14 App Router, React 18, and TypeScript. Routes and layouts live in `src/app/`: `/auth` handles login, `/app` serves store users, and `/backoffice` serves AutoPilot administrators. Reusable UI lives in `src/components/`; shared state lives in `src/contexts/`, `src/hooks/`, and `src/redux/`.
 
-Keep REST contracts in `src/services/`, models in `src/types/`, and helpers in `src/lib/` or `src/utils/`. Static images, icons, fonts, and WASM assets live in `public/`. Tests live in `src/test/`; integration guidance lives in `docs/BACKEND_ALIGNMENT.md`.
+Keep REST contracts in `src/services/`, models in `src/types/`, and helpers in `src/lib/` or `src/utils/`. Static images, icons, fonts, and WASM assets live in `public/`. Tests live in `src/test/`. Follow the backend and microservice READMEs for integrated development.
 
 ## Build, Test, and Development Commands
 
