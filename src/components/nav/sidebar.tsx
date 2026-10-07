@@ -1,4 +1,6 @@
 'use client';
+
+import { roleLabel } from '@/lib/presentation-labels';
 import { TenantLogo } from './TenantLogo';
 
 import Image from 'next/image';
@@ -40,7 +42,7 @@ const MENU_ITEMS = [
       },
       {
         id: 'chat',
-        label: 'Chat',
+        label: 'Conversa',
         href: '/app/deals/chat',
         permissionKey: StorePermission.STORE_VIEW_CHAT,
       },
@@ -77,13 +79,13 @@ const MENU_ITEMS = [
       },
       {
         id: 'tickets',
-        label: 'Tickets de ajuda',
+        label: 'Chamados de ajuda',
         href: '/app/help-faq/tickets',
         permissionKey: null,
       },
       {
         id: 'novo-ticket',
-        label: 'Novo Ticket',
+        label: 'Novo Chamado',
         href: '/app/help-faq/new-ticket',
         permissionKey: null,
       },
@@ -271,7 +273,9 @@ export const Sidebar = () => {
                   {user && user.name}
                 </span>
 
-                <span className="text-sm capitalize truncate">{user && user.profile}</span>
+                <span className="text-sm capitalize truncate">
+                  {user && roleLabel(user.profile)}
+                </span>
 
                 <span className="text-sm capitalize whitespace-normal break-words">
                   Loja: {user && user.companyName}

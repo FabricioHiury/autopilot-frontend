@@ -308,12 +308,12 @@ const ColumnsContainer = ({
       const destinationStage = prevCols[newIndex].stage;
 
       if (originalItem.data.stage === DealStatus.CHAT && destinationStage !== DealStatus.PRE_DEAL) {
-        toast.error('Um chat só pode ser movido para a etapa de Pré-atendimento.');
+        toast.error('Um conversa só pode ser movido para a etapa de Pré-atendimento.');
         return prevCols;
       }
 
       if (originalItem.data.stage !== DealStatus.CHAT && destinationStage === DealStatus.CHAT) {
-        toast.error('Este atendimento não pode voltar para a coluna Chat.');
+        toast.error('Este atendimento não pode voltar para a coluna Conversa.');
         return prevCols;
       }
 

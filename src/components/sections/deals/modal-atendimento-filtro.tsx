@@ -1,4 +1,5 @@
 'use client';
+import { tagLabel } from '@/lib/presentation-labels';
 
 import { useCallback, useEffect, useState } from 'react';
 import { AppServices } from '@/services/app.services';
@@ -399,7 +400,7 @@ export function ModalAtendimentoFiltro({ value, onFilter }: ModalAtendimentoFilt
                       color: item.color || '#485B80',
                     }}
                   >
-                    {item.name}
+                    {tagLabel(item.name)}
                   </button>
                 ))}
             </div>
@@ -475,7 +476,7 @@ export function ModalAtendimentoFiltro({ value, onFilter }: ModalAtendimentoFilt
                   idsTags.map((tagId) => (
                     <ItemSelectedFilter
                       key={tagId}
-                      label={tags.find((t) => t.id === tagId)?.name || 'Etiqueta'}
+                      label={tagLabel(tags.find((t) => t.id === tagId)?.name) || 'Etiqueta'}
                       onRemove={() => {
                         const next = idsTags.filter((id) => id !== tagId);
                         setIdsTags(next);

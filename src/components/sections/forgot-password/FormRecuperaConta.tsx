@@ -46,7 +46,7 @@ function FormRecuperaConta() {
     () => (
       <ButtonBlueDefault
         onClick={handleSubmit}
-        label={isLoading ? 'Processando requisição...' : 'Solicitar link de redefinição'}
+        label={isLoading ? 'Processando requisição...' : 'Solicitar endereço de redefinição'}
         loading={isLoading}
       />
     ),

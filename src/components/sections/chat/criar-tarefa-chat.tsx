@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 import toast from 'react-hot-toast';
 
 import { TextareaComLabel } from '@/components/commons/inputs/textarea-com-label';

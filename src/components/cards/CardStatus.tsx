@@ -10,7 +10,7 @@ export default function CardStatus({ status }: { status: boolean }) {
             status ? 'bg-green-600' : 'bg-red-600',
           )}
         ></div>
-        {status ? 'active' : 'inactive'}
+        {status ? 'Ativo' : 'Inativo'}
       </div>
     </>
   );

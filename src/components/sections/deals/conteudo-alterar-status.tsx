@@ -1,4 +1,5 @@
 'use client';
+import { MOTIVOS_LABEL, SUBMOTIVOS_LABEL, DealLossSubReason } from '@/types/deal-loss';
 import SelectComLabel from '@/components/commons/inputs/select-com-label';
 import { DealStatus, DealStatusLabel } from '@/types/deal-status';
 import {
@@ -65,75 +66,7 @@ export default function ConteudoAlterarStatus({
   const [submotivoPerda, setSubmotivoPerda] = useState<string>('');
   const api = new AppServices();
 
-  const MOTIVOS_LABEL: Record<DealLossReason, string> = {
-    financialCredit: 'Financeiro / Crédito',
-    proposalValuation: 'Proposta / Avaliação',
-    inventoryProduct: 'Estoque / Produto',
-    withoutResult: 'Sem Retorno',
-    competitionOtherStore: 'Concorrência / Outra Loja',
-    interestIntent: 'Interesse / Intenção',
-    otherReasons: 'Outros Motivos',
-  };
-
-  const SUBMOTIVOS_LABEL: Record<string, string> = {
-    financiamentoNaoAprovado: 'Financiamento não aprovado',
-    scoreCreditoInsuficiente: 'Score de crédito insuficiente',
-    entradaMuitoBaixa: 'Entrada muito baixa',
-    valorParcelaIncompativelRenda: 'Parcela incompatível com a renda',
-    clienteSemCreditoDisponivel: 'Sem crédito disponível',
-    condicaoFinanciamentoNaoAceita: 'Condição de financiamento não aceita',
-    clienteDesistiuAposReprovacao: 'Cliente desistiu após reprovação',
-    bancoRecusouProposta: 'Banco recusou proposta',
-    clienteNaoQuisInformarDadosCredito: 'Não quis informar dados de crédito',
-    clienteNaoGostouAvaliacao: 'Não gostou da avaliação',
-    avaliacaoAbaixoEsperado: 'Avaliação abaixo do esperado',
-    lojaNaoAceitouValorTroca: 'Loja não aceitou o valor de troca',
-    valorPropostaAbaixoEsperado: 'Proposta abaixo do esperado',
-    divergenciaValoresNegociacao: 'Divergência de valores',
-    clienteAchouPrecoAlto: 'Achou o preço alto',
-    pedidoDescontoAlemPermitido: 'Pediu desconto além do permitido',
-    semVeiculoInteresseEstoque: 'Sem veículo de interesse no estoque',
-    modeloDesejadoNaoTrabalhadoLoja: 'Modelo não trabalhado na loja',
-    corVersaoIndisponivel: 'Cor/versão indisponível',
-    veiculoFoiVendidoAntesNegociacao: 'Veículo foi vendido antes',
-    veiculoReservadoOutroCliente: 'Veículo reservado para outro cliente',
-    veiculoAguardandoPreparacao: 'Veículo aguardando preparação',
-    documentacaoPendente: 'Documentação pendente',
-    veiculoTrocaNaoInteressa: 'Veículo de troca não interessa',
-    clienteNaoRespondeu: 'Cliente não respondeu',
-    clienteNaoRetornouAposProposta: 'Cliente não retornou após proposta',
-    clienteBloqueouContato: 'Cliente bloqueou contato',
-    dadosContatoIncorretos: 'Dados de contato incorretos',
-    telefoneWhatsappInvalido: 'Telefone/WhatsApp inválido',
-    clienteDisseRetornariaNaoRetornou: 'Disse que retornaria e não retornou',
-    clienteIgnorouMensagens: 'Cliente ignorou mensagens',
-    clienteSumiuAposConversaInicial: 'Cliente sumiu após conversa inicial',
-    clienteNegociouOutraLoja: 'Cliente negociou em outra loja',
-    clienteJaComprouOutroVeiculo: 'Cliente já comprou outro veículo',
-    recebeuPropostaMelhorConcorrencia: 'Recebeu proposta melhor',
-    escolheuOutroModeloMarca: 'Escolheu outro modelo/marca',
-    preferiuConcessionaria: 'Preferiu concessionária',
-    comprouParticular: 'Comprou particular',
-    fechouOutraCidade: 'Fechou em outra cidade',
-    clienteDesistiuNegociacao: 'Cliente desistiu da negociação',
-    mudouIdeiaAposConversa: 'Mudou de ideia após conversa',
-    clienteAdiouCompra: 'Cliente adiou a compra',
-    vaiEsperarNovoModelo: 'Vai esperar novo modelo',
-    vaiComprarProximoMes: 'Vai comprar no próximo mês',
-    vaiManterCarroAtual: 'Vai manter o carro atual',
-    timingForaMomentoCompra: 'Fora do momento de compra',
-    solicitouPausaTemporaria: 'Solicitou pausa temporária',
-    clienteApenasPesquisando: 'Cliente apenas pesquisando',
-    clienteNaoVeioLoja: 'Cliente não veio à loja',
-    moraLongeInviavelDeslocamento: 'Mora longe / inviável deslocamento',
-    ficouDoenteImprevistosPessoal: 'Ficou doente / imprevisto pessoal',
-    atendimentoDuplicado: 'Atendimento duplicado',
-    clienteAtendidoOutroVendedor: 'Atendido por outro vendedor',
-    clienteCarteiraRelacionamentoDireto: 'Carteira de relacionamento direto',
-    outroMotivo: 'Outro motivo',
-  };
-
-  const mapaSub = SUBMOTIVOS_POR_MOTIVO as Record<string, string[]>;
+  const mapaSub = SUBMOTIVOS_POR_MOTIVO as Record<string, DealLossSubReason[]>;
   const submotivosDisponiveis = motivoPerda ? mapaSub[motivoPerda] || [] : [];
 
   const toEnumValue = (val: unknown): DealLossReason | '' => {
@@ -179,7 +112,7 @@ export default function ConteudoAlterarStatus({
     }
 
     const dadosParaValidacao = {
-      title: 'Alteração de Status',
+      title: 'Alteração de Situação',
       descriptionDeal: '',
       vincularCliente: true,
       note,
@@ -323,19 +256,19 @@ export default function ConteudoAlterarStatus({
         <div className="flex items-center gap-2 pb-2">
           <TemperaturaOption
             onClick={() => setTemperatura('HOT')}
-            label="HOT"
+            label="Quente"
             icon={<IconQuente />}
             active={temperature === 'HOT'}
           />
           <TemperaturaOption
             onClick={() => setTemperatura('WARM')}
-            label="WARM"
+            label="Morno"
             icon={<IconMorno />}
             active={temperature === 'WARM'}
           />
           <TemperaturaOption
             onClick={() => setTemperatura('COLD')}
-            label="COLD"
+            label="Frio"
             icon={<IconFrio />}
             active={temperature === 'COLD'}
           />

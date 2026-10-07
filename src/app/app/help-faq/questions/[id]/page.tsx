@@ -1,4 +1,5 @@
 'use client';
+import { supportLabel } from '@/lib/presentation-labels';
 
 import Loading from '@/components/commons/estados/LoadingGlobal';
 import Tiptap from '@/components/tiptap/TipTapEditor';
@@ -112,7 +113,7 @@ export default function Page() {
                   href={'/app/help-faq/new-ticket'}
                   className="text-[hsl(var(--primary))] text-sm font-normal font-['BR Sonoma'] underline leading-tight"
                 >
-                  criação de tickets
+                  criação de chamados
                 </Link>{' '}
                 para mais ter sua dúvida respondida pela nossa equipe!
               </div>
@@ -123,7 +124,7 @@ export default function Page() {
                 className="h-10 p-3 rounded-tl-lg rounded-bl-lg justify-start items-center flex"
               >
                 <span className="grow shrink basis-0 text-[#24292e] text-xs font-semibold leading-none">
-                  Criar Novo Ticket
+                  Criar Novo Chamado
                 </span>
               </Link>
             </div>
@@ -153,8 +154,6 @@ function getReadingTime(value: string): string {
 }
 
 function Content({ item, loading }: { item?: FAQItem; loading: boolean }) {
-
-
   const handleShare = useCallback(async () => {
     try {
       if (typeof window === 'undefined') return;
@@ -163,13 +162,13 @@ function Content({ item, loading }: { item?: FAQItem; loading: boolean }) {
 
       if (navigator.share) {
         await navigator.share({ url });
-        toast.success('Link copiado');
+        toast.success('Endereço copiado');
         return;
       }
 
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
-        toast.success('Link copiado');
+        toast.success('Endereço copiado');
         return;
       }
 
@@ -181,9 +180,9 @@ function Content({ item, loading }: { item?: FAQItem; loading: boolean }) {
       textarea.select();
       document.execCommand('copy');
       document.body.removeChild(textarea);
-      toast.success('Link copiado');
+      toast.success('Endereço copiado');
     } catch {
-      toast.error('Não foi possível copiar o link');
+      toast.error('Não foi possível copiar o endereço');
     }
   }, []);
 
@@ -203,15 +202,17 @@ function Content({ item, loading }: { item?: FAQItem; loading: boolean }) {
 
       <div className="flex gap-2 items-center mt-2 text-[14px]">
         <div className="p-1 px-2 bg-[#E3EBF3] text-[#24292E] text-[14px] font-semibold rounded-xl shadow-sm">
-          {item.category}
+          {supportLabel(item.category)}
         </div>
         <DotSeparator />
-        <span className="text-[#434D56]">{getReadingTime(item.content.replace(/<[^>]*>/g, ''))}</span>
+        <span className="text-[#434D56]">
+          {getReadingTime(item.content.replace(/<[^>]*>/g, ''))}
+        </span>
         <DotSeparator />
         <span className="text-[#434D56] mr-2">
           {time.formatRelativeDate(new Date(item.updatedAt))}
         </span>
-        <button onClick={handleShare} aria-label="Compartilhar link da FAQ" type="button">
+        <button onClick={handleShare} aria-label="Compartilhar endereço da FAQ" type="button">
           <ShareIcon fill="rgba(153,28,28)" />
         </button>
       </div>

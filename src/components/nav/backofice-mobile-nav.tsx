@@ -52,7 +52,7 @@ export const BackofficeMobileNav = () => {
 
   return (
     <nav
-      aria-label="Menu móvel do backoffice"
+      aria-label="Menu móvel da administração"
       aria-busy={isLoading}
       className="text-secondary-foreground z-10 fixed bottom-0 left-0 w-full bg-[hsl(var(--secondary))] px-4 py-6 rounded-t-2xl"
     >

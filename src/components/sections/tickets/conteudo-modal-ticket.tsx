@@ -1,4 +1,5 @@
 'use client';
+import { supportLabel } from '@/lib/presentation-labels';
 
 import { BtnStrong } from '@/components/commons/buttons/buttons';
 import LoadingGlobal from '@/components/commons/estados/LoadingGlobal';
@@ -40,20 +41,20 @@ export function ConteudoModalTicket({
     if (!tick) return;
     return (
       <>
-        <ModalTitle title="Ticket #213213" padrao={1} onClose={onClose} />
+        <ModalTitle title="Chamado #213213" padrao={1} onClose={onClose} />
         <div className="flex flex-col justify-start items-start mt-1 gap-4 w-full">
           <h1 className="text-[32px] font-semibold">{tick.subject}</h1>
           <div className="gap-[1px] grid grid-cols-3 w-full">
             <div className="bg-white flex flex-col gap-1 p-4 items-start">
-              <span className="text-[#95A3B2] font-semibold text-[12px]">Status</span>
+              <span className="text-[#95A3B2] font-semibold text-[12px]">Situação</span>
               <div className="rounded-full text-white text-[11px] font-semibold bg-[#586E9D] px-2 p-1">
-                {tick.status}
+                {supportLabel(tick.status)}
               </div>
             </div>
             <div className="bg-white flex flex-col gap-1 p-4 items-start">
               <span className="text-[#95A3B2] font-semibold text-[12px]">Tipo</span>
               <div className="rounded-full text-[#757E87] text-[11px] font-semibold bg-[#E3EBF3] px-2 p-1">
-                {tick.category}
+                {supportLabel(tick.category)}
               </div>
             </div>
             <div className="bg-white flex flex-col gap-1 p-4 items-start">
@@ -96,7 +97,7 @@ export function ConteudoModalTicket({
 
           <div className="w-full bg-white rounded-md p-4">
             <div className="flex justify-between items-center">
-              <b className="text-[14px] font-medium">Histórico dos tickets</b>
+              <b className="text-[14px] font-medium">Histórico dos chamados</b>
             </div>
             <div className="flex flex-col gap-4 mt-3">
               {tick.history.map((obj) => {

@@ -1,4 +1,6 @@
 'use client';
+import { supportLabel } from '@/lib/presentation-labels';
+
 import ButtonAdd from '@/components/commons/buttons/button-add';
 import LoadingGlobal from '@/components/commons/estados/LoadingGlobal';
 import InputPesquisarBlue from '@/components/commons/inputs/input-pesquisar-blue';
@@ -54,7 +56,7 @@ const optionsCategoria = [
 const optionsTipo = [
   { value: 'todos', label: 'Todos' },
   { value: 'reclamacao', label: 'Reclamação' },
-  { value: 'feedback', label: 'Feedback' },
+  { value: 'feedback', label: 'Avaliação' },
   { value: 'duvidas', label: 'Dúvidas' },
 ];
 
@@ -124,7 +126,7 @@ export default function PageFaq() {
         <SubTitle label="Perguntas publicadas" />
         <div className="flex items-center gap-2 xl:flex-nowrap flex-wrap flex-grow">
           <SelectSweet
-            placeholder="Status"
+            placeholder="Situação"
             options={optionsStatus}
             value={filtros.status}
             setValue={(v) => upFiltro(v, 'status')}
@@ -221,11 +223,11 @@ function ItemLista({ item, onReload }: { item: FAQItem; onReload: VoidFunction }
           <span>aifjaoijsaoidjasd</span>
         </div>
         <div className="flex justify-center  flex-[3]">
-          <Tag label={item.category} bg="#E3EBF3" color="#24292E" />
+          <Tag label={supportLabel(item.category)} bg="#E3EBF3" color="#24292E" />
         </div>
 
         <div className="flex  justify-center flex-[3]">
-          <Tag label={item.status} bg="#B03C03" color="white" />
+          <Tag label={supportLabel(item.status)} bg="#B03C03" color="white" />
         </div>
 
         <div className="flex justify-center flex-[3]">
@@ -303,7 +305,7 @@ function Lista({
       headers={[
         { label: 'Pergunta frequente', level: 3 },
         { label: 'Categoria', level: 3 },
-        { label: 'Status', level: 3 },
+        { label: 'Situação', level: 3 },
         { label: 'Data publicação', level: 3 },
         { label: 'Visitas', level: 3 },
         { label: 'Ações', level: 1 },

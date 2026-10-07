@@ -93,7 +93,10 @@ export default function Page() {
 
   const renderMensagem = (message: any) => {
     return (
-      <div key={message.id} className="p-4 bg-white rounded-lg border border-[#d7e0ea] flex-col justify-start items-start gap-4 inline-flex">
+      <div
+        key={message.id}
+        className="p-4 bg-white rounded-lg border border-[#d7e0ea] flex-col justify-start items-start gap-4 inline-flex"
+      >
         <div className="self-stretch justify-center items-center gap-6 inline-flex">
           <div className="grow shrink basis-0 h-5 justify-start items-center gap-3 flex">
             <div className="text-[#434d56] text-sm font-semibold font-['BR Sonoma'] leading-tight">
@@ -272,7 +275,7 @@ export default function Page() {
   if (!loading && !ticket) {
     return (
       <div className="flex flex-col h-full w-full items-center justify-center">
-        <NoData label="Ticket não encontrado" />
+        <NoData label="Chamado não encontrado" />
       </div>
     );
   }
@@ -311,9 +314,9 @@ export default function Page() {
               </div>
 
               <SelectSweet
-                value={supportLabel(ticket.status)}
+                value={ticket.status}
                 options={status}
-                placeholder="Status"
+                placeholder="Situação"
                 setValue={(v) => {
                   setTicket((old: TicketListItem) => {
                     return {

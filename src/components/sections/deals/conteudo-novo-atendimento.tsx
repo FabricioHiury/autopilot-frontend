@@ -618,7 +618,7 @@ export function ConteudoNovoAtendimento({
 
         <div>
           <SelectComLabel
-            label="Status do atendimento"
+            label="Situação do atendimento"
             value={dataInfoAtendimento.status}
             onChange={(value) =>
               setDataInfoAtendimento({

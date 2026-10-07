@@ -1,4 +1,5 @@
 'use client';
+import { channelLabel } from '@/lib/presentation-labels';
 
 import IconQuente from './icons/icon-quente';
 import IconMorno from './icons/icon-morno';
@@ -248,7 +249,7 @@ export default function ModalArquivados({
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={channelIconSrc(item.dealOrigin) as string}
-                            alt={String(item.dealOrigin)}
+                            alt={channelLabel(item.dealOrigin)}
                             className="w-4 h-4 opacity-90"
                           />
                         </span>
@@ -330,7 +331,7 @@ export default function ModalArquivados({
                           />
                         </span>
                         <p className="text-[#475569] text-sm leading-snug truncate">
-                          {item.title || (item.dealOrigin ? String(item.dealOrigin) : '-')}
+                          {item.title || (item.dealOrigin ? channelLabel(item.dealOrigin) : '-')}
                         </p>
                       </div>
 

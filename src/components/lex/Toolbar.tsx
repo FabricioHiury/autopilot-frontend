@@ -69,7 +69,7 @@ export default function ToolbarPlugin() {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
         }}
         className={'toolbar-item spaced ' + (isBold ? 'active' : '')}
-        aria-label="Format Bold"
+        aria-label="Negrito"
       >
         <svg
           width="20"
@@ -101,7 +101,7 @@ export default function ToolbarPlugin() {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
         }}
         className={'toolbar-item spaced ' + (isItalic ? 'active' : '')}
-        aria-label="Format Italics"
+        aria-label="Itálico"
       >
         <svg
           width="21"
@@ -135,7 +135,7 @@ export default function ToolbarPlugin() {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
         }}
         className={'toolbar-item spaced ' + (isUnderline ? 'active' : '')}
-        aria-label="Format Underline"
+        aria-label="Sublinhado"
       >
         <svg
           width="21"
@@ -161,7 +161,7 @@ export default function ToolbarPlugin() {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left');
         }}
         className="toolbar-item spaced"
-        aria-label="Left Align"
+        aria-label="Alinhar à esquerda"
       >
         <svg
           width="32"
@@ -206,7 +206,7 @@ export default function ToolbarPlugin() {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center');
         }}
         className="toolbar-item spaced"
-        aria-label="Center Align"
+        aria-label="Centralizar"
       >
         <svg
           width="21"
@@ -251,7 +251,7 @@ export default function ToolbarPlugin() {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right');
         }}
         className="toolbar-item spaced"
-        aria-label="Right Align"
+        aria-label="Alinhar à direita"
       >
         <svg
           width="21"
@@ -296,7 +296,7 @@ export default function ToolbarPlugin() {
           editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'justify');
         }}
         className="toolbar-item"
-        aria-label="Justify Align"
+        aria-label="Justificar"
       >
         <svg
           width="21"

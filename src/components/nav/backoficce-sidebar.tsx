@@ -1,5 +1,7 @@
 'use client';
 
+import { roleLabel } from '@/lib/presentation-labels';
+
 import Image from 'next/image';
 import { AutoPilotLogo } from './AutoPilotLogo';
 import CustomerIcon from './icons/customer-icon';
@@ -53,7 +55,7 @@ const BACKOFFICE_MENU_ITEMS = [
       },
       {
         id: 'tickets-ajuda',
-        label: 'Tickets de ajuda',
+        label: 'Chamados de ajuda',
         href: '/backoffice/app/tickets',
         permissionKey: AdminPermission.AUTOPILOT_REPLY_TICKETS,
       },
@@ -86,7 +88,7 @@ export const BackofficeSidebar = () => {
 
   return (
     <nav
-      aria-label="Menu do backoffice"
+      aria-label="Menu da administração"
       aria-busy={isLoading}
       className={`h-full flex flex-col bg-[hsl(var(--secondary))] text-white transition-all duration-300 ${isCollapsed ? 'w-[4.5rem]' : 'w-[18.75rem]'}`}
     >
@@ -169,7 +171,7 @@ export const BackofficeSidebar = () => {
               <span className="text-white font-semibold text-[1.125rem] leading-[1.125rem]">
                 {user && user.name}
               </span>
-              <span className="text-sm capitalize">{user && user.profile}</span>
+              <span className="text-sm capitalize">{user && roleLabel(user.profile)}</span>
             </div>
           )}
         </div>

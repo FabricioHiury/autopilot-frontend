@@ -1,3 +1,4 @@
+import { userMessage } from '@/lib/user-messages';
 import axios, { AxiosError } from 'axios';
 import { clearSession, getAccessToken } from './session';
 export interface ApiEnvelope<T> {
@@ -39,6 +40,13 @@ apiClient.interceptors.response.use(
       clearSession();
       window.location.assign('/auth/login');
     }
+    if (error.response?.data?.message) {
+      error.response.data.message = userMessage(error.response.data.message, error.response.status);
+    }
+    error.message = userMessage(
+      error.response?.data?.message || error.message,
+      error.response?.status,
+    );
     return Promise.reject(error);
   },
 );
@@ -49,14 +57,12 @@ export function apiError(error: unknown): {
   if (error instanceof AxiosError) {
     const message = error.response?.data?.message;
     return {
-      message: Array.isArray(message)
-        ? message.join(' · ')
-        : message || 'Não foi possível conectar ao servidor.',
+      message: userMessage(message || error.message, error.response?.status),
       statusCode: error.response?.status,
     };
   }
   return {
-    message: error instanceof Error ? error.message : 'Não foi possível concluir a operação.',
+    message: userMessage(error instanceof Error ? error.message : null),
   };
 }
 export async function requestData<T>(

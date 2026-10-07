@@ -1,4 +1,5 @@
 'use client';
+import { roleLabel } from '@/lib/presentation-labels';
 
 import ButtonSave from '@/components/commons/buttons/button-save';
 import InputRadioOption from '@/components/commons/inputs/input-radio-option';
@@ -30,7 +31,7 @@ export function FormCargos(props: FormCargosProps) {
   });
 
   const [idCargo, setIdCargo] = useState<string | null>(props.id);
-  const [nomeCargo, setNomeCargo] = useState(props.role);
+  const [nomeCargo, setNomeCargo] = useState(roleLabel(props.role));
   const [permissoesCargo, setPermissoesCargo] = useState<string[]>(props.features);
   const [loading, setLoading] = useState(false);
   const [alertDialog, setAlertDialog] = useState<{
@@ -57,7 +58,11 @@ export function FormCargos(props: FormCargosProps) {
     }
 
     setLoading(true);
-    const [response, error] = await api.role.save(nomeCargo, permissoesCargo, idCargo || undefined);
+    const [response, error] = await api.role.save(
+      nomeCargo === roleLabel(props.role) ? props.role : nomeCargo,
+      permissoesCargo,
+      idCargo || undefined,
+    );
 
     if (error) {
       setAlertDialog({ message: error.message, variant: 'error' });

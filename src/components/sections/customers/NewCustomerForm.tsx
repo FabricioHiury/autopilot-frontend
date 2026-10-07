@@ -13,7 +13,7 @@ import { Customer } from '@/types/customer-details';
 import { optionType } from '@/types/customer';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { ZodError, z } from 'zod';
+import { ZodError, z } from '@/lib/zod';
 import axios from 'axios';
 import { TextareaComLabel } from '@/components/commons/inputs/textarea-com-label';
 import { customerSchema } from '@/lib/client.schema';

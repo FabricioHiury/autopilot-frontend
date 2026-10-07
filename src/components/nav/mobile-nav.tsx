@@ -23,7 +23,7 @@ const MOBILE_MENU_ITEMS = [
   {
     id: 'chat',
     href: '/app/deals/chat',
-    title: 'Chat',
+    title: 'Conversa',
     icon: <ChatIcon />,
     permissionKey: StorePermission.STORE_VIEW_CHAT,
   },

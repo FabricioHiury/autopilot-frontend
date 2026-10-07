@@ -1,6 +1,7 @@
 'use client';
 import { dossierDescription } from '@/lib/copilot-review';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useId } from 'react';
+import { ChevronDown, Sparkles } from 'lucide-react';
 import { useAppAuth } from '@/contexts/auth-app-context';
 import { useChatSocket } from '@/contexts/RealtimeContext';
 import { copilotService } from '@/services/copilot.service';
@@ -26,6 +27,8 @@ export function LeadDossierPanel({
     storeId = auth.getUser()?.storeId;
   const currentContext = useRef('');
   currentContext.current = `${chatId}:${dealId}`;
+  const contentId = useId();
+  const [panelOpen, setPanelOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [analysis, setAnalysis] = useState<CopilotAnalysis | null>(null),
     [error, setError] = useState<string | null>(null),
@@ -43,6 +46,8 @@ export function LeadDossierPanel({
     let active = true;
     setReview(null);
     setExpanded(false);
+    setPanelOpen(false);
+    setError(null);
     setAnalysis(null);
     setQueued(false);
     setLoading(true);
@@ -152,119 +157,175 @@ export function LeadDossierPanel({
       setSaving(false);
     }
   }
-  if (loading)
-    return <div className="text-xs p-2 text-muted-foreground">Carregando AutoPilot IA…</div>;
-  if (error)
-    return (
-      <div className="text-xs p-2 text-muted-foreground">
-        AutoPilot IA: {error}
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={async () => {
-            setLoading(true);
-            try {
-              setAnalysis(await copilotService.getAnalysis(chatId));
-              setError(null);
-            } catch (err) {
-              setError(err instanceof Error ? err.message : 'Erro ao carregar análise.');
-            } finally {
-              setLoading(false);
-            }
-          }}
-        >
-          Tentar novamente
-        </Button>
-      </div>
-    );
-  if (!analysis?.enabled)
-    return (
-      <div className="text-xs p-2 text-muted-foreground">
-        AutoPilot IA ainda não está habilitado para este ambiente.
-      </div>
-    );
-  const dossier = analysis.insight?.leadDossier;
+  const dossier = analysis?.insight?.leadDossier;
+  const replies = analysis?.insight?.quickReplies || [];
+  const status = loading
+    ? 'Carregando…'
+    : error
+      ? 'Indisponível'
+      : !analysis?.enabled
+        ? 'Não habilitada'
+        : queued
+          ? 'Analisando…'
+          : replies.length
+            ? `${replies.length} ${replies.length === 1 ? 'sugestão' : 'sugestões'}`
+            : 'Sem análise';
   return (
-    <section className="border border-primary/20 bg-white rounded-xl p-3 mb-3">
-      <div className="flex items-center justify-between">
-        <strong className="text-primary">AutoPilot IA</strong>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={refresh}
-          disabled={queued && !!socket?.connected}
-        >
-          {queued ? 'Análise solicitada…' : 'Atualizar análise'}
-        </Button>
-      </div>
-      {dossier ? (
-        <>
-          <button
-            type="button"
-            aria-expanded={expanded}
-            onClick={() => setExpanded(!expanded)}
-            className="mt-2 cursor-pointer text-sm font-semibold text-left"
-          >
-            Dossiê estratégico ·{' '}
-            {
-              { HOT: 'Quente', WARM: 'Morno', COLD: 'Frio', UNKNOWN: 'Não identificado' }[
-                dossier.perceivedTemperature
-              ]
-            }
-          </button>
-          {expanded && (
-            <aside
-              aria-label="Dossiê estratégico"
-              className="bg-white border rounded-xl shadow-lg p-4 mt-3 sm:fixed sm:top-24 sm:right-6 sm:bottom-28 sm:w-[380px] overflow-y-auto z-[110]"
+    <section
+      aria-label="AutoPilot IA"
+      className="mb-3 overflow-hidden rounded-xl border border-primary/15 bg-white"
+    >
+      <button
+        type="button"
+        aria-label={panelOpen ? 'Recolher sugestões da IA' : 'Abrir sugestões da IA'}
+        aria-expanded={panelOpen}
+        aria-controls={contentId}
+        onClick={() => setPanelOpen(!panelOpen)}
+        className="flex min-h-11 w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
+      >
+        <Sparkles aria-hidden="true" className="h-4 w-4 shrink-0 text-primary" />
+        <span className="text-sm font-semibold text-secondary">AutoPilot IA</span>
+        <span className="ml-auto text-xs text-muted-foreground" aria-live="polite">
+          {status}
+        </span>
+        <ChevronDown
+          aria-hidden="true"
+          className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform motion-reduce:transition-none ${panelOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+      <div
+        id={contentId}
+        hidden={!panelOpen}
+        className="max-h-[35vh] overflow-y-auto border-t border-primary/10 px-3 pb-3 pt-2 sm:max-h-72"
+      >
+        {loading ? (
+          <p className="py-2 text-sm text-muted-foreground">Carregando análise da conversa…</p>
+        ) : error ? (
+          <div className="space-y-2 py-2">
+            <p role="alert" className="text-sm text-muted-foreground">
+              {error}
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  setAnalysis(await copilotService.getAnalysis(chatId));
+                  setError(null);
+                } catch (err) {
+                  setError(err instanceof Error ? err.message : 'Erro ao carregar análise.');
+                } finally {
+                  setLoading(false);
+                }
+              }}
             >
-              <div className="flex justify-between items-center">
-                <strong>Dossiê estratégico</strong>
-                <button type="button" aria-label="Fechar dossiê" onClick={() => setExpanded(false)}>
-                  ✕
-                </button>
-              </div>
-              <dl className="grid sm:grid-cols-2 gap-3 text-sm py-3">
-                {[
-                  ['Veículo de interesse', dossier.vehicleOfInterest],
-                  [
-                    'Veículo de troca',
-                    dossier.hasTradeIn === false ? 'Sem troca' : dossier.tradeInVehicle,
-                  ],
-                  ['Pagamento', dossier.paymentMethod],
-                  ['Principal objeção', dossier.mainObjection],
-                  ['Próxima ação', analysis.insight?.nextBestAction],
-                ].map(([label, value]) => (
-                  <div key={label}>
-                    <dt className="text-muted-foreground">{label}</dt>
-                    <dd>{value || 'Não identificado'}</dd>
-                  </div>
-                ))}
-              </dl>
-              {dealId && canApply && (
-                <Button type="button" size="sm" onClick={prepare} disabled={saving}>
-                  Revisar e aplicar ao Deal
-                </Button>
-              )}
-              <p className="text-xs text-muted-foreground mt-2">
-                Revise os dados antes de salvar na descrição da negociação.
+              Tentar novamente
+            </Button>
+          </div>
+        ) : !analysis?.enabled ? (
+          <p className="py-2 text-sm text-muted-foreground">
+            AutoPilot IA ainda não está habilitada para este ambiente.
+          </p>
+        ) : (
+          <>
+            <div className="flex flex-wrap items-center justify-between gap-2 py-1">
+              <p className="text-xs text-muted-foreground">
+                Selecione uma resposta para revisar antes de enviar.
               </p>
-            </aside>
-          )}
-          <CopilotQuickReplies
-            replies={analysis.insight?.quickReplies || []}
-            disabled={replyDisabled}
-            onSelect={onReply}
-          />
-        </>
-      ) : (
-        <p className="text-sm mt-2">Ainda não há análise para esta conversa.</p>
-      )}
-      {analysis.analyzedAt && (
-        <p className="text-xs text-muted-foreground">
-          Analisado em {new Date(analysis.analyzedAt).toLocaleString('pt-BR')}
-        </p>
-      )}
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={refresh}
+                disabled={queued && !!socket?.connected}
+              >
+                {queued ? 'Análise solicitada…' : 'Atualizar análise'}
+              </Button>
+            </div>
+            {dossier ? (
+              <>
+                <CopilotQuickReplies
+                  replies={replies}
+                  disabled={replyDisabled}
+                  onSelect={(text) => {
+                    setPanelOpen(false);
+                    onReply(text);
+                  }}
+                />
+                <button
+                  type="button"
+                  aria-expanded={expanded}
+                  aria-controls={`${contentId}-dossier`}
+                  onClick={() => setExpanded(!expanded)}
+                  className="mt-2 flex w-full items-center gap-2 rounded-md py-2 text-left text-xs font-medium text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  Dossiê estratégico
+                  <span className="ml-auto text-muted-foreground">
+                    {
+                      { HOT: 'Quente', WARM: 'Morno', COLD: 'Frio', UNKNOWN: 'Não identificado' }[
+                        dossier.perceivedTemperature
+                      ]
+                    }
+                  </span>
+                  <ChevronDown
+                    aria-hidden="true"
+                    className={`h-3.5 w-3.5 transition-transform motion-reduce:transition-none ${expanded ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {expanded && (
+                  <aside
+                    id={`${contentId}-dossier`}
+                    aria-label="Dossiê estratégico"
+                    className="mt-1 border-t border-primary/10 pt-3"
+                  >
+                    <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                      {[
+                        ['Veículo de interesse', dossier.vehicleOfInterest],
+                        [
+                          'Veículo de troca',
+                          dossier.hasTradeIn === false ? 'Sem troca' : dossier.tradeInVehicle,
+                        ],
+                        ['Pagamento', dossier.paymentMethod],
+                        ['Principal objeção', dossier.mainObjection],
+                        ['Próxima ação', analysis.insight?.nextBestAction],
+                      ].map(([label, value]) => (
+                        <div key={label} className="min-w-0 break-words">
+                          <dt className="text-xs text-muted-foreground">{label}</dt>
+                          <dd className="mt-1 text-secondary">{value || 'Não identificado'}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                    {dealId && canApply && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="mt-3"
+                        onClick={prepare}
+                        disabled={saving}
+                      >
+                        Revisar e aplicar ao Atendimento
+                      </Button>
+                    )}
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Revise os dados antes de salvar na descrição da negociação.
+                    </p>
+                  </aside>
+                )}
+              </>
+            ) : (
+              <p className="py-2 text-sm text-muted-foreground">
+                Ainda não há análise para esta conversa.
+              </p>
+            )}
+            {analysis.analyzedAt && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Analisado em {new Date(analysis.analyzedAt).toLocaleString('pt-BR')}
+              </p>
+            )}
+          </>
+        )}
+      </div>
       {review && (
         <div
           role="dialog"

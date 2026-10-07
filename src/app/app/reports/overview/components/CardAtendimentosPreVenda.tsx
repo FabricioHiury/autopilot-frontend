@@ -1,3 +1,4 @@
+import { presentationLabel } from '@/lib/presentation-labels';
 import React, { useState } from 'react';
 import ChevronLeft from '@/components/icons/chevron-left';
 import ChevronRight from '@/components/icons/chevron-right';
@@ -116,7 +117,7 @@ export function CardAtendimentosPreVenda({
                     deal.status,
                   )}`}
                 >
-                  {deal.status}
+                  {presentationLabel(deal.status)}
                 </span>
               </div>
               <button
@@ -150,7 +151,7 @@ export function CardAtendimentosPreVenda({
                 Dias sem follow-up
               </th>
               <th className="sm:w-[16%] px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider truncate">
-                Status
+                Situação
               </th>
               <th className="sm:w-[8%] px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider truncate">
                 Acessar
@@ -194,7 +195,7 @@ export function CardAtendimentosPreVenda({
                         deal.status,
                       )}`}
                     >
-                      {deal.status}
+                      {presentationLabel(deal.status)}
                     </span>
                   </td>
                   <td className="sm:w-[8%] px-4 py-3 whitespace-nowrap text-center">

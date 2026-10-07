@@ -1,4 +1,5 @@
 'use client';
+import { tagLabel } from '@/lib/presentation-labels';
 
 import { PageTitle } from '@/components/commons/page-title';
 import { useEffect, useRef, useState } from 'react';
@@ -530,14 +531,14 @@ export default function ServicesPage() {
                 return (
                   <button
                     key={tagId}
-                    aria-label={`Remover etiqueta ${tagInfo?.name || 'Etiqueta'}`}
+                    aria-label={`Remover etiqueta ${tagLabel(tagInfo?.name) || 'Etiqueta'}`}
                     className="inline-flex items-center gap-1.5 rounded-full border border-[#DDE6F2] bg-[#F7F9FC] text-[#485B80] text-xs font-semibold px-3 py-1.5 shadow-sm hover:bg-white transition-colors"
                     onClick={() => {
                       const rest = filtro.idsTags!.filter((id) => id !== tagId);
                       setFiltro({ ...filtro, idsTags: rest.length > 0 ? rest : undefined });
                     }}
                   >
-                    <span>{tagInfo?.name || 'Etiqueta'}</span>
+                    <span>{tagLabel(tagInfo?.name) || 'Etiqueta'}</span>
                     <IconX size={12} />
                   </button>
                 );

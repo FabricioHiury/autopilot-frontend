@@ -1,9 +1,8 @@
 'use client';
-import { roleLabel } from '@/lib/presentation-labels';
+import { roleLabel, permissionLabel } from '@/lib/presentation-labels';
 import ButtonAdd from '@/components/commons/buttons/button-add';
 import { IconEdit } from '@/components/icons/icon-edit';
 import { RoleDetails, Role } from '@/types/role';
-import { StorePermissionLabels } from '@/types/permissions';
 
 interface ListCargosProps {
   roles: RoleDetails[];
@@ -12,15 +11,7 @@ interface ListCargosProps {
 }
 
 export function ListCargos(props: ListCargosProps) {
-  const formatarFuncionalidades = (feature: string) => {
-    const indicePermissao = Object.keys(StorePermissionLabels).findIndex((key) => key === feature);
-
-    if (indicePermissao === -1) {
-      return feature;
-    }
-
-    return Object.values(StorePermissionLabels)[indicePermissao];
-  };
+  const formatarFuncionalidades = permissionLabel;
 
   return (
     <div>

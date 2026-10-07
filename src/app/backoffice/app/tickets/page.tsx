@@ -1,4 +1,6 @@
 'use client';
+import { supportLabel } from '@/lib/presentation-labels';
+
 import { BtnStrong } from '@/components/commons/buttons/buttons';
 import InputPesquisarBlue from '@/components/commons/inputs/input-pesquisar-blue';
 import SelectSweet from '@/components/commons/inputs/select-lego';
@@ -70,7 +72,7 @@ export default function Page() {
         <div className="flex flex-col gap-3 w-full">
           <GoBackPage />
           <div className="flex justify-between items-center">
-            <Title label="Tickets de Ajuda" />
+            <Title label="Chamados de Ajuda" />
             <div className="flex items-center gap-3">
               <ModalNotificacoes />
             </div>
@@ -79,7 +81,7 @@ export default function Page() {
       </div>
       <div className="flex flex-col bg-white p-9 py-7 w-full h-full">
         <div className="flex items-center flex-wrap gap-4">
-          <b className="text-neutral-950 mr-36 text-[18px] font-medium">Tickets</b>
+          <b className="text-neutral-950 mr-36 text-[18px] font-medium">Chamados</b>
 
           <SelectSweet
             value={filtros.category}
@@ -194,11 +196,11 @@ function Card({ onClick, ticket }: { onClick: VoidFunction; ticket: TicketListIt
   return (
     <>
       <div className="flex flex-col w-[252px] flex-shrink-0 p-4 rounded-2xl bg-[#F4F7FA]">
-        <b className="text-[#95A3B2] text-[10px]">Ticket #{ticket.id}</b>
+        <b className="text-[#95A3B2] text-[10px]">Chamado #{ticket.id}</b>
         <div className="flex items-center justify-between mt-1">
           <div className="flex items-center gap-2">
             <div className="rounded-full text-white text-[11px] font-semibold bg-[#586E9D] px-2 p-1">
-              {ticket.status}
+              {supportLabel(ticket.status)}
             </div>
             <span className="text-[#434D56] text-[11px]">
               {relativeTime(new Date(ticket.updatedAt))}
@@ -225,7 +227,7 @@ function Card({ onClick, ticket }: { onClick: VoidFunction; ticket: TicketListIt
             </div>
           </div>
           <div className="my-2 h-[1px] w-full bg-neutral-300"></div>
-          <BtnStrong label="Visualizar Ticket" padding="p-[6px]" onClick={onClick} />
+          <BtnStrong label="Visualizar Chamado" padding="p-[6px]" onClick={onClick} />
         </div>
       </div>
     </>

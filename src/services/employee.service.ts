@@ -25,7 +25,7 @@ export class EmployeeService {
       if (error instanceof AxiosError && error.response?.status === 500) {
         return [null, { message: 'Erro no servidor.' }];
       }
-      if (errorAxios.response?.data.message.includes('email')) {
+      if (/e-?mail/i.test(String(errorAxios.response?.data?.message || ''))) {
         return [null, { message: 'Email já cadastrado no banco' }];
       }
       return [null, { message: 'Erro ao criar o colaborador' }];

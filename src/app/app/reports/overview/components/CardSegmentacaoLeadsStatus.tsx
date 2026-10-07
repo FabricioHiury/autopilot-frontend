@@ -90,7 +90,7 @@ export default function CardSegmentacaoLeadsStatus({
         {/* texto central */}
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-2 z-10 pointer-events-none">
           <span className="text-lg font-semibold text-gray-900">
-            {total.toLocaleString()} leads
+            {total.toLocaleString()} contatos interessados
           </span>
           <span className="text-sm text-gray-500">{statusAtual}</span>
         </div>

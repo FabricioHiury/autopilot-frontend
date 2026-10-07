@@ -239,7 +239,7 @@ export default function SuspensoesPage() {
                   <div className="flex flex-row w-full bg-[#E3E6EC] text-[#7F8999] text-sm font-medium sticky top-0">
                     <div className="flex-[3] p-4 whitespace-nowrap">Usuário</div>
                     <div className="flex-[3] p-4 whitespace-nowrap">Período</div>
-                    <div className="flex-[1] p-4 whitespace-nowrap">Status</div>
+                    <div className="flex-[1] p-4 whitespace-nowrap">Situação</div>
                     <div className="flex-[1] p-4 text-center whitespace-nowrap">Ações</div>
                   </div>
 

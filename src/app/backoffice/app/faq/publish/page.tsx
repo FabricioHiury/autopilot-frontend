@@ -1,4 +1,6 @@
 'use client';
+import { tagLabel } from '@/lib/presentation-labels';
+
 import { BtnStrong, BtnTransparent } from '@/components/commons/buttons/buttons';
 import LoadingGlobal from '@/components/commons/estados/LoadingGlobal';
 import SelectSweet from '@/components/commons/inputs/select-lego';
@@ -18,53 +20,52 @@ import { cn } from '@/lib/class-name.utils';
 import { apiAdmin } from '@/utils/classes/api';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 import { faqSchema } from '@/lib/faq-schema';
 
 const categorias = [
   { label: 'Integração', value: 'Integration' },
-  { label: 'Chat', value: 'Chat' },
+  { label: 'Conversa', value: 'Chat' },
   { label: 'Negociações', value: 'Deals' },
   { label: 'Contas', value: 'Account' },
   { label: 'Outros', value: 'Other' },
 ];
 
-const schema = faqSchema
-  .transform(async (obj, ctx) => {
-    const post = async () => {
-      const { id, ...payload } = obj;
-      const [r, e] = await apiAdmin.post('/faq', payload);
-      if (e) {
-        ctx.addIssue({
-          code: 'custom',
-          message: e.message,
-        });
-        return z.NEVER;
-      }
-      console.log(r, 'post');
-      return r.data.id;
-    };
-
-    const put = async () => {
-      const { id, ...form } = obj;
-      const [r, e] = await apiAdmin.put('/faq/' + id, form);
-      if (e) {
-        ctx.addIssue({
-          code: 'custom',
-          message: e.message,
-        });
-        return z.NEVER;
-      }
-      console.log(r, 'put');
-      return id;
-    };
-
-    if (obj.id === '') {
-      return await post();
-    } else {
-      return await put();
+const schema = faqSchema.transform(async (obj, ctx) => {
+  const post = async () => {
+    const { id, ...payload } = obj;
+    const [r, e] = await apiAdmin.post('/faq', payload);
+    if (e) {
+      ctx.addIssue({
+        code: 'custom',
+        message: e.message,
+      });
+      return z.NEVER;
     }
-  });
+    console.log(r, 'post');
+    return r.data.id;
+  };
+
+  const put = async () => {
+    const { id, ...form } = obj;
+    const [r, e] = await apiAdmin.put('/faq/' + id, form);
+    if (e) {
+      ctx.addIssue({
+        code: 'custom',
+        message: e.message,
+      });
+      return z.NEVER;
+    }
+    console.log(r, 'put');
+    return id;
+  };
+
+  if (obj.id === '') {
+    return await post();
+  } else {
+    return await put();
+  }
+});
 
 export default function PagePublicar() {
   const [form, setForm] = useState({
@@ -305,7 +306,7 @@ function TagsGen({ form, upForm }: { form: any; upForm: (c: any, v: string) => v
 
   return (
     <div className="flex flex-col w-full bg-white text-[#95A3B2] text-[12px] p-4 py-2 border rounded-md">
-      <b className="text-[#485B80]  text-[12px] font-semibold">Tags</b>
+      <b className="text-[#485B80]  text-[12px] font-semibold">Etiquetas</b>
       <div className="flex flex-wrap gap-2 items-center w-full mt-2">
         {form.tags.map((ca: any, i: number) => {
           return (
@@ -315,14 +316,14 @@ function TagsGen({ form, upForm }: { form: any; upForm: (c: any, v: string) => v
                 const mock = form.tags.filter((obj: any) => obj !== ca);
                 upForm(mock, 'tags');
               }}
-              label={ca}
+              label={tagLabel(ca)}
             />
           );
         })}
         {editMode ? (
           <input
             type="text"
-            placeholder="Escreva uma tag"
+            placeholder="Escreva uma etiqueta"
             onKeyDown={keyDown}
             className="p-1 pb-[2px] text-neutral-900 focus:border-b outline-none "
             value={tag}
@@ -333,7 +334,7 @@ function TagsGen({ form, upForm }: { form: any; upForm: (c: any, v: string) => v
             onClick={() => setEditMode(true)}
             className="px-2 flex items-center gap-1 group hover:bg-slate-500 hover:text-white p-1 border ease-in-out duration-500 rounded-xl font-semibold text-[12px]"
           >
-            Adicionar Tag
+            Adicionar Etiqueta
             <IconAdd className="group-hover:rotate-[180deg] group-hover:brightness-200 ease-in-out duration-500" />
           </button>
         )}

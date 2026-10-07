@@ -1,5 +1,6 @@
 'use client';
 
+import { userMessage } from '@/lib/user-messages';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ImageModal from '@/components/commons/modais/image-modal';
 import { formatSizeFile } from '@/lib/files.utils';
@@ -200,12 +201,12 @@ export function AnexoAudio({
     const code = audioRef.current?.error?.code;
     const message =
       code === 2
-        ? 'Network error while loading audio.'
+        ? 'Erro de conexão ao carregar o áudio.'
         : code === 3
-          ? 'Cannot decode this audio format.'
+          ? 'Não foi possível reproduzir este formato de áudio.'
           : code === 4
-            ? 'Audio source not supported.'
-            : 'Unable to play audio.';
+            ? 'Formato de áudio não suportado.'
+            : 'Não foi possível reproduzir o áudio.';
     setError(message);
     setIsPlaying(false);
   }, []);
@@ -235,7 +236,9 @@ export function AnexoAudio({
       setIsPlaying(true);
     } catch (err: any) {
       await teardownBoost();
-      setError(err?.message || 'Playback was blocked by the browser.');
+      setError(
+        err?.message ? userMessage(err.message) : 'A reprodução foi bloqueada pelo navegador.',
+      );
       setIsPlaying(false);
     }
   }, [ensureBoost, isPlaying, teardownBoost]);

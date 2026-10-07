@@ -1,4 +1,6 @@
 'use client';
+import { supportLabel } from '@/lib/presentation-labels';
+
 import LoadingGlobal from '@/components/commons/estados/LoadingGlobal';
 import { BellFillAnimation } from '@/components/nav/icons/bell-icon';
 import { ConfigIconAnimation } from '@/components/nav/icons/config-icon';
@@ -88,7 +90,7 @@ export default function Page() {
 
     function compartilhar() {
       navigator.clipboard.writeText(window.location.toString());
-      toast.success('Link copiado');
+      toast.success('Endereço copiado');
     }
 
     if (loading || !faq)
@@ -109,7 +111,7 @@ export default function Page() {
         </div>
         <div className="flex gap-2 items-center mt-2 text-[14px]">
           <div className="p-1 px-2 bg-[#E3EBF3] text-[#24292E] text-[14px] font-semibold rounded-xl shadow-sm">
-            {faq.category}
+            {supportLabel(faq.category)}
           </div>
           <Dot />
           <span className="text-[#434D56]">{tempo(text)}</span>

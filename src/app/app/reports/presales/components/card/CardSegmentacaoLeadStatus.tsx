@@ -89,10 +89,10 @@ export default function CardSegmentacaoLeadStatus({
     <div className="min-h-[320px] h-full flex flex-col overflow-hidden">
       <div className="flex items-center justify-between mb-3 flex-shrink-0">
         <h3 className="font-semibold text-gray-800 text-sm sm:text-base lg:text-lg">
-          Segmentação de leads por Status
+          Segmentação de contatos interessados por Situação
         </h3>
         <div className="h-6 px-2 rounded-full bg-[#EBEEF2] flex items-center justify-center text-[#1B263A] font-semibold text-xs">
-          {totalLeads.toLocaleString()} leads
+          {totalLeads.toLocaleString()} contatos interessados
         </div>
       </div>
 

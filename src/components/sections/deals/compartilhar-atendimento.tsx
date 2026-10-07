@@ -1,4 +1,5 @@
 'use client';
+import { roleLabel } from '@/lib/presentation-labels';
 import toast from 'react-hot-toast';
 import IconCompartilhar from './icons/icon-compartilhar';
 import { useEffect, useState, useRef } from 'react';
@@ -137,7 +138,7 @@ export const CompartilharAtendimento = ({
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between w-full">
                 <h2 className="text-[#283855] text-base font-semibold leading-tight">
-                  Link para compartilhar
+                  Endereço para compartilhar
                 </h2>
                 <button
                   onClick={() => {
@@ -155,7 +156,7 @@ export const CompartilharAtendimento = ({
                   readOnly
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.toString());
-                    toast.success('Link copiado');
+                    toast.success('Endereço copiado');
                   }}
                   className="w-full h-10 bg-[#fdfdfd] rounded-lg outline outline-1 outline-offset-[-1px] outline-[#dce5f1] text-[#6b7687] text-sm font-normal leading-tight cursor-pointer"
                 />
@@ -164,7 +165,7 @@ export const CompartilharAtendimento = ({
                   className="absolute top-2 right-2"
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.toString());
-                    toast.success('Link copiado');
+                    toast.success('Endereço copiado');
                   }}
                 >
                   <svg
@@ -209,8 +210,10 @@ export const CompartilharAtendimento = ({
                             {c.employee.name}
                           </div>
                           <div className="justify-start text-[#7f8999] text-xs font-normal leading-none">
-                            {c.employee.roles.length > 0 ? c.employee.roles[0].role : 'Sem cargo'} |
-                            ID.{c.id}
+                            {c.employee.roles.length > 0
+                              ? roleLabel(c.employee.roles[0].role)
+                              : 'Sem cargo'}{' '}
+                            | ID.{c.id}
                           </div>
                         </div>
                       </div>

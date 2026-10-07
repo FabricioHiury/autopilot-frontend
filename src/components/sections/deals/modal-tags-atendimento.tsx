@@ -1,4 +1,5 @@
 'use client';
+import { tagLabel } from '@/lib/presentation-labels';
 
 import { useEffect, useRef, useState } from 'react';
 import { IconEdit } from '@/components/icons/icon-edit';
@@ -81,7 +82,12 @@ export default function ModalTagsAtendimento({
 
   const handleEdit = (item: TagItem) => {
     setEditing(item);
-    setForm({ id: item.id, name: item.name, color: item.color, description: item.description });
+    setForm({
+      id: item.id,
+      name: tagLabel(item.name),
+      color: item.color,
+      description: item.description,
+    });
   };
 
   const resetForm = () => {
@@ -119,7 +125,8 @@ export default function ModalTagsAtendimento({
       toast.error('O nome da etiqueta deve ter no máximo 40 caracteres');
       return;
     }
-    const payload = { name: nameTrimmed, color: form.color, description: form.description || '' };
+    const name = editing && nameTrimmed === tagLabel(editing.name) ? editing.name : nameTrimmed;
+    const payload = { name, color: form.color, description: form.description || '' };
 
     let error;
     if (editing?.id) {
@@ -197,7 +204,7 @@ export default function ModalTagsAtendimento({
                           color: item.color || '#485B80',
                         }}
                       >
-                        {item.name}
+                        {tagLabel(item.name)}
                       </span>
                       {item.description && (
                         <span className="text-[11px] text-[#7F8999]">{item.description}</span>
@@ -305,7 +312,7 @@ export default function ModalTagsAtendimento({
         {tagToDelete && (
           <ConfirmDialog
             title="Excluir etiqueta"
-            message={`Excluir a etiqueta "${tagToDelete.name}" irá:\n• Remover a etiqueta de todos os atendimentos que a utilizam;\n• Não será possível recuperar esta etiqueta;\n\nTem certeza que deseja prosseguir?`}
+            message={`Excluir a etiqueta "${tagLabel(tagToDelete.name)}" irá:\n• Remover a etiqueta de todos os atendimentos que a utilizam;\n• Não será possível recuperar esta etiqueta;\n\nTem certeza que deseja prosseguir?`}
             variant="danger"
             onConfirm={() => handleRemove(tagToDelete.id)}
             onCancel={() => setTagToDelete(null)}

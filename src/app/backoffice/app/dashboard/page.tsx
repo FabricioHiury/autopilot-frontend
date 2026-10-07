@@ -13,7 +13,7 @@ export default function Dashboard() {
   }, []);
   return (
     <main className="p-6 lg:p-10">
-      <h1 className="text-2xl font-bold">Backoffice AutoPilot</h1>
+      <h1 className="text-2xl font-bold">Administração AutoPilot</h1>
       <p className="text-muted-foreground mt-2">
         Gerencie concessionárias, administradores e atendimento.
       </p>
@@ -21,7 +21,7 @@ export default function Dashboard() {
         {[
           ['Concessionárias', '/backoffice/app/tenants'],
           ['Administradores', '/backoffice/app/access'],
-          ['Tickets de suporte', '/backoffice/app/tickets'],
+          ['Chamados de suporte', '/backoffice/app/tickets'],
         ].map(([label, url]) => (
           <Link
             key={url}

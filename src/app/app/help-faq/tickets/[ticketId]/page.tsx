@@ -266,7 +266,7 @@ export default function Page() {
   if (!ticket) {
     return (
       <div className="flex flex-col h-full w-full items-center justify-center">
-        <NoData label="Ticket não encontrado" />
+        <NoData label="Chamado não encontrado" />
       </div>
     );
   }
@@ -330,7 +330,7 @@ export default function Page() {
                   onClick={() => setReplying(true)}
                   className="bg-[#1b2841] rounded-lg justify-center items-center flex"
                   type="button"
-                  aria-label="Responder ticket"
+                  aria-label="Responder chamado"
                 >
                   <div className="p-2 rounded-tl-lg rounded-bl-lg justify-center items-center flex">
                     <div className="text-white text-xs font-semibold font-['BR Sonoma'] leading-none">

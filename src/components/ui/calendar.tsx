@@ -1,5 +1,6 @@
 'use client';
 
+import { ptBR } from 'date-fns/locale';
 import * as React from 'react';
 import { DayPicker } from 'react-day-picker';
 
@@ -12,6 +13,8 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
   return (
     <DayPicker
+      locale={ptBR}
+      labels={{ labelPrevious: () => 'Mês anterior', labelNext: () => 'Próximo mês' }}
       showOutsideDays={showOutsideDays}
       className={cn('p-3', className)}
       classNames={{

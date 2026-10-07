@@ -1,3 +1,4 @@
+import { channelLabel } from '@/lib/presentation-labels';
 import handleText from '@/utils/classes/format/text';
 import { DealStatus, DealStatusColor, DealStatusLabel } from '@/types/deal-status';
 import Image from 'next/image';
@@ -66,7 +67,7 @@ export default function CardServiceMini({ deal }: { deal: AtendimentoDashboard }
         <h3 className="text-[1rem] leading-4 font-semibold text-[#1B263A] line-clamp-1">
           {deal.customer?.name || deal.temporaryCustomer?.name}
         </h3>
-        <p className="text-xs text-[#C8CCD2] mt-1">{deal.dealOrigin.toUpperCase()}</p>
+        <p className="text-xs text-[#C8CCD2] mt-1">{channelLabel(deal.dealOrigin)}</p>
       </div>
 
       {/* Avatares */}

@@ -1,4 +1,7 @@
 'use client';
+import { integrationMessage } from '@/lib/user-messages';
+import { channelLabel } from '@/lib/presentation-labels';
+
 import CardStatus from '@/components/cards/CardStatus';
 import AvatarCanal from '@/components/commons/avatar-canal';
 import { ModalNotificacoes } from '@/components/commons/modais/modal-notificacoes';
@@ -43,7 +46,7 @@ function formatLastSync(dateString?: string): string {
 }
 
 function formatAtendimentos(count?: number): string {
-  if (count === undefined || count === null) return 'N/A';
+  if (count === undefined || count === null) return 'Não informado';
   if (count === 0) return 'Nenhum';
   if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
   return count.toString();
@@ -59,12 +62,12 @@ function formatMessage(message?: string | null, fallback: string = 'Não Definid
     return fallback;
   }
 
-  return message;
+  return integrationMessage(message);
 }
 
 async function syncIntegration(channel: string, onUpdate: (integration: CanalStatus) => void) {
   try {
-    toast.loading(`Sincronizando ${channel}...`, { id: channel });
+    toast.loading(`Sincronizando ${channelLabel(channel)}...`, { id: channel });
 
     const [statusResponse, statusError] = await api.get(`/integrations/status`);
     if (statusError) {
@@ -77,28 +80,32 @@ async function syncIntegration(channel: string, onUpdate: (integration: CanalSta
 
     if (updatedIntegration) {
       onUpdate(updatedIntegration);
-      toast.success(`${channel} sincronizado com sucesso!`, { id: channel });
+      toast.success(`${channelLabel(channel)} sincronizado com sucesso!`, { id: channel });
     } else {
-      toast.error(`Erro ao encontrar dados de ${channel}`, { id: channel });
+      toast.error(`Erro ao encontrar dados de ${channelLabel(channel)}`, { id: channel });
     }
   } catch (error: any) {
-    toast.error(error.message || `Erro ao sincronizar ${channel}`, { id: channel });
+    toast.error(error.message || `Erro ao sincronizar ${channelLabel(channel)}`, { id: channel });
   }
 }
 
 async function clearIntegrationCache(channel: string): Promise<boolean> {
   try {
-    toast.loading(`Limpando cache de ${channel}...`, { id: `cache-${channel}` });
+    toast.loading(`Limpando cache de ${channelLabel(channel)}...`, { id: `cache-${channel}` });
 
     const [response, error] = await api.post(`/integrations/clear-cache/${channel}`);
     if (error) {
       throw new Error(error.message);
     }
 
-    toast.success(`Cache de ${channel} limpo com sucesso!`, { id: `cache-${channel}` });
+    toast.success(`Cache de ${channelLabel(channel)} limpo com sucesso!`, {
+      id: `cache-${channel}`,
+    });
     return true;
   } catch (error: any) {
-    toast.error(error.message || `Erro ao limpar cache de ${channel}`, { id: `cache-${channel}` });
+    toast.error(error.message || `Erro ao limpar cache de ${channelLabel(channel)}`, {
+      id: `cache-${channel}`,
+    });
     return false;
   }
 }
@@ -122,7 +129,7 @@ async function clearAllIntegrationCache(): Promise<boolean> {
 
 async function checkIntegrationHealth(channel: string): Promise<any> {
   try {
-    toast.loading(`Verificando saúde de ${channel}...`, { id: `health-${channel}` });
+    toast.loading(`Verificando saúde de ${channelLabel(channel)}...`, { id: `health-${channel}` });
 
     const [response, error] = await api.get(`/integrations/health/${channel}`);
     if (error) {
@@ -131,48 +138,59 @@ async function checkIntegrationHealth(channel: string): Promise<any> {
 
     const { data } = response.data;
     if (data && data.status === 'ok') {
-      toast.success(`${channel} está funcionando corretamente!`, { id: `health-${channel}` });
+      toast.success(`${channelLabel(channel)} está funcionando corretamente!`, {
+        id: `health-${channel}`,
+      });
     } else {
-      const message = data?.message || 'Status desconhecido';
-      toast.error(`${channel}: ${message}`, { id: `health-${channel}`, duration: 6000 });
+      const message = integrationMessage(data?.message || 'Situação desconhecida');
+      toast.error(`${channelLabel(channel)}: ${message}`, {
+        id: `health-${channel}`,
+        duration: 6000,
+      });
     }
 
     return data;
   } catch (error: any) {
-    toast.error(error.message || `Erro ao verificar ${channel}`, { id: `health-${channel}` });
+    toast.error(error.message || `Erro ao verificar ${channelLabel(channel)}`, {
+      id: `health-${channel}`,
+    });
     return null;
   }
 }
 
 async function forceRefreshIntegration(channel: string): Promise<any> {
   try {
-    toast.loading(`Atualizando ${channel}...`, { id: `refresh-${channel}` });
+    toast.loading(`Atualizando ${channelLabel(channel)}...`, { id: `refresh-${channel}` });
 
     const [response, error] = await api.post(`/integrations/refresh/${channel}`);
     if (error) {
       throw new Error(error.message);
     }
 
-    toast.success(`${channel} atualizado com sucesso!`, { id: `refresh-${channel}` });
+    toast.success(`${channelLabel(channel)} atualizado com sucesso!`, { id: `refresh-${channel}` });
     return response.data;
   } catch (error: any) {
-    toast.error(error.message || `Erro ao atualizar ${channel}`, { id: `refresh-${channel}` });
+    toast.error(error.message || `Erro ao atualizar ${channelLabel(channel)}`, {
+      id: `refresh-${channel}`,
+    });
     return null;
   }
 }
 
 async function forceRemoveIntegration(channel: string): Promise<boolean> {
   try {
-    toast.loading(`Removendo ${channel}...`, { id: `remove-${channel}` });
+    toast.loading(`Removendo ${channelLabel(channel)}...`, { id: `remove-${channel}` });
 
     const [response, error] = await api.delete(`/integrations/${channel}/remove-with-cache`);
     if (error) {
       throw new Error(error.message);
     }
-    toast.success(`${channel} removido com sucesso!`, { id: `remove-${channel}` });
+    toast.success(`${channelLabel(channel)} removido com sucesso!`, { id: `remove-${channel}` });
     return true;
   } catch (error: any) {
-    toast.error(error.message || `Erro ao remover ${channel}`, { id: `remove-${channel}` });
+    toast.error(error.message || `Erro ao remover ${channelLabel(channel)}`, {
+      id: `remove-${channel}`,
+    });
     return false;
   }
 }
@@ -430,7 +448,7 @@ function CardIntegration({
       color: 'text-gray-600',
       bgColor: 'bg-gray-50',
       borderColor: 'border-gray-200',
-      message: formatMessage(integration.message, 'Status desconhecido'),
+      message: formatMessage(integration.message, 'Situação desconhecida'),
     };
   };
 
@@ -451,7 +469,7 @@ function CardIntegration({
             <div className="flex flex-col">
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="text-lg font-semibold text-[#24292E] capitalize">
-                  {integration.channel}
+                  {channelLabel(integration.channel)}
                 </h3>
                 <CardStatus status={isActive} />
               </div>
@@ -483,7 +501,7 @@ function CardIntegration({
           </div>
 
           <div className="bg-[#F8F9FA] rounded-lg p-3">
-            <div className="text-xs text-[#657380] font-medium mb-1">Última Sync</div>
+            <div className="text-xs text-[#657380] font-medium mb-1">Última sincronização</div>
             <div className="text-sm font-medium text-[#24292E]">
               {formatLastSync(integration.lastSync)}
             </div>
@@ -561,7 +579,7 @@ function CardIntegration({
               <button
                 onClick={() => {
                   setConfirmDialog({
-                    message: `Deseja remover a integração ${integration.channel}?\n\nIsso irá limpar todos os caches relacionados.`,
+                    message: `Deseja remover a integração ${channelLabel(integration.channel)}?\n\nIsso irá limpar todos os caches relacionados.`,
                     onConfirm: async () => {
                       const success = await forceRemoveIntegration(integration.channel);
                       if (success) {

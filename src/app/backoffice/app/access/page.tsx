@@ -162,7 +162,7 @@ export default function PageAcessos() {
               setCurrentUsuario(undefined);
               setPopVisible(false);
             }}
-            title="Criar novo usuário admin"
+            title="Criar novo usuário administrador"
           />
           <PopAdministrador
             close={() => {

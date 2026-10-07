@@ -138,21 +138,21 @@ export default function Page() {
     try {
       const [data, error] = await api.support.create(form);
       if (error) {
-        toast.error('Erro ao criar ticket');
+        toast.error('Erro ao criar chamado');
         console.error(error);
         setLoading(false);
         return;
       }
 
       await sendAttachments(data.id);
-      toast.success(`O ticket "${data.title}" foi criado com sucesso!`);
+      toast.success(`O chamado "${data.title}" foi criado com sucesso!`);
 
       if (data.id) {
         router.push(`/app/help-faq/tickets/${data.id}`);
       }
     } catch (err) {
       console.error(err);
-      toast.error('Erro ao criar ticket');
+      toast.error('Erro ao criar chamado');
       setLoading(false);
     }
   }, [api.support, form, loading, router, sendAttachments]);
@@ -166,7 +166,7 @@ export default function Page() {
       <div className="flex flex-col gap-3 w-full p-9 bg-white">
         <GoBackPage />
         <div className="flex justify-between items-center">
-          <PageTitle title="Novo Ticket" />
+          <PageTitle title="Novo Chamado" />
           <div className="flex items-center gap-3">
             <ModalNotificacoes />
           </div>
@@ -333,7 +333,7 @@ export default function Page() {
                 disabled={loading}
                 type="button"
               >
-                Criar ticket
+                Criar chamado
               </button>
             </div>
           </div>

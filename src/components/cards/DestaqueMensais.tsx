@@ -1,3 +1,4 @@
+import { channelLabel } from '@/lib/presentation-labels';
 import { Highlight } from '@/types/channel-report';
 import React, { useEffect, useState } from 'react';
 
@@ -74,7 +75,7 @@ export default function DestaqueMensais({
             setDadosSelecionado(data.byLeads);
           }}
         >
-          Leads
+          Contatos interessados
         </button>
         {mostrarConversoes && (
           <button
@@ -98,7 +99,7 @@ export default function DestaqueMensais({
         <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</div>
         <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Canal</div>
         <div className="text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
-          Leads
+          Contatos interessados
         </div>
       </div>
 
@@ -120,7 +121,7 @@ export default function DestaqueMensais({
               <div className="w-5 h-5 rounded-full bg-white border flex items-center justify-center">
                 <img
                   src={getIconPath(item.channel)}
-                  alt={item.nameDisplay}
+                  alt={channelLabel(item.nameDisplay)}
                   className="w-4 h-4 object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -128,7 +129,9 @@ export default function DestaqueMensais({
                   }}
                 />
               </div>
-              <span className="text-sm text-gray-700 truncate">{item.nameDisplay}</span>
+              <span className="text-sm text-gray-700 truncate">
+                {channelLabel(item.nameDisplay)}
+              </span>
             </div>
 
             <div className="text-sm font-medium text-gray-900 text-right">{item.value}</div>

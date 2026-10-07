@@ -484,7 +484,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
     );
 
     if (error || !newChat) {
-      setFormError('Erro ao criar chat');
+      setFormError('Erro ao criar conversa');
       setLoading(false);
       return;
     }
@@ -496,7 +496,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
         dealId: props.atendimentoId,
       });
       if (error || !data) {
-        setFormError('Erro ao vincular chat ao atendimento');
+        setFormError('Erro ao vincular conversa ao atendimento');
         setLoading(false);
         return;
       }
@@ -570,7 +570,7 @@ export function ConteudoNovoChat(props: ConteudoNovoAtendimentoProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <NoData label="Já existe um chat de Whatsapp para este atendimento" />
+          <NoData label="Já existe uma conversa de Whatsapp para este atendimento" />
         </div>
       </div>
     );

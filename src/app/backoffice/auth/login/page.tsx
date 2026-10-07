@@ -9,7 +9,7 @@ export default function SignUpPage() {
       <WrapperFormAuth>
         <div className="flex flex-col gap-2">
           <h1 className="leading-tight text-[22px] lg:text-[32px] text-[#1B263A] font-bold">
-            Backoffice AutoPilot CRM
+            Administração AutoPilot CRM
           </h1>
           <h2 className="text-[16px] text-[hsl(var(--secondary))] font-semibold">
             Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos

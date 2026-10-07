@@ -6,7 +6,7 @@ import InputPesquisarBlue from '@/components/commons/inputs/input-pesquisar-blue
 import { cn } from '@/lib/class-name.utils';
 import { apiAdmin } from '@/utils/classes/api';
 import toast from 'react-hot-toast';
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 import validateInputs from '@/utils/classes/sanitizer/validate';
 import Spinner from '@/components/loading/Spinner';
 import { Admin } from '@/types/customer';
@@ -24,7 +24,7 @@ const conviteJson = [
   {
     title: 'Próximo passo',
     content:
-      'O usuário deverá seguir o link no e-mail para configurar sua senha e acessar o sistema.',
+      'O usuário deverá seguir o endereço no e-mail para configurar sua senha e acessar o sistema.',
   },
   {
     title: 'Informações de Suporte',
