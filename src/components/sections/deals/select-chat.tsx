@@ -1,4 +1,6 @@
 'use client';
+import { channelLabel } from '@/lib/presentation-labels';
+
 import IconBalaoChat from './icons/icon-balao-chat';
 import SideModal from '@/components/commons/modais/side-modal';
 import AvatarCanal from '@/components/commons/avatar-canal';
@@ -61,7 +63,7 @@ export function SelectChat(props: SelectChatProps) {
                   channel={option.channel as 'whatsapp' | 'instagram' | 'facebook' | 'olx'}
                   className="border"
                 />
-                <span className="block w-full capitalize">{option.channel}</span>
+                <span className="block w-full capitalize">{channelLabel(option.channel)}</span>
               </button>
             ))}
             {!options.some((option) => option.channel === 'whatsapp') && (

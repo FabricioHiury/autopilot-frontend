@@ -1,4 +1,5 @@
 'use client';
+import { systemMessage } from '@/lib/system-messages';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SideModal from '@/components/commons/modais/side-modal';
@@ -340,7 +341,7 @@ const NotificationCard = ({
                 isPendente ? 'font-semibold' : 'font-normal',
               )}
             >
-              {notifications.message}
+              {systemMessage(notifications.message)}
             </div>
           </div>
         </div>

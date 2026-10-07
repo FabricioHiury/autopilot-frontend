@@ -82,22 +82,18 @@ export default function RelatorioAtendimentosPorCanal({
         const ranking = { byConversations: rankConversas, byLeads: rankLeads };
         const destaquesArr = [
           {
-            byConversations: rankConversas
-              .slice(0, 3)
-              .map((rc) => ({
-                channel: rc.channel,
-                nameDisplay: rc.nameDisplay,
-                value: rc.value,
-                rank: rc.position,
-              })),
-            byLeads: rankLeads
-              .slice(0, 3)
-              .map((rl) => ({
-                channel: rl.channel,
-                nameDisplay: rl.nameDisplay,
-                value: rl.value,
-                rank: rl.position,
-              })),
+            byConversations: rankConversas.slice(0, 3).map((rc) => ({
+              channel: rc.channel,
+              nameDisplay: rc.nameDisplay,
+              value: rc.value,
+              rank: rc.position,
+            })),
+            byLeads: rankLeads.slice(0, 3).map((rl) => ({
+              channel: rl.channel,
+              nameDisplay: rl.nameDisplay,
+              value: rl.value,
+              rank: rl.position,
+            })),
           },
         ];
         return {
@@ -236,22 +232,18 @@ export default function RelatorioAtendimentosPorCanal({
 
         const destaquesCalc: Highlight[] = [
           {
-            byLeads: ranking.byLeads
-              .slice(0, 3)
-              .map((i) => ({
-                channel: i.channel,
-                nameDisplay: i.nameDisplay,
-                value: i.value,
-                rank: i.position,
-              })),
-            byConversations: ranking.byConversations
-              .slice(0, 3)
-              .map((i) => ({
-                channel: i.channel,
-                nameDisplay: i.nameDisplay,
-                value: i.value,
-                rank: i.position,
-              })),
+            byLeads: ranking.byLeads.slice(0, 3).map((i) => ({
+              channel: i.channel,
+              nameDisplay: i.nameDisplay,
+              value: i.value,
+              rank: i.position,
+            })),
+            byConversations: ranking.byConversations.slice(0, 3).map((i) => ({
+              channel: i.channel,
+              nameDisplay: i.nameDisplay,
+              value: i.value,
+              rank: i.position,
+            })),
           },
         ];
 
@@ -370,7 +362,7 @@ export default function RelatorioAtendimentosPorCanal({
         <div className="xl:col-span-12 space-y-4 sm:space-y-6">
           <div className="bg-white rounded-2xl p-4 sm:p-6">
             <h3 className="font-semibold text-gray-800 mb-4 text-sm sm:text-base">
-              Leads vs Conversões em Vendas por canal
+              Contatos interessados e Conversões em Vendas por canal
             </h3>
             <div className="overflow-x-auto">
               <div className="min-w-[800px] xl:min-w-full">
@@ -380,7 +372,7 @@ export default function RelatorioAtendimentosPorCanal({
                   xKey="channel"
                   height={360}
                   series={[
-                    { type: 'bar', dataKey: 'leads', name: 'Leads' },
+                    { type: 'bar', dataKey: 'leads', name: 'Contatos interessados' },
                     { type: 'bar', dataKey: 'conversions', name: 'Conversão' },
                     { type: 'line', dataKey: 'taxaConv', name: 'Taxa de Conversão (%)' },
                   ]}

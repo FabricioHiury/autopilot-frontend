@@ -1,3 +1,4 @@
+import { lossReasonLabel } from '@/lib/presentation-labels';
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { ChevronDown, ChevronRight } from 'lucide-react';
@@ -38,57 +39,7 @@ interface GraficoMotivosPerdasProps {
 }
 
 // Converte valores camelCase/underscore em rótulos legíveis, aplicando acentuação conhecida
-const formatEnumLabel = (raw: string | undefined): string => {
-  if (!raw) return '—';
-  const spaced = raw.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
-  const tokens = spaced.split(' ');
-  const accentMap: Record<string, string> = {
-    nao: 'não',
-    negotiation: 'negociação',
-    avaliacao: 'avaliação',
-    credito: 'crédito',
-    proximo: 'próximo',
-    concessionaria: 'concessionária',
-    veiculo: 'veículo',
-    whatsapp: 'WhatsApp',
-    incompatível: 'incompatível', // fallback caso já venha acentuado
-    incompativel: 'incompatível',
-    documentacao: 'documentação',
-    doente: 'doente',
-    imprevisto: 'imprevisto',
-    imprevistos: 'imprevistos',
-    city: 'city',
-    data: 'data',
-    customer: 'Customer',
-    banco: 'Banco',
-    score: 'Score',
-    mercado: 'mercado',
-    proposta: 'proposta',
-    parcela: 'parcela',
-    renda: 'renda',
-    color: 'color',
-    version: 'versão',
-    modelo: 'modelo',
-    store: 'STORE',
-    bloqueou: 'bloqueou',
-    retornou: 'retornou',
-    respondeu: 'respondeu',
-    messages: 'messages',
-    initial: 'initial',
-    outra: 'outra',
-    competition: 'concorrência',
-  };
-  const normalized = tokens
-    .map((t, i) => {
-      const lower = t.toLowerCase();
-      const converted = accentMap[lower] || lower;
-      // Capitaliza a primeira palavra
-      if (i === 0) return converted.charAt(0).toUpperCase() + converted.slice(1);
-      return converted;
-    })
-    .join(' ');
-  return normalized;
-};
+const formatEnumLabel = lossReasonLabel;
 
 const GraficoMotivosPerdas: React.FC<GraficoMotivosPerdasProps> = ({
   title,

@@ -1,5 +1,5 @@
 import validateInputs from '@/utils/classes/sanitizer/validate';
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 import { telefoneSchema } from './schemas';
 import { isCampoObrigatorio } from '@/utils/validacao-empresa-brasil';
 

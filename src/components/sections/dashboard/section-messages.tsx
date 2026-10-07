@@ -1,3 +1,4 @@
+import { channelLabel } from '@/lib/presentation-labels';
 import AvatarUser from '@/components/commons/avatar-user';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -115,7 +116,7 @@ export default function CardMessage({
         return 'Enviou um anexo';
       }
     }
-    return 'Chat vazio';
+    return 'Conversa vazia';
   }
   return (
     <div
@@ -137,7 +138,7 @@ export default function CardMessage({
           </div>
         </div>
         <span className="bg-[hsl(var(--secondary))] uppercase rounded-full px-3 py-0.5 text-secondary-foreground text-xs flex-shrink-0 whitespace-nowrap mt-2 md:mt-0">
-          {message.channel}
+          {channelLabel(message.channel)}
         </span>
       </div>
 
@@ -153,7 +154,7 @@ export default function CardMessage({
           href={`/app/deals/chat/?id=${message.id}`}
           className="w-full min-h-[2.5rem] rounded-[.5rem] mt-1 flex items-center justify-center gap-2 text-[hsl(var(--secondary))] text-sm font-semibold border border-[hsl(var(--secondary))]"
         >
-          <span className="text-[hsl(var(--secondary))] text-xs">Acessar Chat</span>
+          <span className="text-[hsl(var(--secondary))] text-xs">Acessar Conversa</span>
 
           <svg
             width="20"

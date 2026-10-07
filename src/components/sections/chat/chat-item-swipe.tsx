@@ -105,7 +105,7 @@ export function ChatItemSwipe({
 
     if (candidate) return renderPreviewText ? renderPreviewText(candidate, term) : candidate;
     if (chat.message.length > 0) return 'Enviou um anexo';
-    return 'Chat vazio';
+    return 'Conversa vazia';
   };
 
   const unread = getUnreadCount ? getUnreadCount(chat) : 0;

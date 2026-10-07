@@ -9,7 +9,7 @@ export enum DealStatus {
   LOST = 'lost',
 }
 export enum DealStatusLabel {
-  CHAT = 'Chat',
+  CHAT = 'Conversa',
   PRE_DEAL = 'Pré-atendimento',
   DEAL_INITIAL = 'Atendimento Inicial',
   VISIT = 'Visita',
@@ -29,7 +29,7 @@ export enum DealStatusColor {
   LOST = '#333333',
 }
 export const DealStatusHistory: Record<string, string> = {
-  chat: 'Chat',
+  chat: 'Conversa',
   preDeal: 'Pré-atendimento',
   dealInitial: 'Atendimento inicial',
   visit: 'Visita',

@@ -1,4 +1,5 @@
 'use client';
+import { presentationLabel } from '@/lib/presentation-labels';
 import CardMetrica from '@/components/cards/CardMetrica';
 import CardQualificacao from '@/components/cards/CardQualificacao';
 import CardSegmentacaoLeads from '@/components/cards/CardSegmentacaoLeads';
@@ -94,7 +95,7 @@ export default function RelatorioGeralAtendimentoVendas({
 
     return [
       {
-        title: 'Segmentacao de leads por temperatura',
+        title: 'Segmentação de contatos interessados por temperatura',
         totalLeads: dadosFiltrados.totalDeals,
         unidade: 'leads',
         segmentacao: [
@@ -126,7 +127,7 @@ export default function RelatorioGeralAtendimentoVendas({
 
     return [
       {
-        title: 'Segmentação de Leads após atendimento',
+        title: 'Segmentação de Contatos interessados após atendimento',
         totalLeads: dadosFiltrados?.segmentationTemperatureQualification?.total || 0,
         unidade: 'leads',
         segmentacao: [
@@ -299,11 +300,11 @@ export default function RelatorioGeralAtendimentoVendas({
         value: parseFloat(dadosFiltrados.totalDeals?.toFixed(2)) || 0,
       },
       {
-        label: 'Conversão de Leads',
+        label: 'Conversão de Contatos interessados',
         percentage: parseFloat(dadosFiltrados?.rateConversionLeads?.toFixed(2)) || 0,
         value: parseFloat(dadosFiltrados.limitConversionLeads?.toFixed(2)) || 0,
         color: '#22C55E',
-        subvalorLabel: 'Quantidade total de Leads qualificados',
+        subvalorLabel: 'Quantidade total de Contatos interessados qualificados',
         subvalor: parseFloat(dadosFiltrados.limitQualification?.toFixed(2)) || 0,
       },
       {
@@ -416,7 +417,7 @@ export default function RelatorioGeralAtendimentoVendas({
           <div className="xl:col-span-12 space-y-4 sm:space-y-6">
             <div className="bg-white rounded-2xl p-4 sm:p-6">
               <h3 className="font-semibold text-gray-800 mb-4 text-sm sm:text-base">
-                Leads vs Conversões em Vendas por canal
+                Contatos interessados e Conversões em Vendas por canal
               </h3>
               <div className="overflow-x-auto">
                 <div className="min-w-[800px] xl:min-w-full">
@@ -426,7 +427,7 @@ export default function RelatorioGeralAtendimentoVendas({
                     xKey="channel"
                     height={360}
                     series={[
-                      { type: 'bar', dataKey: 'leads', name: 'Leads' },
+                      { type: 'bar', dataKey: 'leads', name: 'Contatos interessados' },
                       { type: 'bar', dataKey: 'conversions', name: 'Conversão' },
                       { type: 'line', dataKey: 'taxaConv', name: 'Taxa de Conversão (%)' },
                     ]}
@@ -457,13 +458,13 @@ export default function RelatorioGeralAtendimentoVendas({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <CardTempoMedioResposta
                   title="Tempo de resposta média"
-                  subtitulo="Lead e pré-venda"
+                  subtitulo="Contato interessado e pré-venda"
                   tempo={dadosFiltrados?.timeAverageReplyPreSalesperson || '00:00'}
                   period={obterPeriodo()}
                 />
                 <CardTempoMedioResposta
                   title="Tempo de resposta média"
-                  subtitulo="Lead e vendedor"
+                  subtitulo="Contato interessado e vendedor"
                   tempo={dadosFiltrados?.timeAverageReplySalesperson || '00:00'}
                   period={obterPeriodo()}
                 />
@@ -480,11 +481,11 @@ export default function RelatorioGeralAtendimentoVendas({
 
           <div className="xl:col-span-12 sm:space-y-6">
             <CardSegmentacaoLeadsStatus
-              title="Segmentação de leads por Status"
+              title="Segmentação de contatos interessados por Situação"
               total={dadosFiltrados?.segmentationStatus?.total || 0}
               statusAtual="Em negociação"
               segmentos={segmentationStatus.map((item) => ({
-                label: item.status,
+                label: presentationLabel(item.status),
                 value: item.limit,
                 color: item.color,
               }))}

@@ -56,7 +56,7 @@ export default function DashboardPage() {
   async function loadChat() {
     const [response, error] = await api.get(`/chats?limit=6`);
     if (error || !response) {
-      toast.error(error?.message || 'Não foi possível carregar os chats.');
+      toast.error(error?.message || 'Não foi possível carregar as conversas.');
       return;
     }
     setMessages(response.data.chats);
@@ -203,7 +203,7 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row items-start justify-between gap-4">
           <div className="w-full flex gap-4 items-start justify-between">
             <div className="flex flex-col gap-0.5 md:gap-2">
-              <PageTitle title="Dashboard" />
+              <PageTitle title="Painel" />
 
               <div className="flex items-center gap-0.5">
                 <Image

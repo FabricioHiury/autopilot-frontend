@@ -472,11 +472,11 @@ export default function RelatorioAtendimentosPorVendedor({
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
-          {/* Gráfico Leads vs Conversões */}
+          {/* Gráfico Leads e Conversões */}
           <div className="xl:col-span-2 p-6 bg-white rounded-2xl border border-gray-100 flex flex-col">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-gray-900">
-                Leads vs conversões em vendas por vendedor
+                Contatos interessados e conversões em vendas por vendedor
               </h3>
             </div>
             <div className="flex-1">
@@ -487,7 +487,12 @@ export default function RelatorioAtendimentosPorVendedor({
                 height={320}
                 series={[
                   { type: 'bar', dataKey: 'conversions', name: 'Conversões', color: '#2A3E65' },
-                  { type: 'line', dataKey: 'leads', name: 'Leads Atendidos', color: '#10B981' },
+                  {
+                    type: 'line',
+                    dataKey: 'leads',
+                    name: 'Contatos interessados atendidos',
+                    color: '#10B981',
+                  },
                 ]}
                 showLegend
                 showTooltip

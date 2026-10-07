@@ -23,7 +23,7 @@ import {
 } from '@lexical/react/LexicalComposerContext';
 import { ChangeEventHandler, useEffect, useState } from 'react';
 
-const placeholder = 'Enter some rich text...';
+const placeholder = 'Digite o conteúdo...';
 
 const editorConfig = {
   namespace: 'React.js Demo',

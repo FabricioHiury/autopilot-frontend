@@ -1,3 +1,4 @@
+import { presentationLabel } from '@/lib/presentation-labels';
 import ButtonDefault from '@/components/inputs/buttons/ButtonDefault';
 import AvatarList from '../customers/AvatarList';
 import CardGeneric from './CardGeneric';
@@ -219,7 +220,7 @@ const CardsHistorico: React.FC<props> = ({ deal }) => {
     const visita = deal.dealVisit[0]!;
     return (
       <div className="flex flex-col justify-start items-start  gap-1 text-slate-700 font-semibold text-[12px]">
-        Tipo de visita: {visita.type}
+        Tipo de visita: {presentationLabel(visita.type)}
         <div className="p-1 bg-slate-200 px-2 rounded-lg inline-flex justify-start items-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} fill="none">
             <path

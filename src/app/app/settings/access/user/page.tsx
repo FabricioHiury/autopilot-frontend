@@ -4,7 +4,7 @@ import { roleLabel } from '@/lib/presentation-labels';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 
 import { PageTitle } from '@/components/commons/page-title';
 import { Label } from '@/components/commons/label';
@@ -151,7 +151,7 @@ export default function ConfigAdicionarUsuarioPage() {
       try {
         const [response, error] = await api.uploadFile(`/avatar/user/${userId}`, formData, 'POST');
         if (error) {
-          toast.error(error.message || 'Erro ao fazer upload da imagem');
+          toast.error(error.message || 'Erro ao enviar da imagem');
         } else {
           toast.success('Imagem atualizada com sucesso!');
 
@@ -172,7 +172,7 @@ export default function ConfigAdicionarUsuarioPage() {
         }
       } catch (err) {
         console.error('Erro no upload:', err);
-        toast.error('Erro ao fazer upload da imagem');
+        toast.error('Erro ao enviar da imagem');
       }
     },
     [colaboradorData],

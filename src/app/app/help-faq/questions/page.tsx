@@ -1,4 +1,5 @@
 'use client';
+import { supportLabel, tagLabel } from '@/lib/presentation-labels';
 
 import LoadingGlobal from '@/components/commons/estados/LoadingGlobal';
 import { ModalNotificacoes } from '@/components/commons/modais/modal-notificacoes';
@@ -42,7 +43,7 @@ export default function Page() {
     () => [
       { value: 'todas', label: 'Todas' },
       { value: 'Integração', label: 'Integração' },
-      { value: 'Chat', label: 'Chat' },
+      { value: 'Chat', label: 'Conversa' },
       { value: 'Atendimentos', label: 'Atendimentos' },
       { value: 'Conta', label: 'Conta' },
       { value: 'Assinatura', label: 'Assinatura' },
@@ -181,7 +182,7 @@ export default function Page() {
               >
                 <div className="px-2 py-1 bg-[#edf2f7] rounded-xl justify-center items-center gap-2.5 inline-flex">
                   <div className="text-[#24292e] text-xs font-semibold leading-none capitalize">
-                    {faq.category}
+                    {supportLabel(faq.category)}
                   </div>
                 </div>
                 <div className="self-stretch justify-between items-center inline-flex">
@@ -221,7 +222,7 @@ export default function Page() {
                         className="px-2 py-1 bg-[#edf2f7] rounded-xl justify-center items-center gap-2.5 inline-flex"
                       >
                         <div className="text-[#24292e] text-xs font-semibold leading-none">
-                          {tag}
+                          {tagLabel(tag)}
                         </div>
                       </div>
                     ))}

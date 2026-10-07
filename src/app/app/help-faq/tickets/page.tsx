@@ -162,7 +162,7 @@ export default function Page() {
       <div className="flex flex-col gap-3 w-full p-9 bg-white">
         <GoBackPage />
         <div className="flex justify-between items-center">
-          <PageTitle title="Tickets de ajuda" />
+          <PageTitle title="Chamados de ajuda" />
           <div className="flex items-center gap-3">
             <ModalNotificacoes />
           </div>
@@ -174,7 +174,7 @@ export default function Page() {
           <div className="flex flex-col pt-6 pb-4 w-full gap-4">
             <div className="flex items-center flex-wrap gap-4 w-full justify-between">
               <div className="flex items-center gap-4 mr-12">
-                <b className="text-neutral-950 text-[18px] font-medium">Tickets</b>
+                <b className="text-neutral-950 text-[18px] font-medium">Chamados</b>
                 {!isFilterEmpty && (
                   <button
                     className="text-[#485B80] font-medium text-xs"
@@ -205,7 +205,7 @@ export default function Page() {
                 <SelectComLabel
                   label=""
                   className="w-[8.5rem]"
-                  placeholder="Status "
+                  placeholder="Situação "
                   options={STATUS_OPTIONS}
                   value={filter.status}
                   onChange={(v: any) => setFilterItem(v, 'status')}
@@ -278,7 +278,7 @@ export default function Page() {
                     href={'/app/help-faq/new-ticket'}
                     className="text-[hsl(var(--primary))] text-sm font-normal font-['BR Sonoma'] underline leading-tight"
                   >
-                    criação de tickets
+                    criação de chamados
                   </Link>
                   <span className="text-[#e3ebf3] text-sm font-normal font-['BR Sonoma'] leading-tight">
                     {' '}
@@ -290,7 +290,7 @@ export default function Page() {
                 href={'/app/help-faq/new-ticket'}
                 className="bg-white rounded-lg flex p-3 text-[#24292e] text-xs font-semibold"
               >
-                Criar Novo Ticket
+                Criar Novo Chamado
               </Link>
             </div>
           </div>
@@ -303,7 +303,7 @@ export default function Page() {
           totalPages={totalPages}
           setLimitItens={setLimit}
           limitItens={limit}
-          label="Tickets"
+          label="Chamados"
           limitNumberPages={2}
           setPage={setPage}
           page={page}

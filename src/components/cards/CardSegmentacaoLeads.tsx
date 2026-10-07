@@ -1,3 +1,4 @@
+import { presentationLabel } from '@/lib/presentation-labels';
 import React, { useState, useEffect } from 'react';
 import ChevronRight from '@/components/icons/chevron-right';
 import ChevronLeft from '@/components/icons/chevron-left';
@@ -76,7 +77,7 @@ export default function CardSegmentacaoLeads({ type = 'unico', content }: CardTy
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <span className="text-xs">{item.icone}</span>
                   <span className="text-xs font-medium text-gray-700 min-w-[45px]">
-                    {item.type}
+                    {presentationLabel(item.type)}
                   </span>
                 </div>
                 <div className="flex justify-end items-center gap-2 w-1/2">

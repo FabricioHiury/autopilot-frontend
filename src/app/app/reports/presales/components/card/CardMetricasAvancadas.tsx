@@ -1,3 +1,5 @@
+import { lossReasonLabel } from '@/lib/presentation-labels';
+import { presentationLabel } from '@/lib/presentation-labels';
 import React from 'react';
 import { IconLineUp } from '@/components/icons/icon-line-up';
 
@@ -56,49 +58,7 @@ export default function CardMetricasAvancadas({
     return 0;
   };
 
-  const formatEnumLabel = (raw: string | undefined): string => {
-    if (!raw) return '—';
-    const spaced = raw.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
-    const tokens = spaced.split(' ');
-    const accentMap: Record<string, string> = {
-      nao: 'não',
-      negotiation: 'negociação',
-      avaliacao: 'avaliação',
-      credito: 'crédito',
-      proximo: 'próximo',
-      concessionaria: 'concessionária',
-      veiculo: 'veículo',
-      whatsapp: 'WhatsApp',
-      incompativel: 'incompatível',
-      documentacao: 'documentação',
-      customer: 'Customer',
-      banco: 'Banco',
-      score: 'Score',
-      mercado: 'mercado',
-      proposta: 'proposta',
-      parcela: 'parcela',
-      renda: 'renda',
-      color: 'color',
-      version: 'versão',
-      modelo: 'modelo',
-      store: 'STORE',
-      competition: 'concorrência',
-      bloqueou: 'bloqueou',
-      retornou: 'retornou',
-      respondeu: 'respondeu',
-      messages: 'messages',
-      initial: 'initial',
-      outra: 'outra',
-    };
-    const normalized = tokens
-      .map((t, i) => {
-        const lower = t.toLowerCase();
-        const converted = accentMap[lower] || lower;
-        return i === 0 ? converted.charAt(0).toUpperCase() + converted.slice(1) : converted;
-      })
-      .join(' ');
-    return normalized;
-  };
+  const formatEnumLabel = lossReasonLabel;
 
   return (
     <div
@@ -145,13 +105,17 @@ export default function CardMetricasAvancadas({
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                      <div className="font-medium text-gray-800 capitalize">{temperature}</div>
+                      <div className="font-medium text-gray-800 capitalize">
+                        {presentationLabel(temperature)}
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">{(data as any).limit} leads</div>
+                    <div className="text-sm text-gray-600">
+                      {(data as any).limit} contatos interessados
+                    </div>
                   </div>
                   <div
                     className="w-full bg-gray-200 rounded-full h-3"
-                    aria-label={`Conversão ${temperature}`}
+                    aria-label={`Conversão ${presentationLabel(temperature)}`}
                     aria-valuenow={taxaCalculada}
                     aria-valuemin={0}
                     aria-valuemax={100}

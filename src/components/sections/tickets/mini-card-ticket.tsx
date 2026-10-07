@@ -42,7 +42,7 @@ export function MiniCardTicketLoja({ ticket }: MiniCardTicketProps) {
             </div>
           </div>
           <div className="text-[#95a3b2] text-xs font-normal font-['BR Sonoma'] leading-none">
-            Ticket #{ticket.id}
+            Chamado #{ticket.id}
           </div>
         </div>
         <div className="self-stretch justify-between items-center inline-flex">
@@ -50,7 +50,7 @@ export function MiniCardTicketLoja({ ticket }: MiniCardTicketProps) {
             <div className="h-5 justify-start items-start flex">
               <div className="h-5 px-2 py-1 bg-[#586e9d] rounded-xl justify-center items-center gap-2.5 flex">
                 <div className="text-white text-xs font-semibold font-['BR Sonoma'] leading-none">
-                  {ticket.status}
+                  {supportLabel(ticket.status)}
                 </div>
               </div>
             </div>
@@ -111,7 +111,7 @@ export function MiniCardTicketLoja({ ticket }: MiniCardTicketProps) {
             <div className="justify-start items-start flex">
               <div className="px-2 py-0.5 bg-[#e3ebf3] rounded-xl justify-center items-center gap-0.5 flex">
                 <div className="text-[#434d56] text-xs font-semibold font-['BR Sonoma'] leading-none capitalize">
-                  {ticket.category}
+                  {supportLabel(ticket.category)}
                 </div>
               </div>
             </div>
@@ -169,7 +169,7 @@ export function MiniCardTicketLoja({ ticket }: MiniCardTicketProps) {
             className="p-2 w-full rounded-tl-lg bg-[#1b2841] rounded-lg text-white justify-center items-center flex"
             onClick={loadTick}
           >
-            Visualizar ticket
+            Visualizar chamado
           </button>
         </div>
       </div>

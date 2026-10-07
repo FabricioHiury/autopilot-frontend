@@ -280,7 +280,7 @@ const FilterSelect: React.FC<FilterSelectProps> = ({ onChange, config = {}, valu
               <SelectTwo
                 onBlur={handleBlur}
                 focusAnother={() => containerRef.current?.focus()}
-                label="Status"
+                label="Situação"
                 options={STATUS_OPTIONS}
                 selectedOptions={status}
                 setSelectedOptions={setStatus}

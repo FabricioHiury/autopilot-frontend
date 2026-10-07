@@ -191,6 +191,7 @@ export function ChartServiceOrigin() {
                 <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
                 <Line
                   dataKey="facebook"
+                  name="Facebook"
                   type="linear"
                   stroke="hsl(var(--primary))"
                   strokeWidth={1}
@@ -199,6 +200,7 @@ export function ChartServiceOrigin() {
                 />
                 <Line
                   dataKey="whatsapp"
+                  name="WhatsApp"
                   type="linear"
                   stroke="green"
                   strokeWidth={1}
@@ -207,6 +209,7 @@ export function ChartServiceOrigin() {
                 />
                 <Line
                   dataKey="olx"
+                  name="OLX"
                   type="linear"
                   stroke="#85A3DC"
                   strokeWidth={1}
@@ -215,6 +218,7 @@ export function ChartServiceOrigin() {
                 />
                 <Line
                   dataKey="instagram"
+                  name="Instagram"
                   type="linear"
                   stroke="hsl(var(--secondary))"
                   strokeWidth={1}
@@ -223,6 +227,7 @@ export function ChartServiceOrigin() {
                 />
                 <Line
                   dataKey="other"
+                  name="Outros"
                   type="linear"
                   stroke="#4A6395"
                   strokeWidth={1}

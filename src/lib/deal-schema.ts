@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 import { DealStatus } from '@/types/deal-status';
 
 export const dealOriginOptions = [

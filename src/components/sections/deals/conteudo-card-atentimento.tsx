@@ -1,4 +1,9 @@
 'use client';
+
+import { historyDetails } from '@/lib/user-messages';
+import { systemMessage } from '@/lib/system-messages';
+import { tagLabel, presentationLabel, channelLabel } from '@/lib/presentation-labels';
+
 import AvatarCanal from '@/components/commons/avatar-canal';
 import IconEditar from './icons/icon-editar';
 import AvatarUser from '@/components/commons/avatar-user';
@@ -945,7 +950,7 @@ export default function ConteudoCardAtendimento({ dealId }: { dealId: string }) 
                   color: t.color || '#334155',
                 }}
               >
-                {t.name}
+                {tagLabel(t.name)}
                 <button
                   aria-label="Remover etiqueta"
                   onClick={() => handleTagRemove(t.id)}
@@ -958,7 +963,7 @@ export default function ConteudoCardAtendimento({ dealId }: { dealId: string }) 
 
             <span className="inline-flex items-center gap-2 px-1.5 py-0.5 md:px-2 md:py-1 rounded-md bg-slate-100 text-[11px] md:text-xs font-semibold text-slate-700 shrink-0 snap-start">
               <AvatarCanal channel={deal.dealOrigin} size={1.5} />
-              <span>{deal.dealOrigin}</span>
+              <span>{channelLabel(deal.dealOrigin)}</span>
             </span>
 
             {statusChip(stage)}
@@ -1061,7 +1066,7 @@ export default function ConteudoCardAtendimento({ dealId }: { dealId: string }) 
                               color: item.color || '#485B80',
                             }}
                           >
-                            {savingTagId === item.id ? 'Salvando...' : item.name}
+                            {savingTagId === item.id ? 'Salvando...' : tagLabel(item.name)}
                           </span>
 
                           <span className="text-[12px] text-slate-500 truncate opacity-80 group-hover:opacity-100 transition-opacity">
@@ -1317,7 +1322,11 @@ export default function ConteudoCardAtendimento({ dealId }: { dealId: string }) 
                           const dotClass = (t: string | undefined) => {
                             const v = (t || '').toUpperCase();
                             if (v === 'CRIACAO' || v === 'CRIAÇÃO') return 'bg-emerald-500';
-                            if (v === 'MUDANCA_STATUS' || v === 'MUDANÇA_STATUS')
+                            if (
+                              v === 'CHANGE_STATUS' ||
+                              v === 'MUDANCA_STATUS' ||
+                              v === 'MUDANÇA_STATUS'
+                            )
                               return 'bg-amber-500';
                             return 'bg-slate-400';
                           };
@@ -1355,13 +1364,18 @@ export default function ConteudoCardAtendimento({ dealId }: { dealId: string }) 
                                         if (v === 'MUDANCA_STATUS' || v === 'MUDANÇA_STATUS') {
                                           return (
                                             <>
-                                              Status alterado de{' '}
+                                              Situação alterado de{' '}
                                               {statusChip((log as any).dataPrevious?.status)} para{' '}
                                               {statusChip((log as any).dataNew?.status)}
                                             </>
                                           );
                                         }
-                                        return log.message;
+                                        return systemMessage(
+                                          log.message,
+                                          TIPO_EVENTO_LOG[
+                                            log.typeEvent as keyof typeof TIPO_EVENTO_LOG
+                                          ] || 'Atendimento atualizado.',
+                                        );
                                       })()}
                                     </p>
 
@@ -1408,7 +1422,7 @@ export default function ConteudoCardAtendimento({ dealId }: { dealId: string }) 
                                             Dados antigos
                                           </h4>
                                           <pre className="bg-white p-2 border border-[#EBEEF2] rounded max-h-40 overflow-auto text-[11px] leading-4">
-                                            {JSON.stringify(log.dataPrevious ?? {}, null, 2)}
+                                            {historyDetails(log.dataPrevious ?? {})}
                                           </pre>
                                         </div>
                                         <div>
@@ -1416,7 +1430,7 @@ export default function ConteudoCardAtendimento({ dealId }: { dealId: string }) 
                                             Dados novos
                                           </h4>
                                           <pre className="bg-white p-2 border border-[#EBEEF2] rounded max-h-40 overflow-auto text-[11px] leading-4">
-                                            {JSON.stringify(log.dataNew ?? {}, null, 2)}
+                                            {historyDetails(log.dataNew ?? {})}
                                           </pre>
                                         </div>
                                       </div>
@@ -1946,7 +1960,7 @@ export default function ConteudoCardAtendimento({ dealId }: { dealId: string }) 
                       <span className="text-sm">{visita.hourStart}</span>
                     </div>
                     <div>
-                      <span className="font-semibold">{visita.type}</span>
+                      <span className="font-semibold">{presentationLabel(visita.type)}</span>
                       <div className="flex items-center gap-1.5">
                         <AvatarUser
                           src={

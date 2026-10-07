@@ -67,7 +67,7 @@ export function AtendimentoCanalTable({ data, loading = false }: AtendimentoCana
     },
     {
       key: 'leadsTotal',
-      title: 'Total de Leads',
+      title: 'Total de Contatos interessados',
       dataIndex: 'leadsTotal',
       align: 'center',
       render: (value) => <span className="text-sm font-medium text-gray-900">{value}</span>,

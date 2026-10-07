@@ -260,7 +260,7 @@ export default function CardQualificacao(props: CardQualificacaoProps & { classN
             <div className="flex items-center gap-2 justify-between w-2/3">
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }}></div>
-                <span className="text-sm text-gray-600">Leads</span>
+                <span className="text-sm text-gray-600">Contatos interessados</span>
               </div>
               <span className="text-sm font-semibold text-gray-900">{props.salespeople}</span>
             </div>

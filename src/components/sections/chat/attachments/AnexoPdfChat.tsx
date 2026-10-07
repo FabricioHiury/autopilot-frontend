@@ -69,7 +69,7 @@ export function AnexoPdfChat({ src, idContainer }: AnexoPdfChatProps) {
             onClick={handleDownload}
             className="py-2 text-[#025787] text-sm font-medium leading-tight"
           >
-            Download
+            Baixar
           </button>
           <button
             onClick={() => setOpenModal(true)}

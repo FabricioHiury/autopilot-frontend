@@ -22,7 +22,7 @@ export default function SectionHighlights() {
   if (!highlight)
     return (
       <div className="py-8 px-1 text-[14px] flex items-center justify-center opacity-50 w-full">
-        <p>LoadingGlobal...</p>
+        <p>Carregando...</p>
       </div>
     );
 

@@ -1,7 +1,7 @@
 'use client';
 import SelectComLabel from '@/components/commons/inputs/select-com-label';
 import { DatePicker } from '@/components/commons/inputs/date-picker';
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 import { useEffect, useState } from 'react';
 // import api from "@/utils/classes/api";
 import toast from 'react-hot-toast';
@@ -109,7 +109,7 @@ export default function CriarVisita({ dealId, onCancelar, onSalvar }: CriarVisit
                 onChange={(value) => updateForm(value, 'type')}
                 options={[
                   { label: 'Recebimento', value: 'Recebimento' },
-                  { label: 'Test Drive', value: 'Test Drive' },
+                  { label: 'Teste de direção', value: 'Test Drive' },
                   { label: 'Assinatura', value: 'Assinatura' },
                 ]}
               />

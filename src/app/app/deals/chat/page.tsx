@@ -470,20 +470,20 @@ export default function ChatPage() {
   const handleArchiveChat = async (id: string) => {
     const [, error] = await apiApp.chat.archive(id);
     if (error) {
-      toast.error(error.message || 'Erro ao arquivar chat');
+      toast.error(error.message || 'Erro ao arquivar conversa');
       return;
     }
-    toast.success('Chat arquivado');
+    toast.success('Conversa arquivada');
     await fetchChats(undefined, undefined, currentFilterKeyRef.current);
   };
 
   const handleUnarchiveChat = async (id: string) => {
     const [, error] = await apiApp.chat.unarchive(id);
     if (error) {
-      toast.error(error.message || 'Erro ao desarquivar chat');
+      toast.error(error.message || 'Erro ao desarquivar conversa');
       return;
     }
-    toast.success('Chat desarquivado');
+    toast.success('Conversa desarquivada');
     await fetchChats(undefined, undefined, currentFilterKeyRef.current);
   };
 
@@ -1004,7 +1004,7 @@ export default function ChatPage() {
   };
 
   const getServiceStatus = () => {
-    if (!selectedChat) return 'Deal';
+    if (!selectedChat) return 'Atendimento';
     const statusKey =
       (findChatId(selectedChat)?.deal?.status as DealStatus) ?? DealStatus.DEAL_INITIAL;
     return dealStatusNames[statusKey];
@@ -1056,7 +1056,7 @@ export default function ChatPage() {
   const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
   const renderPreviewText = (text: string, term?: string) => {
-    if (!text) return 'Chat vazio';
+    if (!text) return 'Conversa vazia';
     const { callInfo, linkInfo } = analyzeMessage(text);
 
     if (callInfo?.isCall) {
@@ -1727,7 +1727,7 @@ export default function ChatPage() {
                   alt="AutoPilot"
                   className="w-24 opacity-70 bg-cover"
                 />
-                <span className="text-sm">Selecione um chat ou pesquise mensagens</span>
+                <span className="text-sm">Selecione uma conversa ou pesquise mensagens</span>
               </div>
             </div>
           )}
@@ -1791,7 +1791,7 @@ export default function ChatPage() {
               <div className="mb-3 p-3 bg-[#F8F9FA] border-l-4 border-[hsl(var(--primary))] rounded-r-md flex items-center justify-between">
                 <div className="flex-1">
                   <div className="text-xs text-[#657380] font-medium mb-1">
-                    Respondendo a {replyingTo.person?.name || 'Customer'}
+                    Respondendo a {replyingTo.person?.name || 'Cliente'}
                   </div>
                   <div className="text-sm text-[hsl(var(--secondary))] truncate">
                     {replyingTo.content || 'Mídia'}

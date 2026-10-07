@@ -1,4 +1,6 @@
 'use client';
+import { systemMessage } from '@/lib/system-messages';
+import { channelLabel } from '@/lib/presentation-labels';
 
 import { useEffect, useMemo, useState, memo, useRef, useCallback } from 'react';
 import { format, isSameDay, subDays } from 'date-fns';
@@ -364,7 +366,7 @@ export function MessagesContainer({
 
       <div className="mx-auto w-full px-4 max-w-[24rem]">
         <p className="text-center text-[#485b7f] text-xs font-semibold">
-          Você está iniciando o atendimento pelo {chat.channel}.
+          Você está iniciando o atendimento pelo {channelLabel(chat.channel)}.
         </p>
         <p className="text-center text-[#485b7f] text-xs font-normal">
           As mensagens em outros canais ficarão disponíveis nas informações sobre o atendimento.
@@ -374,7 +376,7 @@ export function MessagesContainer({
       {hasNonEmptyText(search) && Object.keys(filteredAndGrouped).length === 0 && !loading && (
         <div className="flex h-full w-full items-center justify-center">
           <div className="text-center text-[#485b7f]">
-            <p className="text-sm">Nenhuma mensagem encontrada neste chat.</p>
+            <p className="text-sm">Nenhuma mensagem encontrada nesta conversa.</p>
           </div>
         </div>
       )}
@@ -975,7 +977,7 @@ function MessageItem({
     return (
       <div id={`message-${message.id}`} className="w-full flex justify-center">
         <p className="w-fit block text-center text-[#485b7f] text-xs font-semibold px-1.5 py-1 bg-[#ebeef2] rounded whitespace-pre-wrap break-words">
-          {message.content}
+          {systemMessage(message.content)}
         </p>
       </div>
     );

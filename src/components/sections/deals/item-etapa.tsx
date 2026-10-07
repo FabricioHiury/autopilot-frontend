@@ -1,4 +1,6 @@
 'use client';
+import { tagLabel, channelLabel } from '@/lib/presentation-labels';
+
 import React from 'react';
 import AvatarUser from '@/components/commons/avatar-user';
 import AvatarCanal from '@/components/commons/avatar-canal';
@@ -194,7 +196,7 @@ export default function ItemEtapa({ itemAtendimento, etapaId, availableTags }: I
         origemAtual,
       );
       if (error) {
-        toast.error('Erro ao vincular tag', { id: `tag-${tagId}` });
+        toast.error('Erro ao vincular etiqueta', { id: `tag-${tagId}` });
       } else {
         const selectedTag = availableTags?.find((tag) => tag.id === tagId);
         if (selectedTag) {
@@ -214,7 +216,7 @@ export default function ItemEtapa({ itemAtendimento, etapaId, availableTags }: I
         }
       }
     } catch (error) {
-      toast.error('Erro ao vincular tag');
+      toast.error('Erro ao vincular etiqueta');
     } finally {
       setSavingTagId(null);
       setOptionsOpen(false);
@@ -236,13 +238,13 @@ export default function ItemEtapa({ itemAtendimento, etapaId, availableTags }: I
         origemAtual,
       );
       if (error) {
-        toast.error('Erro ao remover tag', { id: `tag-remove-${tagId}` });
+        toast.error('Erro ao remover etiqueta', { id: `tag-remove-${tagId}` });
       } else {
         setTags(remainingTags);
-        toast.success('Tag removida', { id: `tag-remove-${tagId}` });
+        toast.success('Etiqueta removida', { id: `tag-remove-${tagId}` });
       }
     } catch (error) {
-      toast.error('Erro ao remover tag');
+      toast.error('Erro ao remover etiqueta');
     } finally {
       setRemovingTagId(null);
     }
@@ -251,10 +253,10 @@ export default function ItemEtapa({ itemAtendimento, etapaId, availableTags }: I
   const handleArchiveChat = async (id: string) => {
     const [, error] = await api.chat.archive(id);
     if (error) {
-      toast.error(error.message || 'Erro ao arquivar chat');
+      toast.error(error.message || 'Erro ao arquivar conversa');
       return;
     }
-    toast.success('Chat arquivado');
+    toast.success('Conversa arquivada');
     setOptionsOpen(false);
     setShowArchiveConfirm(false);
     try {
@@ -428,7 +430,7 @@ export default function ItemEtapa({ itemAtendimento, etapaId, availableTags }: I
                       router.push(`/app/deals/chat?id=${chat.id}`);
                       setOptionsOpen(false);
                     }}
-                    title={`Abrir chat (${chat.channel || '?'})`}
+                    title={`Abrir conversa (${channelLabel(chat.channel) || '?'})`}
                     className={cn(
                       'bg-white hover:bg-[#F7F9FC] text-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary))] rounded-full w-8 h-8 flex items-center justify-center border border-[#DDE6F2]',
                     )}
@@ -605,7 +607,7 @@ export default function ItemEtapa({ itemAtendimento, etapaId, availableTags }: I
                                       color: tag.color || '#485B80',
                                     }}
                                   >
-                                    {tag.name}
+                                    {tagLabel(tag.name)}
                                   </span>
                                   {tag.description && (
                                     <span className="text-[11px] text-[#7F8999] truncate">
@@ -639,7 +641,7 @@ export default function ItemEtapa({ itemAtendimento, etapaId, availableTags }: I
                               <path d="M7 7v11a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7" />
                               <path d="M10 12h4" />
                             </svg>
-                            <span>Arquivar chat</span>
+                            <span>Arquivar conversa</span>
                           </button>
                         ) : (
                           <div className="px-3 py-2 flex items-center justify-between gap-2">
@@ -805,17 +807,17 @@ export default function ItemEtapa({ itemAtendimento, etapaId, availableTags }: I
                   color: tag.color || '#485B80',
                 }}
               >
-                <span className="truncate max-w-[140px]">{tag.name}</span>
+                <span className="truncate max-w-[140px]">{tagLabel(tag.name)}</span>
                 <button
                   type="button"
-                  aria-label="Remover tag"
+                  aria-label="Remover etiqueta"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleTagRemove(tag.id);
                   }}
                   disabled={removingTagId === tag.id}
                   className="ml-1 inline-flex items-center justify-center w-4 h-4 rounded-sm hover:bg-white/20 disabled:opacity-60"
-                  title="Remover tag"
+                  title="Remover etiqueta"
                 >
                   {removingTagId === tag.id ? (
                     <span className="inline-block w-3 h-3 border-2 border-white/60 border-t-transparent rounded-sm animate-spin" />

@@ -23,7 +23,7 @@ interface AtendimentoVendedorProps {
 
 export default function AtendimentoVendedor({
   data,
-  title = 'Leads e Conversões',
+  title = 'Contatos interessados e Conversões',
   placeholderFiltro = 'Procurar em vendedores',
   onVendedorClick,
 }: AtendimentoVendedorProps) {
@@ -54,28 +54,28 @@ export default function AtendimentoVendedor({
     },
     {
       key: 'leads',
-      title: 'Leads',
+      title: 'Contatos interessados',
       dataIndex: 'leads',
       align: 'center',
       render: (value) => <span className="font-medium text-gray-900">{value}</span>,
     },
     {
       key: 'leadsAtendimento',
-      title: 'Leads em atendimento',
+      title: 'Contatos interessados em atendimento',
       dataIndex: 'leadsAtendimento',
       align: 'center',
       render: (value) => <span className="font-medium text-gray-900">{value}</span>,
     },
     {
       key: 'leadsResgate',
-      title: 'Leads em resgate',
+      title: 'Contatos interessados em resgate',
       dataIndex: 'leadsResgate',
       align: 'center',
       render: (value) => <span className="font-medium text-gray-900">{value}</span>,
     },
     {
       key: 'leadsConverted',
-      title: 'Leads convertidos',
+      title: 'Contatos interessados convertidos',
       dataIndex: 'leadsConverted',
       align: 'center',
       render: (value) => <span className="font-medium text-gray-900">{value}</span>,

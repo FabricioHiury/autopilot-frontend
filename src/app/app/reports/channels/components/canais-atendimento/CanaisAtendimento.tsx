@@ -1,4 +1,5 @@
 'use client';
+import { channelLabel } from '@/lib/presentation-labels';
 
 import { useState, useRef } from 'react';
 import { ChannelReport } from '@/types/channel-report';
@@ -69,7 +70,7 @@ export default function CanaisAtendimento({
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Hoje nos seus canais de atendimento</h3>
         <div className="text-sm text-gray-500">
-          <span className="font-medium">{totalLeads}</span> leads •{' '}
+          <span className="font-medium">{totalLeads}</span> contatos interessados •{' '}
           <span className="font-medium">{totalConversions}</span> conversões
         </div>
       </div>
@@ -117,7 +118,7 @@ export default function CanaisAtendimento({
                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
                   <img
                     src={getIconPath(channel.channel)}
-                    alt={channel.nameDisplay}
+                    alt={channelLabel(channel.nameDisplay)}
                     className="w-8 h-8 object-contain"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -128,12 +129,14 @@ export default function CanaisAtendimento({
               </div>
 
               {/* Nome do canal */}
-              <div className="text-xs font-medium text-gray-600 mb-2">{channel.nameDisplay}</div>
+              <div className="text-xs font-medium text-gray-600 mb-2">
+                {channelLabel(channel.nameDisplay)}
+              </div>
 
               {/* Métricas */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="text-gray-500">Leads</span>
+                  <span className="text-gray-500">Contatos interessados</span>
                   <span className="font-medium text-gray-900">{channel.leadsTotal}</span>
                 </div>
                 <div className="flex justify-between text-xs">

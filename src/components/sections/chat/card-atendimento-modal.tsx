@@ -1,4 +1,5 @@
 'use client';
+import { channelLabel, presentationLabel } from '@/lib/presentation-labels';
 
 import { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import Link from 'next/link';
@@ -233,7 +234,7 @@ export function CardAtendimentoModal({ dealId }: CardAtendimentoModalProps) {
                 />
                 <div className="flex flex-col gap-0.5">
                   <div className="text-[#1b263a] text-sm font-semibold font-['BR Sonoma'] leading-tight capitalize">
-                    {chat.channel}
+                    {channelLabel(chat.channel)}
                   </div>
                 </div>
               </div>
@@ -267,7 +268,7 @@ export function CardAtendimentoModal({ dealId }: CardAtendimentoModalProps) {
               </div>
 
               <div>
-                <span className="font-semibold">{visit.type}</span>
+                <span className="font-semibold">{presentationLabel(visit.type)}</span>
                 <div className="flex items-center gap-1.5">
                   <AvatarUser
                     src={

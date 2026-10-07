@@ -42,8 +42,9 @@ beforeEach(() => {
 });
 async function review() {
   render(<LeadDossierPanel chatId="chat-a" dealId="deal-a" onReply={vi.fn()} />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Abrir sugestões da IA' }));
   fireEvent.click(await screen.findByRole('button', { name: /Dossiê estratégico/ }));
-  fireEvent.click(await screen.findByRole('button', { name: 'Revisar e aplicar ao Deal' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Revisar e aplicar ao Atendimento' }));
   return screen.findByRole('textbox', { name: 'Descrição revisada' });
 }
 it('waits for review and applies the seller edits only after confirmation', async () => {
@@ -77,6 +78,37 @@ it('does not overwrite a deal that changed while the seller was reviewing', asyn
 it('does not offer deal updates without the edit permission', async () => {
   mocks.fetchPermissions.mockResolvedValue({ permissions: [] });
   render(<LeadDossierPanel chatId="chat-a" dealId="deal-a" onReply={vi.fn()} />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Abrir sugestões da IA' }));
   fireEvent.click(await screen.findByRole('button', { name: /Dossiê estratégico/ }));
-  expect(screen.queryByRole('button', { name: 'Revisar e aplicar ao Deal' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Revisar e aplicar ao Atendimento' })).toBeNull();
+});
+
+it('starts collapsed and inserts a suggestion for review without sending it', async () => {
+  const onReply = vi.fn();
+  render(<LeadDossierPanel chatId="chat-a" onReply={onReply} />);
+  await waitFor(() => expect(screen.getByText('1 sugestão')).toBeTruthy());
+  expect(
+    screen.getByRole('button', { name: 'Abrir sugestões da IA' }).getAttribute('aria-expanded'),
+  ).toBe('false');
+  expect(screen.queryByRole('button', { name: 'Vamos agendar uma visita?' })).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Abrir sugestões da IA' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Vamos agendar uma visita?' }));
+  expect(onReply).toHaveBeenCalledWith('Vamos agendar uma visita?');
+  expect(screen.queryByRole('button', { name: 'Vamos agendar uma visita?' })).toBeNull();
+  expect(mocks.applyToDeal).not.toHaveBeenCalled();
+});
+
+it('can be minimized and resets to collapsed when switching conversations', async () => {
+  const onReply = vi.fn();
+  const { rerender } = render(<LeadDossierPanel chatId="chat-a" onReply={onReply} />);
+  await waitFor(() => expect(screen.getByText('1 sugestão')).toBeTruthy());
+  fireEvent.click(screen.getByRole('button', { name: 'Abrir sugestões da IA' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Recolher sugestões da IA' }));
+  expect(screen.queryByRole('button', { name: 'Vamos agendar uma visita?' })).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Abrir sugestões da IA' }));
+  rerender(<LeadDossierPanel chatId="chat-b" onReply={onReply} />);
+  await waitFor(() => expect(screen.getByText('1 sugestão')).toBeTruthy());
+  expect(
+    screen.getByRole('button', { name: 'Abrir sugestões da IA' }).getAttribute('aria-expanded'),
+  ).toBe('false');
 });

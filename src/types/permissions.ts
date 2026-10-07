@@ -36,13 +36,13 @@ export enum AdminPermission {
   AUTOPILOT_VIEW_USERS_ADMIN = 'autopilotViewUsersAdmin',
 }
 export const StorePermissionLabels: Record<StorePermission, string> = {
-  [StorePermission.STORE_VIEW_DASHBOARD]: 'Visualizar Dashboard',
+  [StorePermission.STORE_VIEW_DASHBOARD]: 'Visualizar Painel',
   [StorePermission.STORE_VIEW_DEALS]: 'Visualizar Atendimentos',
   [StorePermission.STORE_EDIT_DELETE_DEAL]: 'Editar/Excluir Atendimento',
   [StorePermission.STORE_LINK_DEAL_USER]: 'Vincular Atendimento a Usuário',
   [StorePermission.STORE_TRANSFER_DEAL]: 'Transferir Atendimento',
-  [StorePermission.STORE_VIEW_CHAT]: 'Visualizar Chat',
-  [StorePermission.STORE_REPLY_CHAT]: 'Responder Chat',
+  [StorePermission.STORE_VIEW_CHAT]: 'Visualizar Conversa',
+  [StorePermission.STORE_REPLY_CHAT]: 'Responder Conversa',
   [StorePermission.STORE_REGISTER_EDIT_CUSTOMERS]: 'Cadastrar/Editar Clientes',
   [StorePermission.STORE_SEARCH_CUSTOMERS]: 'Pesquisar Clientes',
   [StorePermission.STORE_MANAGE_USERS]: 'Gerenciar Usuários',

@@ -1,4 +1,5 @@
 'use client';
+import { lossReasonLabel } from '@/lib/presentation-labels';
 
 import CardSegmentacaoLeadStatus from './components/card/CardSegmentacaoLeadStatus';
 import toast from 'react-hot-toast';
@@ -90,43 +91,7 @@ export default function RelatorioAtendimentosGeral({
       : undefined;
   };
 
-  const formatEnumLabel = (raw: string | undefined): string => {
-    if (!raw) return '—';
-    const spaced = raw.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
-    const tokens = spaced.split(' ');
-    const accentMap: Record<string, string> = {
-      nao: 'não',
-      negotiation: 'negociação',
-      avaliacao: 'avaliação',
-      credito: 'crédito',
-      proximo: 'próximo',
-      concessionaria: 'concessionária',
-      veiculo: 'veículo',
-      whatsapp: 'WhatsApp',
-      incompativel: 'incompatível',
-      documentacao: 'documentação',
-      customer: 'Customer',
-      banco: 'Banco',
-      score: 'Score',
-      mercado: 'mercado',
-      proposta: 'proposta',
-      parcela: 'parcela',
-      renda: 'renda',
-      color: 'color',
-      version: 'versão',
-      modelo: 'modelo',
-      store: 'STORE',
-      competition: 'concorrência',
-    };
-    const normalized = tokens
-      .map((t, i) => {
-        const lower = t.toLowerCase();
-        const converted = accentMap[lower] || lower;
-        return i === 0 ? converted.charAt(0).toUpperCase() + converted.slice(1) : converted;
-      })
-      .join(' ');
-    return normalized;
-  };
+  const formatEnumLabel = lossReasonLabel;
 
   const motivosPerdaChartData = useMemo(() => {
     const palette = [
@@ -292,7 +257,7 @@ export default function RelatorioAtendimentosGeral({
         <div className="xl:col-span-5 flex flex-col md:flex-row gap-4 h-full">
           <CardTempoResposta
             title="Tempo de resposta média"
-            subtitulo="Lead e pré-venda"
+            subtitulo="Contato interessado e pré-venda"
             tempo={dadosFiltrados?.timeAverageReplyPreSalesperson || '00:00'}
             dadosTempoMedio={dadosFiltrados?.timeAverageReplyPreSalespersonByMonth}
             className="flex-1"
@@ -313,11 +278,11 @@ export default function RelatorioAtendimentosGeral({
             type="carrossel"
             slides={[
               {
-                title: 'Leads Recebidas vs Conversões',
-                subtitulo: 'Leads que passaram pelo(s) Pré-vendedor(es)',
+                title: 'contatos interessados recebidos e Conversões',
+                subtitulo: 'Contatos interessados que passaram pelo(s) Pré-vendedor(es)',
                 itens: [
                   {
-                    label: 'Quantidade de leads recebidas',
+                    label: 'Quantidade de contatos interessados recebidos',
                     percentage: dadosFiltrados?.rateConversionLeads || 0,
                     total: dadosFiltrados?.limitQualification || 0,
                     conversao: dadosFiltrados?.limitConversionLeads || 0,
@@ -325,11 +290,11 @@ export default function RelatorioAtendimentosGeral({
                 ],
               },
               {
-                title: 'Leads Recebidas vs Qualificações',
-                subtitulo: 'Leads que chegaram ao vendedor após pré-venda',
+                title: 'contatos interessados recebidos e Qualificações',
+                subtitulo: 'Contatos interessados que chegaram ao vendedor após pré-venda',
                 itens: [
                   {
-                    label: 'Leads recebidas',
+                    label: 'contatos interessados recebidos',
                     percentage: dadosFiltrados?.averageQualification || 0,
                     total: dadosFiltrados?.totalDeals || 0,
                     conversao: dadosFiltrados?.limitQualification || 0,
@@ -337,11 +302,11 @@ export default function RelatorioAtendimentosGeral({
                 ],
               },
               {
-                title: 'Leads Recebidas vs Qualificações',
+                title: 'contatos interessados recebidos e Qualificações',
                 subtitulo: '',
                 itens: [
                   {
-                    label: 'Leads Convertidas',
+                    label: 'contatos interessados convertidos',
                     percentage: dadosFiltrados?.averageConversion || 0,
                     total: dadosFiltrados?.totalDeals || 0,
                     conversao: dadosFiltrados?.limitConversion || 0,
@@ -349,11 +314,11 @@ export default function RelatorioAtendimentosGeral({
                 ],
               },
               {
-                title: 'Leads Qualificadas vs Conversões',
-                subtitulo: 'Leads que chegaram ao vendedor vs Vendas realizadas',
+                title: 'contatos interessados qualificados e Conversões',
+                subtitulo: 'Contatos interessados que chegaram ao vendedor e Vendas realizadas',
                 itens: [
                   {
-                    label: 'Leads qualificadas',
+                    label: 'contatos interessados qualificados',
                     percentage: dadosFiltrados?.rateConversionLeads || 0,
                     total: dadosFiltrados?.limitQualification || 0,
                     conversao: dadosFiltrados?.limitConversionLeads || 0,

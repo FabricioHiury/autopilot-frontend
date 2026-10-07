@@ -16,7 +16,7 @@ import validateInputs from '@/utils/classes/sanitizer/validate';
 import { Employee } from '@/types/employee';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 import { Store } from '@/lib/store-schema';
 import { AlertDialog } from '@/components/commons/modais/alert-dialog';
 

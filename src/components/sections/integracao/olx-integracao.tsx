@@ -31,7 +31,7 @@ export default function OlxIntegracao() {
       const [response, error] = await api.get('/integrations/olx-link-redirect');
 
       if (!response || error) {
-        toast.error('Erro ao carregar o link de redirecionamento');
+        toast.error('Erro ao carregar o endereço de redirecionamento');
         return;
       }
 
@@ -291,7 +291,7 @@ Equipe ${state.storeName}`,
             <br />
             <br />
             Qualquer dúvida, consulte nosso Manual de Integração. Nosso time de especialistas também
-            está disponível pelo chat!
+            está disponível pela conversa!
             <br />
             <br />
             João Silva.

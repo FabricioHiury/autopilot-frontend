@@ -158,12 +158,12 @@ export class DealService {
       return [response.data as DealListResponse, null];
     } catch (error) {
       if (error instanceof AxiosError && error.response?.status === 401) {
-        return [null, { message: 'Você não tem permissão para listar os chats' }];
+        return [null, { message: 'Você não tem permissão para listar as conversas' }];
       }
       if (error instanceof AxiosError && error.response?.status === 500) {
         return [null, { message: 'Erro no servidor.' }];
       }
-      return [null, { message: 'Não foi possível listar os chats' }];
+      return [null, { message: 'Não foi possível listar as conversas' }];
     }
   }
   async getDeal(dealId: string): Promise<ApiResult<DealDetails>> {
@@ -638,14 +638,14 @@ export class DealService {
         return [
           null,
           {
-            message: 'Você não tem permissão para registrar tag no atendimento',
+            message: 'Você não tem permissão para registrar etiqueta no atendimento',
           },
         ];
       }
       if (error instanceof AxiosError && error.response?.status === 500) {
         return [null, { message: 'Erro no servidor.' }];
       }
-      return [null, { message: 'Erro ao registrar tag no atendimento' }];
+      return [null, { message: 'Erro ao registrar etiqueta no atendimento' }];
     }
   }
   async findTagsDeal(): Promise<ApiResult<DealTag[]>> {
@@ -657,14 +657,14 @@ export class DealService {
         return [
           null,
           {
-            message: 'Você não tem permissão para buscar tags no atendimento',
+            message: 'Você não tem permissão para buscar etiquetas no atendimento',
           },
         ];
       }
       if (error instanceof AxiosError && error.response?.status === 500) {
         return [null, { message: 'Erro no servidor.' }];
       }
-      return [null, { message: 'Erro ao buscar tags no atendimento' }];
+      return [null, { message: 'Erro ao buscar etiquetas no atendimento' }];
     }
   }
   async updateTagDeal(idTag: string, data: DealTag): Promise<ApiResult<any>> {
@@ -676,14 +676,14 @@ export class DealService {
         return [
           null,
           {
-            message: 'Você não tem permissão para atualizar tag no atendimento',
+            message: 'Você não tem permissão para atualizar etiqueta no atendimento',
           },
         ];
       }
       if (error instanceof AxiosError && error.response?.status === 500) {
         return [null, { message: 'Erro no servidor.' }];
       }
-      return [null, { message: 'Erro ao atualizar tag no atendimento' }];
+      return [null, { message: 'Erro ao atualizar etiqueta no atendimento' }];
     }
   }
   async removeTagDeal(idTag: string): Promise<ApiResult<any>> {
@@ -695,14 +695,14 @@ export class DealService {
         return [
           null,
           {
-            message: 'Você não tem permissão para remover tag no atendimento',
+            message: 'Você não tem permissão para remover etiqueta no atendimento',
           },
         ];
       }
       if (error instanceof AxiosError && error.response?.status === 500) {
         return [null, { message: 'Erro no servidor.' }];
       }
-      return [null, { message: 'Erro ao remover tag no atendimento' }];
+      return [null, { message: 'Erro ao remover etiqueta no atendimento' }];
     }
   }
   async linkTagDeal(
@@ -721,14 +721,14 @@ export class DealService {
         return [
           null,
           {
-            message: 'Você não tem permissão para vincular tag no atendimento',
+            message: 'Você não tem permissão para vincular etiqueta no atendimento',
           },
         ];
       }
       if (error instanceof AxiosError && error.response?.status === 500) {
         return [null, { message: 'Erro no servidor.' }];
       }
-      return [null, { message: 'Erro ao vincular tag no atendimento' }];
+      return [null, { message: 'Erro ao vincular etiqueta no atendimento' }];
     }
   }
   async archiveDeal(dealId: string): Promise<ApiResult<any>> {

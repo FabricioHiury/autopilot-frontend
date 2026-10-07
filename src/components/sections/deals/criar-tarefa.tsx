@@ -3,7 +3,7 @@ import { TextareaComLabel } from '@/components/commons/inputs/textarea-com-label
 import IconTarefa from './icons/icon-tarefa';
 import { DatePicker } from '@/components/commons/inputs/date-picker';
 import { TimePicker } from '@/components/commons/inputs/time-picker';
-import { z } from 'zod';
+import { z } from '@/lib/zod';
 import { useState } from 'react';
 import api from '@/utils/classes/api';
 import toast from 'react-hot-toast';

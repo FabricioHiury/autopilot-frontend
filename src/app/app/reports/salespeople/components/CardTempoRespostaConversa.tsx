@@ -99,7 +99,7 @@ const CardTempoRespostaConversa: React.FC<CardTempoRespostaConversaProps> = ({
 
       {/* <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-gray-500">Performance vs Meta</span>
+          <span className="text-xs text-gray-500">Performance e Meta</span>
           {isWithinMeta && <span className={`text-xs font-medium ${isWithinMeta ? 'text-green-600' : 'text-red-600'}`}>
             {isWithinMeta ? 'Dentro da meta' : 'Acima da meta'}
           </span>}

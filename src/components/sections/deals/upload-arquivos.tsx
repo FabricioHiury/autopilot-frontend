@@ -258,7 +258,7 @@ export default function UploadArquivosAtandimento({ dealId }: UploadArquivosAtan
     <div className="flex flex-col gap-7">
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-          <span className="font-medium">Erro no upload:</span> {error}
+          <span className="font-medium">Erro no envio:</span> {error}
         </div>
       )}
       {success && (

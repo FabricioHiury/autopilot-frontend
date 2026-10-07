@@ -1,3 +1,4 @@
+import { channelLabel } from '@/lib/presentation-labels';
 import React from 'react';
 
 interface CanalDestaque {
@@ -48,7 +49,7 @@ export default function CanaisDestaque({
         <div className="w-6 h-6 rounded-full bg-white border flex items-center justify-center">
           <img
             src={channel.iconUrl || getIconPath(channel.channel)}
-            alt={channel.nameDisplay}
+            alt={channelLabel(channel.nameDisplay)}
             className="w-4 h-4 object-contain"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
@@ -56,7 +57,9 @@ export default function CanaisDestaque({
             }}
           />
         </div>
-        <span className="text-xs font-medium text-gray-700">{channel.nameDisplay}</span>
+        <span className="text-xs font-medium text-gray-700">
+          {channelLabel(channel.nameDisplay)}
+        </span>
       </div>
       <div className="text-right">
         <div className="text-sm font-bold text-gray-900">
@@ -80,7 +83,7 @@ export default function CanaisDestaque({
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-2 h-2 rounded-full bg-orange-400"></div>
-          <span className="text-xs font-medium text-gray-600">Leads</span>
+          <span className="text-xs font-medium text-gray-600">Contatos interessados</span>
           <span className="text-xs text-green-500 font-medium ml-auto">30%</span>
         </div>
         <div className="space-y-1">

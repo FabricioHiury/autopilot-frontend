@@ -1,4 +1,5 @@
 'use client';
+import { channelLabel } from '@/lib/presentation-labels';
 
 import React from 'react';
 import { Ranking } from '@/types/channel-report';
@@ -70,7 +71,7 @@ export default function RankingCanais({ ranking, taxaMedia, className }: Ranking
       {leadTop && (
         <div className="mb-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-gray-800">Leads</span>
+            <span className="text-sm font-semibold text-gray-800">Contatos interessados</span>
             {taxaMedia !== undefined && <PercentPill value={taxaMedia} />}
           </div>
           <div className="flex items-center justify-between mt-3">
@@ -78,7 +79,7 @@ export default function RankingCanais({ ranking, taxaMedia, className }: Ranking
               <div className="w-11 h-11 rounded-full bg-white border flex items-center justify-center">
                 <img
                   src={getIconPath(leadTop.channel)}
-                  alt={leadTop.nameDisplay}
+                  alt={channelLabel(leadTop.nameDisplay)}
                   className="w-7 h-7 object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -87,7 +88,7 @@ export default function RankingCanais({ ranking, taxaMedia, className }: Ranking
                 />
               </div>
               <div className="text-lg font-semibold text-gray-600 leading-tight">
-                {leadTop.nameDisplay}
+                {channelLabel(leadTop.nameDisplay)}
               </div>
             </div>
             <div className="text-3xl font-bold text-gray-900">
@@ -109,7 +110,7 @@ export default function RankingCanais({ ranking, taxaMedia, className }: Ranking
               <div className="w-11 h-11 rounded-full bg-white border flex items-center justify-center">
                 <img
                   src={getIconPath(convTop.channel)}
-                  alt={convTop.nameDisplay}
+                  alt={channelLabel(convTop.nameDisplay)}
                   className="w-7 h-7 object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -118,7 +119,7 @@ export default function RankingCanais({ ranking, taxaMedia, className }: Ranking
                 />
               </div>
               <div className="text-lg font-semibold text-gray-600 leading-tight">
-                {convTop.nameDisplay}
+                {channelLabel(convTop.nameDisplay)}
               </div>
             </div>
             <div className="text-3xl font-bold text-gray-900">

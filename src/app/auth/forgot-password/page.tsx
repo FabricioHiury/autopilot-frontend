@@ -32,8 +32,8 @@ function RecoverPassPage() {
             Recupere sua conta
           </h1>
           <h2 className="text-[14px] lg:text-[17px] text-[#485B80] font-normal leading-relaxed">
-            Informe seu e-mail cadastrado para receber um link de recuperação e voltar a acessar sua
-            conta com segurança.
+            Informe seu e-mail cadastrado para receber um endereço de recuperação e voltar a acessar
+            sua conta com segurança.
           </h2>
         </div>
       </div>
