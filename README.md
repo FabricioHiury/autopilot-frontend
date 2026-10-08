@@ -1,65 +1,112 @@
-# AutoPilot CRM — Frontend
+# AutoPilot — Frontend
 
-CRM para concessionárias com interface em português, serviços REST em inglês, identidade visual por loja e assistência de IA nas conversas. A implementação usa como referência o repositório `autopilot-backend` atual.
+Interface web do AutoPilot, CRM para lojas e concessionárias de veículos. A aplicação reúne atendimento comercial, conversas, clientes, gestão da equipe, relatórios e assistência de IA. O mesmo frontend oferece a área da loja e o backoffice dos administradores da plataforma.
+
+Stack: Next.js 14 App Router, React 18, TypeScript, Tailwind CSS, componentes Radix, Redux e Socket.io. Os textos da interface são apresentados em português; campos e valores internos dos contratos permanecem em inglês.
+
+## Projetos e responsabilidades
+
+| Projeto                  | Responsabilidade                                        | Porta local |
+| ------------------------ | ------------------------------------------------------- | ----------- |
+| `autopilot-frontend`     | Navegação, formulários, chat e experiência dos usuários | 3001        |
+| `autopilot-backend`      | Autenticação, regras do CRM, dados e análises da IA     | 3003        |
+| `autopilot-microservice` | Integrações com os canais externos                      | 3005        |
+
+O navegador acessa o backend principal. Tokens de provedores, Evolution e microservice ficam nas APIs. A inferência da IA também é solicitada pelo backend, inclusive quando o modelo roda localmente no Ollama.
+
+## O que a aplicação oferece
+
+- **Atendimentos:** pipeline de compra, venda e consignação, responsáveis, etapas, etiquetas, temperatura, tarefas, visitas, comentários e histórico.
+- **Conversas:** caixa de entrada, filtros, mensagens, anexos, respostas padrão e acompanhamento de entrega.
+- **AutoPilot IA:** dossiê do contato, próxima ação e respostas sugeridas para revisão pelo vendedor.
+- **Clientes e equipe:** cadastro de contatos, usuários, cargos e permissões por loja.
+- **Gestão:** painel comercial, relatórios, distribuição de atendimentos e suspensões.
+- **Configurações:** identidade visual, dados da loja e integrações de WhatsApp, Instagram, Facebook e OLX.
+- **Suporte:** perguntas frequentes e chamados.
+- **Backoffice:** gestão de concessionárias, administradores da plataforma, conteúdo de FAQ e atendimento de suporte.
+
+As telas e ações disponíveis dependem do perfil e das permissões retornadas pelo backend.
 
 ## Executar localmente
 
-Requisitos: Node.js 20 ou superior e pnpm. O frontend não precisa de Docker.
+Recomenda-se Node.js 22 e pnpm 10.25.0 para trabalhar com os três projetos. O frontend roda no host e não precisa de um container próprio.
 
-```sh
-pnpm install
+Na primeira configuração:
+
+```bash
 cp .env.example .env.local
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Abra `http://localhost:3001/auth/login`. O backend principal deve estar em `http://localhost:3003`. Configure `NEXT_PUBLIC_API_URL` em `.env.local` se usar outra origem. `NEXT_PUBLIC_SOCKET_URL` é opcional e recebe somente a origem, sem o namespace `/chats`.
+Preserve o `.env.local` se ele já estiver configurado. As variáveis públicas são:
 
-Inicie backend e microservice nos respectivos projetos. Libere `http://localhost:3001` no CORS do backend, configure sua URL de frontend para os links de e-mail e prepare banco, Redis, SMTP, armazenamento de arquivos e Evolution conforme as instruções desses projetos. Não há dados demonstrativos nem credenciais de microservice no navegador. Sem backend, o login mostra o erro da conexão.
+```dotenv
+NEXT_PUBLIC_API_URL=http://localhost:3003
+NEXT_PUBLIC_SOCKET_URL=http://localhost:3003
+```
 
-Para produção:
+`NEXT_PUBLIC_SOCKET_URL` recebe a origem, sem `/chats`; quando omitida, o cliente utiliza a origem da API. Variáveis `NEXT_PUBLIC_*` são públicas e incorporadas ao build.
 
-```sh
+Abra `http://localhost:3001/auth/login`. Para o ambiente integrado, siga o [guia local do backend](../autopilot-backend/docker/local/README.md), considerando os repositórios em pastas irmãs. Ele sobe PostgreSQL, Redis, Evolution e Ollama pelo Colima e mantém as aplicações no host. O CORS do backend deve permitir `http://localhost:3001`.
+
+O login depende de usuários ativos no banco do CRM. A aplicação não fornece uma sessão demonstrativa nem cria usuários automaticamente.
+
+## Navegação e sessão
+
+| Rota                         | Área                                          |
+| ---------------------------- | --------------------------------------------- |
+| `/auth/login`                | Login compartilhado das lojas e da plataforma |
+| `/app/dashboard`             | Painel da loja                                |
+| `/app/deals/pipeline`        | Pipeline de atendimentos                      |
+| `/app/deals/chat`            | Caixa de entrada e AutoPilot IA               |
+| `/app/customers`             | Clientes                                      |
+| `/app/reports`               | Relatórios comerciais                         |
+| `/app/settings/access`       | Usuários, cargos e permissões                 |
+| `/app/settings/branding`     | Identidade visual da loja                     |
+| `/app/settings/integrations` | Configuração dos canais                       |
+| `/app/help-faq`              | FAQ e suporte                                 |
+| `/backoffice/app/tenants`    | Concessionárias e seus administradores        |
+| `/backoffice/app/access`     | Administradores da plataforma                 |
+| `/backoffice/app/tickets`    | Chamados de suporte do backoffice             |
+
+O perfil `autopilot` acessa o backoffice; `storeOwner` e `user` acessam a loja. A sessão persiste até expirar, ocorrer logout ou resposta HTTP 401. Uma resposta 403 mantém a sessão e informa a falta de permissão. Não existe renovação automática de JWT no contrato atual.
+
+A identidade institucional AutoPilot usa a mesma logo nas áreas da aplicação. A personalização da loja é carregada após o login por `GET /store/customization`, aplicada ao tema e removida ao sair. As lojas compartilham o domínio da aplicação.
+
+## Experiência do AutoPilot IA
+
+Em cada conversa, o painel começa recolhido na barra **AutoPilot IA**. O usuário pode abrir ou minimizar as sugestões; o dossiê estratégico aparece sob demanda dentro do painel, com altura limitada e rolagem própria.
+
+Selecionar uma resposta recolhe o painel e preenche o editor para revisão. O envio depende do botão normal de enviar. Aplicar dados ao atendimento exige permissão, revisão e confirmação; alterações concorrentes são verificadas antes de salvar.
+
+Quando a análise termina, o painel recebe a atualização em tempo real sem abrir automaticamente. Estados de carregamento, indisponibilidade e IA desabilitada também ficam acessíveis ao expandir a barra.
+
+O modelo e a habilitação são definidos no **backend**, pelas variáveis `CHAT_AI_URL`, `CHAT_AI_MODEL` e `CHAT_AI_API_KEY`. O frontend não guarda a chave nem escolhe o modelo. O ambiente local documentado usa Ollama com `gemma3:1b`, um modelo leve para testes com limitações de qualidade.
+
+## Integração e estrutura
+
+`src/app/` organiza as rotas. Componentes ficam em `src/components/`; contratos REST em `src/services/`; modelos em `src/types/`; estado e contexto em `src/redux/`, `src/hooks/` e `src/contexts/`. Assets institucionais ficam em `public/` e testes em `src/test/`.
+
+`api.client.ts` centraliza JWT, timeout e o envelope `{ message, statusCode, data }`. Helpers de apresentação traduzem cargos, canais, etiquetas conhecidas e mensagens de erro, preservando os valores enviados à API e nomes personalizados.
+
+`RealtimeContext` mantém uma conexão Socket.io por sessão no namespace `/chats`. Os eventos são filtrados pela loja. Reconexão e retorno à aba reconciliam o histórico por REST; o pareamento de WhatsApp consulta o status enquanto aguarda o QR Code.
+
+Há redirecionamentos para links antigos de login, recuperação de senha, confirmação de e-mail e callbacks dos canais. Os parâmetros dos callbacks são preservados.
+
+## Verificação e produção
+
+```bash
+pnpm typecheck
+pnpm test:run
+pnpm lint
+pnpm format:check
 pnpm build
 pnpm start
 ```
 
-As variáveis `NEXT_PUBLIC_*` são públicas e incorporadas ao build. Nunca coloque tokens de microservice ou de provedores nelas.
+Vitest e React Testing Library cobrem sessão, permissões, contratos REST, tema, mensagens em tempo real, tradução da interface e revisão humana da IA. `pnpm format` e `pnpm lint:fix` aplicam as correções automáticas de formatação e lint.
 
-## Fluxos principais
+O lint geral ainda possui pendências preexistentes que podem bloquear `pnpm build`. Para diagnosticar somente compilação e tipagem, existe `pnpm exec next build --no-lint`; esse comando não substitui a correção do lint.
 
-- `/auth/login`: login único. `autopilot` entra no backoffice; `storeOwner` e `user` entram na loja. A sessão persiste entre visitas até expirar o JWT, com encerramento em logout ou resposta HTTP 401. Respostas 403 mantêm a sessão.
-- `/backoffice/app/tenants`: cadastro de concessionária e administrador responsável, confirmação de e-mail e habilitação do WhatsApp. Não há cadastro público na interface nem checkout/Stripe.
-- `/app/settings/access`: usuários, cargos e permissões por loja. Os cargos iniciais do backend incluem vendedor e pré-vendedor; cargos adicionais e suas permissões podem ser definidos pela administração da loja.
-- `/app/settings/branding`: cores, nome, logos, favicon, horários e dias de atendimento. A prévia pode ser cancelada. O upload de logo usa o backend; logos alternativos e favicon aceitam URLs HTTPS.
-- `/app/settings/integrations/connect/whatsapp`: Evolution com QR Code, renovação visual e desconexão. Instagram, Facebook e OLX continuam disponíveis.
-- `/app/deals`: pipeline; `/app/deals/chat`: mensagens, status de entrega e AutoPilot IA. O dossiê lateral permite revisar os dados e confirmar sua aplicação ao deal. Sugestões apenas preenchem o editor; o vendedor envia a mensagem.
-- `/app/customers`, `/app/reports` e `/app/help-faq`: clientes, relatórios e suporte.
-
-As cores institucionais padrão são petróleo `#087F8C`, azul escuro `#172D3E` e âmbar `#D98C10`. O tema é carregado após autenticação por `GET /store/customization` e limpo ao sair. A identidade institucional aparece no login, compartilhado entre todas as lojas.
-
-## Integração e organização
-
-`src/services/api.client.ts` centraliza JWT, timeout de 30 segundos e tratamento do envelope `{message,statusCode,data}`. Serviços em `src/services` concentram os contratos de cada domínio; `src/types` contém os modelos. `TenantContext` carrega a marca e `RealtimeContext` mantém uma conexão Socket.io por sessão.
-
-O socket usa `/chats` e `auth: {token}`. Eventos são conferidos pelo `storeId`. Reconexão e retorno à aba refazem a consulta REST; mensagens não dependem de polling. A consulta periódica de status durante o pareamento do QR Code continua necessária. Não existe renovação de JWT no backend atual.
-
-Os links de e-mail existentes `/login` e `/authentication/reset-password` são redirecionados para as rotas atuais. A confirmação usa `/confirm-email?token=...`. Os callbacks legados dos canais em `/app/configuracoes/integracoes/acesso/:channel` continuam sendo redirecionados, preservando os parâmetros do microservice.
-
-## Verificação
-
-Para padronizar a formatação de TypeScript, TSX, JavaScript, JSON, CSS e Markdown:
-
-```sh
-pnpm format
-pnpm lint:fix
-```
-
-`format` aplica o Prettier ao projeto, ignorando dependências, builds, arquivos estáticos e patches de backend. `lint:fix` corrige os problemas que o ESLint consegue resolver automaticamente; erros de lógica, tipagem e hooks podem exigir revisão manual. Para apenas verificar, sem alterar arquivos, use `pnpm format:check` e `pnpm lint`.
-
-```sh
-pnpm typecheck
-pnpm test:run
-pnpm build
-```
-
-Os testes cobrem sessão persistente, erro de permissão, envelope REST, limpeza do tema, reconciliação de mensagens e revisão humana da IA. A validação com os serviços reais depende de iniciar backend e microservice. Siga os READMEs desses projetos para configurar o ambiente e validar os fluxos integrados.
+Integrações reais exigem contas e credenciais configuradas nas APIs. SMTP, Firebase e Evolution não são simulados pelo frontend. Consulte [AGENTS.md](AGENTS.md) para as convenções de contribuição.
