@@ -1,37 +1,37 @@
 # AutoPilot — Frontend
 
-Interface web do AutoPilot, CRM para lojas e concessionárias de veículos. A aplicação reúne atendimento comercial, conversas, clientes, gestão da equipe, relatórios e assistência de IA. O mesmo frontend oferece a área da loja e o backoffice dos administradores da plataforma.
+AutoPilot's web interface, a CRM for vehicle retailers and dealerships. The application brings together sales deals, conversations, customers, team management, reports, and AI assistance. The same frontend serves store users and platform administrators through the backoffice.
 
-Stack: Next.js 14 App Router, React 18, TypeScript, Tailwind CSS, componentes Radix, Redux e Socket.io. Os textos da interface são apresentados em português; campos e valores internos dos contratos permanecem em inglês.
+Stack: Next.js 14 App Router, React 18, TypeScript, Tailwind CSS, Radix components, Redux, and Socket.io. User-facing text is in Portuguese; internal contract fields and values remain in English.
 
-## Projetos e responsabilidades
+## Projects and responsibilities
 
-| Projeto                  | Responsabilidade                                        | Porta local |
-| ------------------------ | ------------------------------------------------------- | ----------- |
-| `autopilot-frontend`     | Navegação, formulários, chat e experiência dos usuários | 3001        |
-| `autopilot-backend`      | Autenticação, regras do CRM, dados e análises da IA     | 3003        |
-| `autopilot-microservice` | Integrações com os canais externos                      | 3005        |
+| Project                                                                           | Responsibility                                   | Local port |
+| --------------------------------------------------------------------------------- | ------------------------------------------------ | ---------- |
+| [autopilot-frontend](https://github.com/FabricioHiury/autopilot-frontend)         | Navigation, forms, chat, and user experience     | 3001       |
+| [autopilot-backend](https://github.com/FabricioHiury/autopilot-backend)           | Authentication, CRM rules, data, and AI analysis | 3003       |
+| [autopilot-microservice](https://github.com/FabricioHiury/autopilot-microservice) | External channel integrations                    | 3005       |
 
-O navegador acessa o backend principal. Tokens de provedores, Evolution e microservice ficam nas APIs. A inferência da IA também é solicitada pelo backend, inclusive quando o modelo roda localmente no Ollama.
+The browser connects to the main backend. Provider, Evolution, and microservice tokens stay within the APIs. The backend also requests AI inference, including when the model runs locally through Ollama.
 
-## O que a aplicação oferece
+## Application features
 
-- **Atendimentos:** pipeline de compra, venda e consignação, responsáveis, etapas, etiquetas, temperatura, tarefas, visitas, comentários e histórico.
-- **Conversas:** caixa de entrada, filtros, mensagens, anexos, respostas padrão e acompanhamento de entrega.
-- **AutoPilot IA:** dossiê do contato, próxima ação e respostas sugeridas para revisão pelo vendedor.
-- **Clientes e equipe:** cadastro de contatos, usuários, cargos e permissões por loja.
-- **Gestão:** painel comercial, relatórios, distribuição de atendimentos e suspensões.
-- **Configurações:** identidade visual, dados da loja e integrações de WhatsApp, Instagram, Facebook e OLX.
-- **Suporte:** perguntas frequentes e chamados.
-- **Backoffice:** gestão de concessionárias, administradores da plataforma, conteúdo de FAQ e atendimento de suporte.
+- **Deals:** purchase, sale, and consignment pipelines, assignees, stages, tags, lead temperature, tasks, visits, comments, and history.
+- **Conversations:** inbox, filters, messages, attachments, predefined replies, and delivery tracking.
+- **AutoPilot AI:** contact dossier, next action, and suggested replies for salesperson review.
+- **Customers and teams:** contacts, users, roles, and permissions per store.
+- **Management:** sales dashboard, reports, deal distribution, and suspensions.
+- **Settings:** branding, store information, and WhatsApp, Instagram, Facebook, and OLX integrations.
+- **Support:** FAQs and tickets.
+- **Backoffice:** dealerships, platform administrators, FAQ content, and support management.
 
-As telas e ações disponíveis dependem do perfil e das permissões retornadas pelo backend.
+Available screens and actions depend on the profile and permissions returned by the backend.
 
-## Executar localmente
+## Running locally
 
-Recomenda-se Node.js 22 e pnpm 10.25.0 para trabalhar com os três projetos. O frontend roda no host e não precisa de um container próprio.
+Node.js 22 and pnpm 10.25.0 are recommended when working with all three projects. The frontend runs on the host and does not need its own container.
 
-Na primeira configuração:
+For the initial setup:
 
 ```bash
 cp .env.example .env.local
@@ -39,62 +39,62 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Preserve o `.env.local` se ele já estiver configurado. As variáveis públicas são:
+Preserve `.env.local` if it is already configured. The public variables are:
 
 ```dotenv
 NEXT_PUBLIC_API_URL=http://localhost:3003
 NEXT_PUBLIC_SOCKET_URL=http://localhost:3003
 ```
 
-`NEXT_PUBLIC_SOCKET_URL` recebe a origem, sem `/chats`; quando omitida, o cliente utiliza a origem da API. Variáveis `NEXT_PUBLIC_*` são públicas e incorporadas ao build.
+`NEXT_PUBLIC_SOCKET_URL` takes the origin without `/chats`; when omitted, the client uses the API origin. `NEXT_PUBLIC_*` variables are public and embedded in the build.
 
-Abra `http://localhost:3001/auth/login`. Para o ambiente integrado, siga o [guia local do backend](../autopilot-backend/docker/local/README.md), considerando os repositórios em pastas irmãs. Ele sobe PostgreSQL, Redis, Evolution e Ollama pelo Colima e mantém as aplicações no host. O CORS do backend deve permitir `http://localhost:3001`.
+Open `http://localhost:3001/auth/login`. For the integrated environment, follow the [backend local guide](https://github.com/FabricioHiury/autopilot-backend/blob/main/docker/local/README.md), assuming the repositories are sibling directories. It starts PostgreSQL, Redis, Evolution, and Ollama through Colima while keeping the applications on the host. Backend CORS must allow `http://localhost:3001`.
 
-O login depende de usuários ativos no banco do CRM. A aplicação não fornece uma sessão demonstrativa nem cria usuários automaticamente.
+Login requires active users in the CRM database. The application does not provide a demo session or create users automatically.
 
-## Navegação e sessão
+## Navigation and sessions
 
-| Rota                         | Área                                          |
-| ---------------------------- | --------------------------------------------- |
-| `/auth/login`                | Login compartilhado das lojas e da plataforma |
-| `/app/dashboard`             | Painel da loja                                |
-| `/app/deals/pipeline`        | Pipeline de atendimentos                      |
-| `/app/deals/chat`            | Caixa de entrada e AutoPilot IA               |
-| `/app/customers`             | Clientes                                      |
-| `/app/reports`               | Relatórios comerciais                         |
-| `/app/settings/access`       | Usuários, cargos e permissões                 |
-| `/app/settings/branding`     | Identidade visual da loja                     |
-| `/app/settings/integrations` | Configuração dos canais                       |
-| `/app/help-faq`              | FAQ e suporte                                 |
-| `/backoffice/app/tenants`    | Concessionárias e seus administradores        |
-| `/backoffice/app/access`     | Administradores da plataforma                 |
-| `/backoffice/app/tickets`    | Chamados de suporte do backoffice             |
+| Route                        | Area                                 |
+| ---------------------------- | ------------------------------------ |
+| `/auth/login`                | Shared store and platform login      |
+| `/app/dashboard`             | Store dashboard                      |
+| `/app/deals/pipeline`        | Deal pipeline                        |
+| `/app/deals/chat`            | Inbox and AutoPilot AI               |
+| `/app/customers`             | Customers                            |
+| `/app/reports`               | Sales reports                        |
+| `/app/settings/access`       | Users, roles, and permissions        |
+| `/app/settings/branding`     | Store branding                       |
+| `/app/settings/integrations` | Channel configuration                |
+| `/app/help-faq`              | FAQs and support                     |
+| `/backoffice/app/tenants`    | Dealerships and their administrators |
+| `/backoffice/app/access`     | Platform administrators              |
+| `/backoffice/app/tickets`    | Backoffice support tickets           |
 
-O perfil `autopilot` acessa o backoffice; `storeOwner` e `user` acessam a loja. A sessão persiste até expirar, ocorrer logout ou resposta HTTP 401. Uma resposta 403 mantém a sessão e informa a falta de permissão. Não existe renovação automática de JWT no contrato atual.
+The `autopilot` profile accesses the backoffice; `storeOwner` and `user` access the store area. Sessions persist until expiration, logout, or an HTTP 401 response. An HTTP 403 preserves the session and reports insufficient permissions. The current contract does not include automatic JWT renewal.
 
-A identidade institucional AutoPilot usa a mesma logo nas áreas da aplicação. A personalização da loja é carregada após o login por `GET /store/customization`, aplicada ao tema e removida ao sair. As lojas compartilham o domínio da aplicação.
+AutoPilot's institutional branding uses the same logo across application areas. Store customization is fetched after login through `GET /store/customization`, applied to the theme, and removed on logout. Stores share the application domain.
 
-## Experiência do AutoPilot IA
+## AutoPilot AI experience
 
-Em cada conversa, o painel começa recolhido na barra **AutoPilot IA**. O usuário pode abrir ou minimizar as sugestões; o dossiê estratégico aparece sob demanda dentro do painel, com altura limitada e rolagem própria.
+In each conversation, the panel starts collapsed in the **AutoPilot IA** bar. Users can open or minimize suggestions; the strategic dossier appears on demand inside the panel, with a limited height and its own scrolling.
 
-Selecionar uma resposta recolhe o painel e preenche o editor para revisão. O envio depende do botão normal de enviar. Aplicar dados ao atendimento exige permissão, revisão e confirmação; alterações concorrentes são verificadas antes de salvar.
+Selecting a reply collapses the panel and fills the editor for review. Sending requires the regular send button. Applying data to a deal requires permission, review, and confirmation; concurrent changes are checked before saving.
 
-Quando a análise termina, o painel recebe a atualização em tempo real sem abrir automaticamente. Estados de carregamento, indisponibilidade e IA desabilitada também ficam acessíveis ao expandir a barra.
+When analysis finishes, the panel receives the update in real time without opening automatically. Loading, unavailable, and disabled AI states are also accessible by expanding the bar.
 
-O modelo e a habilitação são definidos no **backend**, pelas variáveis `CHAT_AI_URL`, `CHAT_AI_MODEL` e `CHAT_AI_API_KEY`. O frontend não guarda a chave nem escolhe o modelo. O ambiente local documentado usa Ollama com `gemma3:1b`, um modelo leve para testes com limitações de qualidade.
+The **backend** determines the model and availability through `CHAT_AI_URL`, `CHAT_AI_MODEL`, and `CHAT_AI_API_KEY`. The frontend neither stores the key nor selects the model. The documented local environment uses Ollama with `gemma3:1b`, a lightweight testing model with quality limitations.
 
-## Integração e estrutura
+## Integration and structure
 
-`src/app/` organiza as rotas. Componentes ficam em `src/components/`; contratos REST em `src/services/`; modelos em `src/types/`; estado e contexto em `src/redux/`, `src/hooks/` e `src/contexts/`. Assets institucionais ficam em `public/` e testes em `src/test/`.
+`src/app/` organizes routes. Components live in `src/components/`; REST contracts in `src/services/`; models in `src/types/`; and state and context in `src/redux/`, `src/hooks/`, and `src/contexts/`. Institutional assets are in `public/`, and tests are in `src/test/`.
 
-`api.client.ts` centraliza JWT, timeout e o envelope `{ message, statusCode, data }`. Helpers de apresentação traduzem cargos, canais, etiquetas conhecidas e mensagens de erro, preservando os valores enviados à API e nomes personalizados.
+`api.client.ts` centralizes JWT handling, timeouts, and the `{ message, statusCode, data }` envelope. Presentation helpers translate roles, channels, known tags, and error messages while preserving API values and custom names.
 
-`RealtimeContext` mantém uma conexão Socket.io por sessão no namespace `/chats`. Os eventos são filtrados pela loja. Reconexão e retorno à aba reconciliam o histórico por REST; o pareamento de WhatsApp consulta o status enquanto aguarda o QR Code.
+`RealtimeContext` maintains one Socket.io connection per session in the `/chats` namespace. Events are filtered by store. Reconnection and returning to the tab reconcile history through REST; WhatsApp pairing polls status while waiting for the QR code.
 
-Há redirecionamentos para links antigos de login, recuperação de senha, confirmação de e-mail e callbacks dos canais. Os parâmetros dos callbacks são preservados.
+Redirects support legacy login, password recovery, email confirmation, and channel callback links. Callback parameters are preserved.
 
-## Verificação e produção
+## Verification and production
 
 ```bash
 pnpm typecheck
@@ -105,8 +105,8 @@ pnpm build
 pnpm start
 ```
 
-Vitest e React Testing Library cobrem sessão, permissões, contratos REST, tema, mensagens em tempo real, tradução da interface e revisão humana da IA. `pnpm format` e `pnpm lint:fix` aplicam as correções automáticas de formatação e lint.
+Vitest and React Testing Library cover sessions, permissions, REST contracts, branding, real-time messages, interface translations, and human review of AI suggestions. `pnpm format` and `pnpm lint:fix` apply automatic formatting and lint fixes.
 
-O lint geral ainda possui pendências preexistentes que podem bloquear `pnpm build`. Para diagnosticar somente compilação e tipagem, existe `pnpm exec next build --no-lint`; esse comando não substitui a correção do lint.
+Project-wide lint still has existing issues that may block `pnpm build`. To diagnose compilation and types alone, use `pnpm exec next build --no-lint`; this command does not replace fixing lint issues.
 
-Integrações reais exigem contas e credenciais configuradas nas APIs. SMTP, Firebase e Evolution não são simulados pelo frontend. Consulte [AGENTS.md](AGENTS.md) para as convenções de contribuição.
+Real integrations require accounts and credentials configured in the APIs. The frontend does not mock SMTP, Firebase, or Evolution. See [AGENTS.md](AGENTS.md) for contribution conventions.
